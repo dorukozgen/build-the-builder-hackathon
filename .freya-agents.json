@@ -1,7 +1,7 @@
 {
- "BRIEF": {
-  "workflow_id": "361a22e0-106f-4965-98fd-b33848bf2667",
-  "agent_id": "e4f080fa-471b-4c54-bdd9-283dd7804da9",
-  "version": 2
+ "freyabank-ekstre-borc": {
+  "workflow_id": "afb0c7bc-7a26-4be9-8f6c-964aed2ed431",
+  "agent_id": "24ecbf12-8265-4683-84e7-767f44c1adf1",
+  "version": 6
  }
 }
