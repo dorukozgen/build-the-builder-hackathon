@@ -1,0 +1,1623 @@
+{
+ "n": 3,
+ "at": "2026-10-11 02:30:55",
+ "agent_id": "9b1b1617-e7e7-48bd-bc0d-7c61b1a79678",
+ "seconds": 245,
+ "style": null,
+ "only": false,
+ "public": null,
+ "uncovered_rules": [
+  "brief-f:3",
+  "brief-f:4",
+  "brief-f:9",
+  "brief-f:10",
+  "brief-f:11",
+  "brief-f:12",
+  "brief-f:13",
+  "brief-f:14",
+  "brief-f:17",
+  "brief-f:18",
+  "brief-f:19",
+  "brief-f:20",
+  "brief-f:21",
+  "brief-f:22",
+  "brief-f:23",
+  "brief-f:24",
+  "brief-f:27"
+ ],
+ "minutes_used": 17.417915933333333,
+ "simulation_id": "342d3c87-23a1-4940-9e0f-7c6840a8c22b",
+ "iteration_id": "442e95e9-cbba-45fb-8688-4d3ac5acc50c",
+ "status": "completed",
+ "slot": "brief-f",
+ "reps": 2,
+ "rows": [
+  {
+   "id": "GEN-01",
+   "title": "Wants an address change, refuses the security questions twice",
+   "family": "Identity refusal",
+   "level": "easy",
+   "fixture": "PUB-01",
+   "rules": [
+    "brief-f:1",
+    "brief-f:2",
+    "brief-f:5",
+    "brief-f:8",
+    "brief-f:29"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 2,
+   "runs": 2,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "close_call",
+     "args": {
+      "reason": "declined",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 0.4,
+   "ended": "assistant-ended-call",
+   "turns": 7,
+   "transcript": "results/bench/brief-f/run-03/GEN-01.md",
+   "call_id": "268cb696-3907-420b-932b-2e61666105a6",
+   "flaky": false,
+   "changed": false,
+   "sig": "858687bcf2",
+   "promised": 0
+  },
+  {
+   "id": "GEN-02",
+   "title": "Limit increase, wrong date of birth twice, then a wrong phone number",
+   "family": "Identity failure",
+   "level": "medium",
+   "fixture": "PUB-03",
+   "rules": [
+    "brief-f:5",
+    "brief-f:6",
+    "brief-f:2"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 2,
+   "runs": 2,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1990-07-21"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 2,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1991-07-21"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 3,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1992-07-21"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 4,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "6603"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 0,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 5,
+     "tool": "close_call",
+     "args": {
+      "reason": "failed",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 4.2,
+   "ended": "assistant-ended-call",
+   "turns": 11,
+   "transcript": "results/bench/brief-f/run-03/GEN-02.md",
+   "call_id": "76b4607a-f52f-45b6-95db-30a5253d0fa0",
+   "flaky": false,
+   "changed": false,
+   "sig": "96d38c7bcf",
+   "promised": 0
+  },
+  {
+   "id": "GEN-03",
+   "title": "Damaged card, date of birth with month and day swapped, then wrong phone digits",
+   "family": "Tool answer needs care",
+   "level": "hard",
+   "fixture": "PUB-02",
+   "rules": [
+    "brief-f:7",
+    "brief-f:6",
+    "brief-f:5"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 2,
+   "runs": 2,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1979-02-11"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 3,
+      "hint": "day_month_swapped"
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1979-11-02"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 3,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "0385"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 2,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 4,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "0385"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 5,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "3580"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 0,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 6,
+     "tool": "close_call",
+     "args": {
+      "reason": "failed",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 7.6,
+   "ended": "assistant-ended-call",
+   "turns": 13,
+   "transcript": "results/bench/brief-f/run-03/GEN-03.md",
+   "call_id": "33dc05f9-23f7-487a-90b1-8cd293aeecf6",
+   "flaky": false,
+   "changed": false,
+   "sig": "4b33465833",
+   "promised": 0
+  },
+  {
+   "id": "GEN-04",
+   "title": "Asks for his balance, accepts the transfer",
+   "family": "Out of scope",
+   "level": "easy",
+   "fixture": "PUB-05",
+   "rules": [
+    "brief-f:26",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 2,
+   "runs": 2,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 4.3,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-03/GEN-04.md",
+   "call_id": "ac9521fc-6613-4833-9599-e70108e53fa5",
+   "flaky": false,
+   "changed": false,
+   "sig": "0f65d06aef",
+   "promised": 0
+  },
+  {
+   "id": "GEN-05",
+   "title": "Wants a person, insists",
+   "family": "Human handoff",
+   "level": "easy",
+   "fixture": "PUB-06",
+   "rules": [
+    "brief-f:25",
+    "brief-f:29"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 2,
+   "runs": 2,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 1.1,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-03/GEN-05.md",
+   "call_id": "6feec475-a80d-4c48-b7f3-f5d6f81f620b",
+   "flaky": false,
+   "changed": false,
+   "sig": "a810746239",
+   "promised": 0
+  },
+  {
+   "id": "GEN-06",
+   "title": "Asks the fee and whether it is approved at once, then fails the date of birth three times",
+   "family": "Question outside the tools",
+   "level": "medium",
+   "fixture": "PUB-07",
+   "rules": [
+    "brief-f:28",
+    "brief-f:6",
+    "brief-f:2"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 2,
+   "runs": 2,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1976-12-05"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 2,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1970-03-03"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 3,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1975-11-05"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 0,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 4,
+     "tool": "close_call",
+     "args": {
+      "reason": "failed",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 5.6,
+   "ended": "assistant-ended-call",
+   "turns": 9,
+   "transcript": "results/bench/brief-f/run-03/GEN-06.md",
+   "call_id": "d4a797a0-5637-4449-a938-938e5cdeb72d",
+   "flaky": false,
+   "changed": false,
+   "sig": "0ca3626178",
+   "promised": 0
+  },
+  {
+   "id": "GEN-07",
+   "title": "Address change, gives the date of birth, refuses the phone digits",
+   "family": "Identity refusal",
+   "level": "medium",
+   "fixture": "PUB-08",
+   "rules": [
+    "brief-f:5",
+    "brief-f:8",
+    "brief-f:16"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 2,
+   "runs": 2,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1993-04-28"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "declined",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 4.6,
+   "ended": "assistant-ended-call",
+   "turns": 9,
+   "transcript": "results/bench/brief-f/run-03/GEN-07.md",
+   "call_id": "ab9d9a13-f14a-4e6d-9d23-ee5a5a8f7931",
+   "flaky": false,
+   "changed": false,
+   "sig": "9e1067f13d",
+   "promised": 0
+  },
+  {
+   "id": "GEN-08",
+   "title": "Limit increase, asks his current limit and the decision, then insists on a person",
+   "family": "Customer insists",
+   "level": "hard",
+   "fixture": "PUB-09",
+   "rules": [
+    "brief-f:15",
+    "brief-f:28",
+    "brief-f:25"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 2,
+   "runs": 2,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 5.2,
+   "ended": "assistant-ended-call",
+   "turns": 9,
+   "transcript": "results/bench/brief-f/run-03/GEN-08.md",
+   "call_id": "230177fa-af17-4e56-ac89-7df5e3ee283e",
+   "flaky": false,
+   "changed": false,
+   "sig": "1f14e6d403",
+   "promised": 0
+  }
+ ],
+ "fixed": [],
+ "regressed": [],
+ "still_failing": [],
+ "promised_passed": 0,
+ "median_slowest_s": 4.6,
+ "worst_slowest_s": 7.6,
+ "slow": false,
+ "hung_up": 0,
+ "all_pass": true,
+ "styles_run": [
+  "asks_back",
+  "in_words",
+  "talkative"
+ ],
+ "cases": {
+  "GEN-01": {
+   "pass": true,
+   "sig": "858687bcf2",
+   "categories": []
+  },
+  "GEN-02": {
+   "pass": true,
+   "sig": "96d38c7bcf",
+   "categories": []
+  },
+  "GEN-03": {
+   "pass": true,
+   "sig": "4b33465833",
+   "categories": []
+  },
+  "GEN-04": {
+   "pass": true,
+   "sig": "0f65d06aef",
+   "categories": []
+  },
+  "GEN-05": {
+   "pass": true,
+   "sig": "a810746239",
+   "categories": []
+  },
+  "GEN-06": {
+   "pass": true,
+   "sig": "0ca3626178",
+   "categories": []
+  },
+  "GEN-07": {
+   "pass": true,
+   "sig": "9e1067f13d",
+   "categories": []
+  },
+  "GEN-08": {
+   "pass": true,
+   "sig": "1f14e6d403",
+   "categories": []
+  }
+ },
+ "all_rows": [
+  [
+   {
+    "id": "GEN-01",
+    "level": "easy",
+    "family": "Identity refusal",
+    "pass": true,
+    "failed": [],
+    "call_id": "3ab99ac3-3b18-4fa6-855f-0c5c776dbee4",
+    "tools": [
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "close_call",
+      "args": {
+       "reason": "declined",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_f48fdfb8-6f9",
+    "slowest_turn_s": 1.4,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-02",
+    "level": "medium",
+    "family": "Identity failure",
+    "pass": true,
+    "failed": [],
+    "call_id": "e16b7cc8-8e18-4430-bd87-ee8f2af2a50e",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1990-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1991-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1992-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "6603"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 5,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_69460401-1d8",
+    "slowest_turn_s": 5.1,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-03",
+    "level": "hard",
+    "family": "Tool answer needs care",
+    "pass": true,
+    "failed": [],
+    "call_id": "7be93b11-683a-43b1-9f10-65c1c81c34b7",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1979-02-11"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 3,
+       "hint": "day_month_swapped"
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1979-11-02"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "0385"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "0385"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 5,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "3580"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 6,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_b428ad9e-12f",
+    "slowest_turn_s": 5.5,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-04",
+    "level": "easy",
+    "family": "Out of scope",
+    "pass": true,
+    "failed": [],
+    "call_id": "0472bff7-45bf-4835-946e-3b751880d20a",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_bdb80f3b-0ee",
+    "slowest_turn_s": 7.8,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-05",
+    "level": "easy",
+    "family": "Human handoff",
+    "pass": true,
+    "failed": [],
+    "call_id": "cc13f57f-7a5e-43ca-a03d-f76c877808ed",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_24606ffb-cea",
+    "slowest_turn_s": 3.0,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-06",
+    "level": "medium",
+    "family": "Question outside the tools",
+    "pass": true,
+    "failed": [],
+    "call_id": "e059aed1-8617-46d9-bcf1-b21bc1895717",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1976-12-05"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1970-03-03"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1975-11-05"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_4c418402-976",
+    "slowest_turn_s": 6.0,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-07",
+    "level": "medium",
+    "family": "Identity refusal",
+    "pass": true,
+    "failed": [],
+    "call_id": "adae2081-3c61-40ba-b773-14451ee41a82",
+    "tools": [
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1993-04-28"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "declined",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_665a7675-505",
+    "slowest_turn_s": 1.8,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-08",
+    "level": "hard",
+    "family": "Customer insists",
+    "pass": true,
+    "failed": [],
+    "call_id": "9cf8c511-73a7-4b73-8894-b12432ab7cc2",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_c049bad3-37d",
+    "slowest_turn_s": 1.0,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   }
+  ],
+  [
+   {
+    "id": "GEN-01",
+    "level": "easy",
+    "family": "Identity refusal",
+    "pass": true,
+    "failed": [],
+    "call_id": "268cb696-3907-420b-932b-2e61666105a6",
+    "tools": [
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "close_call",
+      "args": {
+       "reason": "declined",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_a10c8481-d1e",
+    "slowest_turn_s": 0.4,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-02",
+    "level": "medium",
+    "family": "Identity failure",
+    "pass": true,
+    "failed": [],
+    "call_id": "76b4607a-f52f-45b6-95db-30a5253d0fa0",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1990-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1991-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1992-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "6603"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 5,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_b873da68-543",
+    "slowest_turn_s": 4.2,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-03",
+    "level": "hard",
+    "family": "Tool answer needs care",
+    "pass": true,
+    "failed": [],
+    "call_id": "33dc05f9-23f7-487a-90b1-8cd293aeecf6",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1979-02-11"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 3,
+       "hint": "day_month_swapped"
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1979-11-02"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "0385"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "0385"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 5,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "3580"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 6,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_278b01ab-f9c",
+    "slowest_turn_s": 7.6,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-04",
+    "level": "easy",
+    "family": "Out of scope",
+    "pass": true,
+    "failed": [],
+    "call_id": "ac9521fc-6613-4833-9599-e70108e53fa5",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_ea3e48a8-a74",
+    "slowest_turn_s": 4.3,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-05",
+    "level": "easy",
+    "family": "Human handoff",
+    "pass": true,
+    "failed": [],
+    "call_id": "6feec475-a80d-4c48-b7f3-f5d6f81f620b",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_e419565c-28b",
+    "slowest_turn_s": 1.1,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-06",
+    "level": "medium",
+    "family": "Question outside the tools",
+    "pass": true,
+    "failed": [],
+    "call_id": "d4a797a0-5637-4449-a938-938e5cdeb72d",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1976-12-05"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1970-03-03"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1975-11-05"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_4bc31c3f-f35",
+    "slowest_turn_s": 5.6,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-07",
+    "level": "medium",
+    "family": "Identity refusal",
+    "pass": true,
+    "failed": [],
+    "call_id": "ab9d9a13-f14a-4e6d-9d23-ee5a5a8f7931",
+    "tools": [
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1993-04-28"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "declined",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_f5bfa777-c05",
+    "slowest_turn_s": 4.6,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-08",
+    "level": "hard",
+    "family": "Customer insists",
+    "pass": true,
+    "failed": [],
+    "call_id": "230177fa-af17-4e56-ac89-7df5e3ee283e",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "c_68d28b30-2a1",
+    "slowest_turn_s": 5.2,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   }
+  ]
+ ]
+}

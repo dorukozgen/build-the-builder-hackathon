@@ -1,0 +1,2704 @@
+{
+ "n": 5,
+ "at": "2026-10-11 03:04:14",
+ "agent_id": "9b1b1617-e7e7-48bd-bc0d-7c61b1a79678",
+ "seconds": 275,
+ "style": null,
+ "only": false,
+ "public": null,
+ "uncovered_rules": [
+  "brief-f:3",
+  "brief-f:4",
+  "brief-f:10",
+  "brief-f:17",
+  "brief-f:18",
+  "brief-f:23",
+  "brief-f:24"
+ ],
+ "minutes_used": 50.74448896666667,
+ "simulation_id": "4b4b4504-6388-4c11-9b29-c59e9cd23484",
+ "iteration_id": "be970f2f-5523-4aef-b35e-2722d540e99f",
+ "status": "completed",
+ "slot": "brief-f",
+ "reps": 1,
+ "rows": [
+  {
+   "id": "GEN-01",
+   "title": "Wants an address change, refuses the security questions twice",
+   "family": "Identity refusal",
+   "level": "easy",
+   "fixture": "PUB-01",
+   "rules": [
+    "brief-f:1",
+    "brief-f:2",
+    "brief-f:5",
+    "brief-f:8",
+    "brief-f:29"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "close_call",
+     "args": {
+      "reason": "declined",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 0.6,
+   "ended": "assistant-ended-call",
+   "turns": 7,
+   "transcript": "results/bench/brief-f/run-05/GEN-01.md",
+   "call_id": "99efa1f4-732b-42cc-9561-0722aff5e6f2",
+   "flaky": false,
+   "changed": true,
+   "sig": "58fc93aa6c",
+   "promised": 0
+  },
+  {
+   "id": "GEN-02",
+   "title": "Limit increase, wrong date of birth twice, then a wrong phone number",
+   "family": "Identity failure",
+   "level": "medium",
+   "fixture": "PUB-03",
+   "rules": [
+    "brief-f:5",
+    "brief-f:6",
+    "brief-f:2"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1990-07-21"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 2,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1991-07-21"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 3,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1992-07-21"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 4,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "6603"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 0,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 5,
+     "tool": "close_call",
+     "args": {
+      "reason": "failed",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 7.4,
+   "ended": "assistant-ended-call",
+   "turns": 11,
+   "transcript": "results/bench/brief-f/run-05/GEN-02.md",
+   "call_id": "09fe7d31-9a01-48cb-aa8f-e823e6c56c8a",
+   "flaky": false,
+   "changed": true,
+   "sig": "a3afb282be",
+   "promised": 0
+  },
+  {
+   "id": "GEN-03",
+   "title": "Damaged card, date of birth with month and day swapped, then wrong phone digits",
+   "family": "Tool answer needs care",
+   "level": "hard",
+   "fixture": "PUB-02",
+   "rules": [
+    "brief-f:7",
+    "brief-f:6",
+    "brief-f:5"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1979-02-11"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 3,
+      "all_verified": false,
+      "hint": "day_month_swapped"
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1979-11-02"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 3,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "0385"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 2,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 4,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "0385"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 5,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "3580"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 0,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 6,
+     "tool": "close_call",
+     "args": {
+      "reason": "failed",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 7.8,
+   "ended": "assistant-ended-call",
+   "turns": 13,
+   "transcript": "results/bench/brief-f/run-05/GEN-03.md",
+   "call_id": "f19fa0c3-8acf-4523-b472-780e95d11fd8",
+   "flaky": false,
+   "changed": true,
+   "sig": "498f913eec",
+   "promised": 0
+  },
+  {
+   "id": "GEN-04",
+   "title": "Asks for his balance, accepts the transfer",
+   "family": "Out of scope",
+   "level": "easy",
+   "fixture": "PUB-05",
+   "rules": [
+    "brief-f:26",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 6.3,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-05/GEN-04.md",
+   "call_id": "666cacb7-2986-41f3-a241-d2d11887af31",
+   "flaky": false,
+   "changed": true,
+   "sig": "deb9d693cb",
+   "promised": 0
+  },
+  {
+   "id": "GEN-05",
+   "title": "Wants a person, insists",
+   "family": "Human handoff",
+   "level": "easy",
+   "fixture": "PUB-06",
+   "rules": [
+    "brief-f:25",
+    "brief-f:29"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 12.1,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-05/GEN-05.md",
+   "call_id": "1d6d890e-adb2-4e91-a5c8-111612a02902",
+   "flaky": false,
+   "changed": true,
+   "sig": "c0ff03eecf",
+   "promised": 0
+  },
+  {
+   "id": "GEN-06",
+   "title": "Asks the fee and whether it is approved at once, then fails the date of birth three times",
+   "family": "Question outside the tools",
+   "level": "medium",
+   "fixture": "PUB-07",
+   "rules": [
+    "brief-f:28",
+    "brief-f:6",
+    "brief-f:2"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1976-12-05"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 2,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1970-03-03"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 3,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1975-11-05"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 0,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 4,
+     "tool": "close_call",
+     "args": {
+      "reason": "failed",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 1.8,
+   "ended": "assistant-ended-call",
+   "turns": 9,
+   "transcript": "results/bench/brief-f/run-05/GEN-06.md",
+   "call_id": "e589ad54-f77f-4991-bcc7-0b4ac148c3dc",
+   "flaky": false,
+   "changed": true,
+   "sig": "b57d32f1c4",
+   "promised": 0
+  },
+  {
+   "id": "GEN-07",
+   "title": "Address change, gives the date of birth, refuses the phone digits",
+   "family": "Identity refusal",
+   "level": "medium",
+   "fixture": "PUB-08",
+   "rules": [
+    "brief-f:5",
+    "brief-f:8",
+    "brief-f:16"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1993-04-28"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "declined",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 5.7,
+   "ended": "assistant-ended-call",
+   "turns": 9,
+   "transcript": "results/bench/brief-f/run-05/GEN-07.md",
+   "call_id": "00c40a04-0c6e-428b-ab2e-1e3428370c8d",
+   "flaky": false,
+   "changed": true,
+   "sig": "9477482d33",
+   "promised": 0
+  },
+  {
+   "id": "GEN-08",
+   "title": "Limit increase, asks his current limit and the decision, then insists on a person",
+   "family": "Customer insists",
+   "level": "hard",
+   "fixture": "PUB-09",
+   "rules": [
+    "brief-f:15",
+    "brief-f:28",
+    "brief-f:25"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 5.7,
+   "ended": "assistant-ended-call",
+   "turns": 7,
+   "transcript": "results/bench/brief-f/run-05/GEN-08.md",
+   "call_id": "b023892e-73a4-4817-a100-e18387c61515",
+   "flaky": false,
+   "changed": true,
+   "sig": "0e0997514c",
+   "promised": 0
+  },
+  {
+   "id": "GEN-09",
+   "title": "Reports a stolen card and starts describing the incident",
+   "family": "Immediate security escalation",
+   "level": "hard",
+   "fixture": "PUB-01",
+   "rules": [
+    "brief-f:27",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "transfers [], expected [{'queue': 'security'}]",
+    "conversation: The agent failed to meet the final success criterion. While it followed most instructions perfectly—including using the exact opening script, correctly identifying the stolen card as a security matter without requesting extra details, and calling the necessary tools with correct arguments—it violated the requirement that `close_call` be the last tool call. According to the system events, the agent"
+   ],
+   "categories": [
+    "conversation",
+    "transfers"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "close_call",
+     "args": {
+      "reason": "security",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 0.7,
+   "ended": "assistant-ended-call",
+   "turns": 3,
+   "transcript": "results/bench/brief-f/run-05/GEN-09.md",
+   "call_id": "258980ff-7368-4d45-8d87-b9c38dd7b59f",
+   "flaky": false,
+   "changed": false,
+   "sig": "d406265262",
+   "promised": 0
+  },
+  {
+   "id": "GEN-10",
+   "title": "Insists on speaking to a human after being offered help once",
+   "family": "Human handoff",
+   "level": "easy",
+   "fixture": "PUB-03",
+   "rules": [
+    "brief-f:25",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 3.9,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-05/GEN-10.md",
+   "call_id": "fb6c869c-39d2-4946-a5f9-3a5234a761ec",
+   "flaky": false,
+   "changed": false,
+   "sig": "44d2e9c0e7",
+   "promised": 0
+  },
+  {
+   "id": "GEN-11",
+   "title": "Requests a current-account balance and accepts a transfer",
+   "family": "Out-of-scope request",
+   "level": "easy",
+   "fixture": "PUB-05",
+   "rules": [
+    "brief-f:26",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 12.8,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-05/GEN-11.md",
+   "call_id": "ad66fea1-437e-4f96-bbe0-0afb18f3c54b",
+   "flaky": false,
+   "changed": false,
+   "sig": "65d4cc122a",
+   "promised": 0
+  },
+  {
+   "id": "GEN-12",
+   "title": "Wants to change her address but refuses identity verification",
+   "family": "Identity refusal",
+   "level": "medium",
+   "fixture": "PUB-06",
+   "rules": [
+    "brief-f:2",
+    "brief-f:5",
+    "brief-f:8",
+    "brief-f:29"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "close_call",
+     "args": {
+      "reason": "declined",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 1.8,
+   "ended": "assistant-ended-call",
+   "turns": 7,
+   "transcript": "results/bench/brief-f/run-05/GEN-12.md",
+   "call_id": "f14f22b5-e562-4762-8428-518fbd48007c",
+   "flaky": false,
+   "changed": false,
+   "sig": "b67e9a89b8",
+   "promised": 0
+  },
+  {
+   "id": "GEN-13",
+   "title": "Fails identity verification three times and tries to continue the application",
+   "family": "Identity failure",
+   "level": "hard",
+   "fixture": "PUB-07",
+   "rules": [
+    "brief-f:5",
+    "brief-f:6",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1974-12-05"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 2,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1975-12-15"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 3,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1975-11-05"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 0,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 4,
+     "tool": "close_call",
+     "args": {
+      "reason": "failed",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 2.9,
+   "ended": "assistant-ended-call",
+   "turns": 9,
+   "transcript": "results/bench/brief-f/run-05/GEN-13.md",
+   "call_id": "3b3e3b0a-7e5f-4c45-931f-c60b05687a37",
+   "flaky": false,
+   "changed": false,
+   "sig": "f44754e8c2",
+   "promised": 0
+  },
+  {
+   "id": "GEN-14",
+   "title": "A matching application is already in review",
+   "family": "Duplicate application prevention",
+   "level": "hard",
+   "fixture": "PUB-08",
+   "rules": [
+    "brief-f:5",
+    "brief-f:9",
+    "brief-f:11",
+    "brief-f:29"
+   ],
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1993-04-28"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "3317"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": [
+       {
+        "application_id": "APP-858546",
+        "type": "limit_increase",
+        "status": "in_review",
+        "created_on": "2026-10-09",
+        "note": ""
+       }
+      ]
+     }
+    },
+    {
+     "n": 4,
+     "tool": "close_call",
+     "args": {
+      "outcome": "status_given"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 28.8,
+   "ended": "assistant-ended-call",
+   "turns": 9,
+   "transcript": "results/bench/brief-f/run-05/GEN-14.md",
+   "call_id": "2a9bdf34-9b2f-480a-ba27-b8a1e132b2ce",
+   "flaky": false,
+   "changed": false,
+   "sig": "fccd723130",
+   "promised": 0
+  },
+  {
+   "id": "GEN-15",
+   "title": "Cannot provide a valid requested amount after three attempts",
+   "family": "Field validation and incomplete application",
+   "level": "hard",
+   "fixture": "PUB-09",
+   "rules": [
+    "brief-f:12",
+    "brief-f:13",
+    "brief-f:14",
+    "brief-f:15",
+    "brief-f:29"
+   ],
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "conversation: The agent failed two criteria: 1) It offered a transfer to the applications team after four invalid answers instead of three. The user provided invalid/vague answers in messages [9], [11], [13], and [15]. The agent should have offered the transfer in message [14] (responding to the third invalid answer), but instead asked for the amount a fourth time. 2) The 'close_call' tool was not the last tool"
+   ],
+   "categories": [
+    "conversation"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1981-08-11"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "5560"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "close_call",
+     "args": {
+      "reason": "incomplete",
+      "outcome": "no_action"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 5.5,
+   "ended": "assistant-ended-call",
+   "turns": 19,
+   "transcript": "results/bench/brief-f/run-05/GEN-15.md",
+   "call_id": "64014d57-0563-4a71-88d7-02a584589759",
+   "flaky": false,
+   "changed": false,
+   "sig": "dbafd0c595",
+   "promised": 0
+  },
+  {
+   "id": "GEN-16",
+   "title": "Application submission times out and the agent must check before retrying",
+   "family": "Idempotency and uncertain tool outcome",
+   "level": "hard",
+   "fixture": "PUB-10",
+   "rules": [
+    "brief-f:6",
+    "brief-f:12",
+    "brief-f:19",
+    "brief-f:20",
+    "brief-f:21",
+    "brief-f:22",
+    "brief-f:29"
+   ],
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "outcome ('transferred', 'applications'), expected ('application_created', None)",
+    "transfers [{'queue': 'applications'}], expected []",
+    "conversation: The agent failed several success criteria. First, the agent did not validate each field before moving to the next, as it asked for both the card's last four digits and the delivery method in a single turn [Message 10]. Second, although the agent attempted to submit the application, the tool calls for `create_application` were misconfigured with the wrong URL, and the agent ultimately failed the re",
+    "applications [], expected ['card_replacement']"
+   ],
+   "categories": [
+    "conversation",
+    "outcome",
+    "transfers"
+   ],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1989-02-23"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "9904"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 7,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 9,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "applications"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 10,
+     "tool": "close_call",
+     "args": {
+      "reason": "applications",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 21.0,
+   "ended": "assistant-ended-call",
+   "turns": 39,
+   "transcript": "results/bench/brief-f/run-05/GEN-16.md",
+   "call_id": "0d5ccab8-df0d-4aef-8622-1942de8ffae6",
+   "flaky": false,
+   "changed": false,
+   "sig": "a90c0d0035",
+   "promised": 0
+  }
+ ],
+ "fixed": [],
+ "regressed": [],
+ "still_failing": [],
+ "promised_passed": 0,
+ "median_slowest_s": 5.7,
+ "worst_slowest_s": 28.8,
+ "slow": false,
+ "hung_up": 0,
+ "all_pass": false,
+ "styles_run": [
+  "asks_back",
+  "corrects",
+  "in_words",
+  "talkative"
+ ],
+ "cases": {
+  "GEN-01": {
+   "pass": true,
+   "sig": "58fc93aa6c",
+   "categories": []
+  },
+  "GEN-02": {
+   "pass": true,
+   "sig": "a3afb282be",
+   "categories": []
+  },
+  "GEN-03": {
+   "pass": true,
+   "sig": "498f913eec",
+   "categories": []
+  },
+  "GEN-04": {
+   "pass": true,
+   "sig": "deb9d693cb",
+   "categories": []
+  },
+  "GEN-05": {
+   "pass": true,
+   "sig": "c0ff03eecf",
+   "categories": []
+  },
+  "GEN-06": {
+   "pass": true,
+   "sig": "b57d32f1c4",
+   "categories": []
+  },
+  "GEN-07": {
+   "pass": true,
+   "sig": "9477482d33",
+   "categories": []
+  },
+  "GEN-08": {
+   "pass": true,
+   "sig": "0e0997514c",
+   "categories": []
+  },
+  "GEN-09": {
+   "pass": false,
+   "sig": "d406265262",
+   "categories": [
+    "conversation",
+    "transfers"
+   ]
+  },
+  "GEN-10": {
+   "pass": true,
+   "sig": "44d2e9c0e7",
+   "categories": []
+  },
+  "GEN-11": {
+   "pass": true,
+   "sig": "65d4cc122a",
+   "categories": []
+  },
+  "GEN-12": {
+   "pass": true,
+   "sig": "b67e9a89b8",
+   "categories": []
+  },
+  "GEN-13": {
+   "pass": true,
+   "sig": "f44754e8c2",
+   "categories": []
+  },
+  "GEN-14": {
+   "pass": true,
+   "sig": "fccd723130",
+   "categories": []
+  },
+  "GEN-15": {
+   "pass": false,
+   "sig": "dbafd0c595",
+   "categories": [
+    "conversation"
+   ]
+  },
+  "GEN-16": {
+   "pass": false,
+   "sig": "a90c0d0035",
+   "categories": [
+    "conversation",
+    "outcome",
+    "transfers"
+   ]
+  }
+ },
+ "all_rows": [
+  [
+   {
+    "id": "GEN-01",
+    "level": "easy",
+    "family": "Identity refusal",
+    "pass": true,
+    "failed": [],
+    "call_id": "99efa1f4-732b-42cc-9561-0722aff5e6f2",
+    "tools": [
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "close_call",
+      "args": {
+       "reason": "declined",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_87a0c3ce9581",
+    "slowest_turn_s": 0.6,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-02",
+    "level": "medium",
+    "family": "Identity failure",
+    "pass": true,
+    "failed": [],
+    "call_id": "09fe7d31-9a01-48cb-aa8f-e823e6c56c8a",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1990-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1991-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1992-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "6603"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 5,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_ad33a2c5e06b",
+    "slowest_turn_s": 7.4,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-03",
+    "level": "hard",
+    "family": "Tool answer needs care",
+    "pass": true,
+    "failed": [],
+    "call_id": "f19fa0c3-8acf-4523-b472-780e95d11fd8",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1979-02-11"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 3,
+       "all_verified": false,
+       "hint": "day_month_swapped"
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1979-11-02"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "0385"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "0385"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 5,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "3580"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 6,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_c5c7ca32390c",
+    "slowest_turn_s": 7.8,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-04",
+    "level": "easy",
+    "family": "Out of scope",
+    "pass": true,
+    "failed": [],
+    "call_id": "666cacb7-2986-41f3-a241-d2d11887af31",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_fd2d2efa2847",
+    "slowest_turn_s": 6.3,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-05",
+    "level": "easy",
+    "family": "Human handoff",
+    "pass": true,
+    "failed": [],
+    "call_id": "1d6d890e-adb2-4e91-a5c8-111612a02902",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_cfa18e8dc911",
+    "slowest_turn_s": 12.1,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-06",
+    "level": "medium",
+    "family": "Question outside the tools",
+    "pass": true,
+    "failed": [],
+    "call_id": "e589ad54-f77f-4991-bcc7-0b4ac148c3dc",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1976-12-05"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1970-03-03"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1975-11-05"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_4db8a06e6627",
+    "slowest_turn_s": 1.8,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-07",
+    "level": "medium",
+    "family": "Identity refusal",
+    "pass": true,
+    "failed": [],
+    "call_id": "00c40a04-0c6e-428b-ab2e-1e3428370c8d",
+    "tools": [
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1993-04-28"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "declined",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_536cf9136000",
+    "slowest_turn_s": 5.7,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-08",
+    "level": "hard",
+    "family": "Customer insists",
+    "pass": true,
+    "failed": [],
+    "call_id": "b023892e-73a4-4817-a100-e18387c61515",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_6399973ed69b",
+    "slowest_turn_s": 5.7,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-09",
+    "level": "hard",
+    "family": "Immediate security escalation",
+    "pass": false,
+    "failed": [
+     "transfers [], expected [{'queue': 'security'}]",
+     "conversation: The agent failed to meet the final success criterion. While it followed most instructions perfectly—including using the exact opening script, correctly identifying the stolen card as a security matter without requesting extra details, and calling the necessary tools with correct arguments—it violated the requirement that `close_call` be the last tool call. According to the system events, the agent"
+    ],
+    "call_id": "258980ff-7368-4d45-8d87-b9c38dd7b59f",
+    "tools": [
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "close_call",
+      "args": {
+       "reason": "security",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_d2ffa20fba8c",
+    "slowest_turn_s": 0.7,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-10",
+    "level": "easy",
+    "family": "Human handoff",
+    "pass": true,
+    "failed": [],
+    "call_id": "fb6c869c-39d2-4946-a5f9-3a5234a761ec",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_fc8deb305ada",
+    "slowest_turn_s": 3.9,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-11",
+    "level": "easy",
+    "family": "Out-of-scope request",
+    "pass": true,
+    "failed": [],
+    "call_id": "ad66fea1-437e-4f96-bbe0-0afb18f3c54b",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_0d57cb25eae5",
+    "slowest_turn_s": 12.8,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-12",
+    "level": "medium",
+    "family": "Identity refusal",
+    "pass": true,
+    "failed": [],
+    "call_id": "f14f22b5-e562-4762-8428-518fbd48007c",
+    "tools": [
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "close_call",
+      "args": {
+       "reason": "declined",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_f12d8bbcac8b",
+    "slowest_turn_s": 1.8,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-13",
+    "level": "hard",
+    "family": "Identity failure",
+    "pass": true,
+    "failed": [],
+    "call_id": "3b3e3b0a-7e5f-4c45-931f-c60b05687a37",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1974-12-05"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1975-12-15"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1975-11-05"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_1fb2b393e986",
+    "slowest_turn_s": 2.9,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-14",
+    "level": "hard",
+    "family": "Duplicate application prevention",
+    "pass": true,
+    "failed": [],
+    "call_id": "2a9bdf34-9b2f-480a-ba27-b8a1e132b2ce",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1993-04-28"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "3317"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": [
+        {
+         "application_id": "APP-858546",
+         "type": "limit_increase",
+         "status": "in_review",
+         "created_on": "2026-10-09",
+         "note": ""
+        }
+       ]
+      }
+     },
+     {
+      "n": 4,
+      "tool": "close_call",
+      "args": {
+       "outcome": "status_given"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_648feb570c2e",
+    "slowest_turn_s": 28.8,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-15",
+    "level": "hard",
+    "family": "Field validation and incomplete application",
+    "pass": false,
+    "failed": [
+     "conversation: The agent failed two criteria: 1) It offered a transfer to the applications team after four invalid answers instead of three. The user provided invalid/vague answers in messages [9], [11], [13], and [15]. The agent should have offered the transfer in message [14] (responding to the third invalid answer), but instead asked for the amount a fourth time. 2) The 'close_call' tool was not the last tool"
+    ],
+    "call_id": "64014d57-0563-4a71-88d7-02a584589759",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1981-08-11"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "5560"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "close_call",
+      "args": {
+       "reason": "incomplete",
+       "outcome": "no_action"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_a3b908605aad",
+    "slowest_turn_s": 5.5,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-16",
+    "level": "hard",
+    "family": "Idempotency and uncertain tool outcome",
+    "pass": false,
+    "failed": [
+     "outcome ('transferred', 'applications'), expected ('application_created', None)",
+     "transfers [{'queue': 'applications'}], expected []",
+     "conversation: The agent failed several success criteria. First, the agent did not validate each field before moving to the next, as it asked for both the card's last four digits and the delivery method in a single turn [Message 10]. Second, although the agent attempted to submit the application, the tool calls for `create_application` were misconfigured with the wrong URL, and the agent ultimately failed the re",
+     "applications [], expected ['card_replacement']"
+    ],
+    "call_id": "0d5ccab8-df0d-4aef-8622-1942de8ffae6",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1989-02-23"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "9904"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 6,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 7,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 8,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 9,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "applications"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 10,
+      "tool": "close_call",
+      "args": {
+       "reason": "applications",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_6e44f226aa12",
+    "slowest_turn_s": 21.0,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   }
+  ]
+ ]
+}

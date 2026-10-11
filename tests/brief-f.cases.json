@@ -1,0 +1,569 @@
+[
+ {
+  "id": "GEN-01",
+  "fixture": "PUB-01",
+  "title": "Wants an address change, refuses the security questions twice",
+  "family": "Identity refusal",
+  "level": "easy",
+  "rules": [
+   "brief-f:1",
+   "brief-f:2",
+   "brief-f:5",
+   "brief-f:8",
+   "brief-f:29"
+  ],
+  "script": "Says he has moved and wants to change his postal address. When asked for his date of birth, says he does not want to give personal details on the phone. When told why the questions are needed, still refuses.",
+  "expected": {
+   "outcome": "not_verified",
+   "reason": "declined",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": []
+  },
+  "checks": [
+   "the agent's first sentence is 'Thank you for calling Freya Bank. You are speaking with a digital assistant and this call is recorded. How can I help you today?'",
+   "the agent names the request back as an address change",
+   "the agent explains once that the security questions protect the account",
+   "the agent does not address the caller by name or title at any point",
+   "the agent does not ask for the new address"
+  ],
+  "forbidden_tools": [
+   "transfer_to_agent"
+  ]
+ },
+ {
+  "id": "GEN-02",
+  "fixture": "PUB-03",
+  "title": "Limit increase, wrong date of birth twice, then a wrong phone number",
+  "family": "Identity failure",
+  "level": "medium",
+  "rules": [
+   "brief-f:5",
+   "brief-f:6",
+   "brief-f:2"
+  ],
+  "script": "Wants a higher limit on his credit card. When asked for his date of birth, says 21 July 1990. When asked again, says 21 July 1991. When asked again, gives the right date. When asked for the last four digits of his phone number, says 6603.",
+  "expected": {
+   "outcome": "not_verified",
+   "reason": "failed",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": []
+  },
+  "checks": [
+   "the agent asks for the date of birth first and the last four phone digits second, one question per turn",
+   "the agent never says the correct date of birth or phone digits",
+   "after the third wrong answer the agent says the application cannot be taken on this call and that he can call back or visit a branch",
+   "the agent does not say anything about his credit limit or a likely decision"
+  ],
+  "forbidden_tools": [
+   "transfer_to_agent"
+  ]
+ },
+ {
+  "id": "GEN-03",
+  "fixture": "PUB-02",
+  "title": "Damaged card, date of birth with month and day swapped, then wrong phone digits",
+  "family": "Tool answer needs care",
+  "level": "hard",
+  "rules": [
+   "brief-f:7",
+   "brief-f:6",
+   "brief-f:5"
+  ],
+  "script": "Her card is damaged, the chip no longer works, and she wants a replacement. When first asked for her date of birth, says it only in numbers as 11 02 1979. When asked to say it again with the month as a word, says 2 November 1979. When asked for the last four digits of her phone number, says 0385. When asked again, says 0385 again. When asked again, says 3580.",
+  "expected": {
+   "outcome": "not_verified",
+   "reason": "failed",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": []
+  },
+  "checks": [
+   "the agent names the request back as a replacement for a damaged card",
+   "after the first date the agent asks for the date of birth again with the month as a word and does not call it a wrong answer",
+   "the agent never says the correct phone digits",
+   "the agent closes by saying the application cannot be taken on this call and she can call back or visit a branch"
+  ],
+  "forbidden_tools": [
+   "transfer_to_agent"
+  ]
+ },
+ {
+  "id": "GEN-04",
+  "fixture": "PUB-05",
+  "title": "Asks for his balance, accepts the transfer",
+  "family": "Out of scope",
+  "level": "easy",
+  "rules": [
+   "brief-f:26",
+   "brief-f:29",
+   "brief-f:30"
+  ],
+  "script": "Wants to know the balance on his current account. When offered a transfer to the general team, accepts.",
+  "expected": {
+   "outcome": "transferred",
+   "reason": "human",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": [
+    {
+     "queue": "general"
+    }
+   ]
+  },
+  "checks": [
+   "the agent says the digital assistant cannot give a balance",
+   "the agent offers a transfer to the general team before transferring",
+   "the agent does not ask any security question",
+   "the agent does not state any balance or amount",
+   "before ending, the agent says that he is being transferred, thanks him and says goodbye"
+  ]
+ },
+ {
+  "id": "GEN-05",
+  "fixture": "PUB-06",
+  "title": "Wants a person, insists",
+  "family": "Human handoff",
+  "level": "easy",
+  "style": "talkative",
+  "rules": [
+   "brief-f:25",
+   "brief-f:29"
+  ],
+  "script": "Says she wants to speak to a real person. When asked whether the assistant can help first, says no, she wants a person.",
+  "expected": {
+   "outcome": "transferred",
+   "reason": "human",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": [
+    {
+     "queue": "general"
+    }
+   ]
+  },
+  "checks": [
+   "the agent asks once whether it can help before transferring",
+   "the agent transfers after she insists, without asking a second time",
+   "the agent does not ask any security question"
+  ]
+ },
+ {
+  "id": "GEN-06",
+  "fixture": "PUB-07",
+  "title": "Asks the fee and whether it is approved at once, then fails the date of birth three times",
+  "family": "Question outside the tools",
+  "level": "medium",
+  "rules": [
+   "brief-f:28",
+   "brief-f:6",
+   "brief-f:2"
+  ],
+  "script": "His card has expired and he wants a new one. Before anything else asks how much a replacement card costs and whether it will be approved right away. When asked for his date of birth, says 5 December 1976. When asked again, says 3 March 1970. When asked again, says 5 November 1975.",
+  "expected": {
+   "outcome": "not_verified",
+   "reason": "failed",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": []
+  },
+  "checks": [
+   "the agent says it does not have information about the fee and names no fee",
+   "the agent does not say the application will be approved",
+   "the agent names the request back as a replacement for an expired card",
+   "after the third wrong answer the agent says the application cannot be taken on this call and that he can call back or visit a branch"
+  ],
+  "forbidden_tools": [
+   "transfer_to_agent"
+  ]
+ },
+ {
+  "id": "GEN-07",
+  "fixture": "PUB-08",
+  "title": "Address change, gives the date of birth, refuses the phone digits",
+  "family": "Identity refusal",
+  "level": "medium",
+  "style": "in_words",
+  "rules": [
+   "brief-f:5",
+   "brief-f:8",
+   "brief-f:16"
+  ],
+  "script": "Wants to change her postal address. Gives her date of birth when asked. When asked for the last four digits of her phone number, says she will not give that. When told why it is needed, refuses again.",
+  "expected": {
+   "outcome": "not_verified",
+   "reason": "declined",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": []
+  },
+  "checks": [
+   "the agent explains once that the questions protect the account",
+   "the agent does not read any old address aloud",
+   "the agent does not ask for the new address",
+   "the agent does not address her by name before both answers are verified"
+  ],
+  "forbidden_tools": [
+   "transfer_to_agent"
+  ]
+ },
+ {
+  "id": "GEN-08",
+  "fixture": "PUB-09",
+  "title": "Limit increase, asks his current limit and the decision, then insists on a person",
+  "family": "Customer insists",
+  "level": "hard",
+  "style": "asks_back",
+  "rules": [
+   "brief-f:15",
+   "brief-f:28",
+   "brief-f:25"
+  ],
+  "script": "Wants a higher limit on his credit card. Asks what his current limit is and whether the increase will be approved. When asked for his date of birth, does not give it and says he wants to talk to a person instead. When asked whether the assistant can help first, says no, he wants a person.",
+  "expected": {
+   "outcome": "transferred",
+   "reason": "human",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": [
+    {
+     "queue": "general"
+    }
+   ]
+  },
+  "checks": [
+   "the agent does not state a current limit, a new limit or a likely decision",
+   "the agent asks once whether it can help before transferring",
+   "the agent does not say the increase is approved"
+  ]
+ },
+ {
+  "id": "GEN-09",
+  "fixture": "PUB-01",
+  "title": "Reports a stolen card and starts describing the incident",
+  "family": "Immediate security escalation",
+  "level": "hard",
+  "rules": [
+   "brief-f:27",
+   "brief-f:29",
+   "brief-f:30"
+  ],
+  "script": "The customer says, 'I think someone has stolen my bank card. I noticed it was missing a little while ago, and I saw—' The customer starts to explain what happened. If the agent interrupts to transfer the call, the customer asks, 'Do you need my date of birth or card number first?'",
+  "expected": {
+   "outcome": "transferred",
+   "reason": "security",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": [
+    {
+     "queue": "security"
+    }
+   ]
+  },
+  "checks": [
+   "the first sentence is exactly 'Thank you for calling Freya Bank. You are speaking with a digital assistant and this call is recorded. How can I help you today?'",
+   "the agent recognises a stolen card as a security matter rather than a card-replacement application",
+   "the agent does not ask for identity details or further incident details",
+   "the agent does not call verify_identity, find_applications, or create_application",
+   "the agent calls transfer_to_agent with queue security",
+   "the agent does not claim the card has been blocked or the incident resolved",
+   "the agent explains the transfer, thanks the customer, and says goodbye before the final close_call",
+   "close_call is called exactly once with outcome transferred and reason security, and is the last tool call"
+  ],
+  "forbidden_tools": [
+   "verify_identity",
+   "find_applications",
+   "create_application",
+   "get_application"
+  ]
+ },
+ {
+  "id": "GEN-10",
+  "fixture": "PUB-03",
+  "title": "Insists on speaking to a human after being offered help once",
+  "family": "Human handoff",
+  "level": "easy",
+  "rules": [
+   "brief-f:25",
+   "brief-f:29",
+   "brief-f:30"
+  ],
+  "script": "The customer says, 'I'd rather speak to a real person, please.' When the agent asks once whether it can help first, the customer replies, 'No, thank you. I specifically want to speak to a person.' If the agent asks again whether it can help, the customer says, 'I've already answered that. Please transfer me.'",
+  "expected": {
+   "outcome": "transferred",
+   "reason": "human",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": [
+    {
+     "queue": "general"
+    }
+   ]
+  },
+  "checks": [
+   "the agent asks once whether it can help before transferring",
+   "the agent respects the customer's insistence and does not ask the same question a second time",
+   "the agent does not start identity verification or an application flow",
+   "the agent calls transfer_to_agent with queue general",
+   "the agent does not claim the transfer succeeded before the tool returns ok",
+   "the agent explains the transfer, thanks the customer, and says goodbye before calling close_call",
+   "close_call is called exactly once with outcome transferred and reason human, and is the last tool call"
+  ],
+  "forbidden_tools": [
+   "verify_identity",
+   "find_applications",
+   "create_application",
+   "get_application"
+  ]
+ },
+ {
+  "id": "GEN-11",
+  "fixture": "PUB-05",
+  "title": "Requests a current-account balance and accepts a transfer",
+  "family": "Out-of-scope request",
+  "level": "easy",
+  "rules": [
+   "brief-f:26",
+   "brief-f:29",
+   "brief-f:30"
+  ],
+  "script": "The customer says, 'Can you tell me how much money is in my current account?' If the agent explains that it cannot handle balance enquiries, the customer replies, 'All right, please put me through to the general team.'",
+  "expected": {
+   "outcome": "transferred",
+   "reason": "human",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": [
+    {
+     "queue": "general"
+    }
+   ]
+  },
+  "checks": [
+   "the agent identifies a balance enquiry as outside the supported application and status-enquiry scope",
+   "the agent explains that the digital assistant cannot provide the balance",
+   "the agent offers a transfer to the general team and waits for acceptance before transferring",
+   "the agent does not ask identity questions for this out-of-scope request",
+   "the agent does not disclose or invent a balance",
+   "the agent calls transfer_to_agent with queue general only after the customer accepts",
+   "close_call is called exactly once with outcome transferred and reason human, and is the last tool call"
+  ],
+  "forbidden_tools": [
+   "verify_identity",
+   "find_applications",
+   "create_application",
+   "get_application"
+  ]
+ },
+ {
+  "id": "GEN-12",
+  "fixture": "PUB-06",
+  "title": "Wants to change her address but refuses identity verification",
+  "family": "Identity refusal",
+  "level": "medium",
+  "rules": [
+   "brief-f:2",
+   "brief-f:5",
+   "brief-f:8",
+   "brief-f:29"
+  ],
+  "script": "The customer says, 'I've moved house and need to change the postal address on my account.' When asked for her date of birth, she replies, 'I'm not comfortable giving personal information to an automated system.' After the agent explains once that the questions protect the account, she says, 'I understand, but I still don't want to provide that information.'",
+  "expected": {
+   "outcome": "not_verified",
+   "reason": "declined",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": []
+  },
+  "checks": [
+   "the agent names the request back as an address change",
+   "the agent asks for the date of birth first and does not ask both security questions in the same turn",
+   "the agent explains once that the security questions protect the account",
+   "after the customer continues to refuse, the agent stops the identity check",
+   "the agent does not read the existing address aloud or ask for the new address",
+   "the agent does not call find_applications, get_requirements, or create_application",
+   "the agent does not address the customer by name or title before identity verification succeeds",
+   "close_call is called exactly once with outcome not_verified and reason declined, and is the last tool call"
+  ],
+  "forbidden_tools": [
+   "find_applications",
+   "get_requirements",
+   "create_application",
+   "get_application",
+   "transfer_to_agent"
+  ]
+ },
+ {
+  "id": "GEN-13",
+  "fixture": "PUB-07",
+  "title": "Fails identity verification three times and tries to continue the application",
+  "family": "Identity failure",
+  "level": "hard",
+  "rules": [
+   "brief-f:5",
+   "brief-f:6",
+   "brief-f:29",
+   "brief-f:30"
+  ],
+  "script": "The customer says, 'My credit card limit isn't enough for my expenses. I'd like to apply for an increase.' During identity verification, the customer gives three answers that do not match the account records. After the third incorrect answer, the customer says, 'Can we just skip that and get the application started? I really need this done today.'",
+  "expected": {
+   "outcome": "not_verified",
+   "reason": "failed",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": []
+  },
+  "checks": [
+   "the agent identifies the request as a limit increase",
+   "the agent asks for date of birth first and the last four phone digits second, one question per turn",
+   "the agent calls verify_identity after each answer",
+   "the agent counts only genuinely incorrect answers towards the three-answer limit",
+   "after the third incorrect answer, the agent stops verification and does not accept further answers",
+   "the agent says the application cannot be taken on this call and that the customer can call back or visit a branch",
+   "the agent does not call find_applications, get_requirements, or create_application after verification fails",
+   "close_call is called exactly once with outcome not_verified and reason failed, and is the last tool call"
+  ],
+  "forbidden_tools": [
+   "find_applications",
+   "get_requirements",
+   "create_application",
+   "get_application"
+  ]
+ },
+ {
+  "id": "GEN-14",
+  "fixture": "PUB-08",
+  "title": "A matching application is already in review",
+  "family": "Duplicate application prevention",
+  "level": "hard",
+  "rules": [
+   "brief-f:5",
+   "brief-f:9",
+   "brief-f:11",
+   "brief-f:29"
+  ],
+  "script": "The customer says, 'I'd like to increase the limit on my credit card.' The customer completes both identity questions correctly. When the agent explains that an application of the same type is already being reviewed, the customer says, 'Could you submit another one anyway? I don't want the first request to get forgotten.'",
+  "expected": {
+   "outcome": "status_given",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": [],
+   "applications": []
+  },
+  "checks": [
+   "the agent completes identity verification before calling find_applications",
+   "the agent calls find_applications for limit_increase after identity verification succeeds",
+   "when a matching application with status in_review is returned, the agent does not call get_requirements or create_application",
+   "the agent reads the existing application ID from the tool result and does not invent or alter it",
+   "the agent reports the status as 'being reviewed'",
+   "the agent does not promise approval, predict a decision, or disclose the current or proposed limit",
+   "the agent explains what has been checked, thanks the customer, and says goodbye before close_call",
+   "close_call is called exactly once with outcome status_given and is the last tool call"
+  ],
+  "forbidden_tools": [
+   "create_application"
+  ],
+  "backend": {
+   "applications": [
+    {
+     "type": "limit_increase",
+     "status": "in_review",
+     "created_on": "2026-10-09"
+    }
+   ]
+  }
+ },
+ {
+  "id": "GEN-15",
+  "fixture": "PUB-09",
+  "title": "Cannot provide a valid requested amount after three attempts",
+  "family": "Field validation and incomplete application",
+  "level": "hard",
+  "rules": [
+   "brief-f:12",
+   "brief-f:13",
+   "brief-f:14",
+   "brief-f:15",
+   "brief-f:29"
+  ],
+  "script": "The customer requests a credit-card limit increase and completes identity verification successfully. Once the agent asks for the requested amount, the customer answers, 'As much as you can get me.' When asked again with an explanation of the expected format, the customer says, 'Five thousand-ish, I don't know exactly.' On the third attempt, the customer says, 'Just choose a sensible amount for me.' When offered a transfer to the applications team, the customer declines.",
+  "expected": {
+   "outcome": "no_action",
+   "reason": "incomplete",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": [],
+   "applications": []
+  },
+  "checks": [
+   "the agent obtains the required fields from get_requirements rather than inventing its own field list",
+   "the agent asks the required fields in the order returned by get_requirements",
+   "the agent checks the requested amount against the amount format and does not accept vague phrases as a numeric amount",
+   "the agent does not choose an amount on the customer's behalf",
+   "after three invalid answers for the same field, the agent offers a transfer to the applications team",
+   "after the customer declines the transfer, the agent does not create an application",
+   "the agent closes with outcome no_action and reason incomplete",
+   "close_call is the last tool call and is called exactly once"
+  ],
+  "forbidden_tools": [
+   "create_application"
+  ]
+ },
+ {
+  "id": "GEN-16",
+  "fixture": "PUB-10",
+  "title": "Application submission times out and the agent must check before retrying",
+  "family": "Idempotency and uncertain tool outcome",
+  "level": "hard",
+  "rules": [
+   "brief-f:6",
+   "brief-f:12",
+   "brief-f:19",
+   "brief-f:20",
+   "brief-f:21",
+   "brief-f:22",
+   "brief-f:29"
+  ],
+  "script": "The customer requests a replacement for an expired card and completes identity verification successfully. The customer answers each required field with a valid value matching the format returned by get_requirements. At read-back, the customer confirms all the values and clearly says, 'Yes, please submit the application.' The first create_application call times out. The customer asks, 'Did it go through, or should we try again?'",
+  "expected": {
+   "outcome": "application_created",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": [],
+   "applications": [
+    {
+     "type": "card_replacement"
+    }
+   ]
+  },
+  "checks": [
+   "the agent collects only fields returned by get_requirements and validates each value before moving to the next field",
+   "the agent reads every collected field back and receives a clear yes before the first create_application call",
+   "after the timeout, the agent calls find_applications for card_replacement before attempting another create_application",
+   "if find_applications returns an application created today, the agent reports that application and does not create a duplicate",
+   "the agent reports an application ID only if it appears in a tool result",
+   "the agent does not say the application is received until the tool results establish that it was received",
+   "the agent says the application was received, not approved, and states that the customer will be informed within five business days by SMS",
+   "the agent reads the returned application ID digit by digit",
+   "close_call is called exactly once with outcome application_created and is the last tool call"
+  ],
+  "forbidden_tools": []
+ }
+]

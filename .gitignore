@@ -1,0 +1,25 @@
+# secrets: the keys live only in .env; env.example is the template
+.env
+.env.*
+
+# python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# local caches and stale copies of the kit's state
+.personas.json
+*.bak
+.freya-agents.stale.json
+.superpowers/
+
+# editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# node
+node_modules/
