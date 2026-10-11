@@ -1,0 +1,22 @@
+50 cases · families {'Identity refusal': 3, 'Identity failure': 2, 'Tool answer needs care': 1, 'Out of scope': 2, 'Human handoff': 2, 'Question outside the tools': 1, 'Customer insists': 1, 'Immediate security escalation': 1, 'Out-of-scope request': 1, 'Duplicate application prevention': 1, 'Field validation and incomplete application': 1, 'Idempotency and uncertain tool outcome': 1, 'Happy path': 3, 'Unsupported': 2, 'Multiple applications': 1, 'Existing application': 5, 'Status enquiry': 3, 'Collection': 5, 'Data minimisation': 1, 'Security': 3, 'Tool failure': 1, 'Adversarial': 3, 'Identity': 1, 'Style': 5} · fixtures {'PUB-01': 5, 'PUB-03': 5, 'PUB-02': 4, 'PUB-05': 4, 'PUB-06': 4, 'PUB-07': 4, 'PUB-08': 5, 'PUB-09': 5, 'PUB-10': 2, 'PUB-04': 3, 'PUB-11': 3, 'PUB-12': 3, 'PUB-13': 3} · outcomes {'not_verified': 8, 'transferred': 12, 'status_given': 7, 'no_action': 3, 'application_created': 20} · styles ['asks_back', 'corrects', 'in_words', 'pieces', 'talkative']
+every rule is cited by at least one case
+check: ok
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s
+another simulation is running in this workspace, waiting 30 s

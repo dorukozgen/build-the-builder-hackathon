@@ -68,7 +68,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/verify_identity"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/verify_identity"
         },
         "method": {
          "type": "string",
@@ -80,10 +80,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -134,7 +130,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
         },
         "method": {
          "type": "string",
@@ -146,10 +142,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -195,7 +187,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -207,10 +199,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -484,7 +472,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
         },
         "method": {
          "type": "string",
@@ -496,10 +484,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -545,7 +529,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -557,10 +541,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -791,7 +771,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/find_applications"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/find_applications"
         },
         "method": {
          "type": "string",
@@ -803,10 +783,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -996,7 +972,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
         },
         "method": {
          "type": "string",
@@ -1008,10 +984,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -1170,7 +1142,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/get_requirements"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/get_requirements"
         },
         "method": {
          "type": "string",
@@ -1182,10 +1154,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -1245,7 +1213,7 @@
        "properties": {
         "code": {
          "type": "string",
-         "default": "\nimport datetime, json, re\nPHRASE = dict(card_replacement='card replacement', address_change='address change', limit_increase='credit card limit increase')\nWORDS = dict(received='received and waiting', in_review='being reviewed', more_info_needed='waiting for information from you', approved='approved', rejected='not approved')\ndef to_list(v):\n    if isinstance(v, str):\n        s = v.strip()\n        if s == '__none__' or s == '':\n            return None\n        try:\n            v = json.loads(s)\n        except Exception:\n            try:\n                v = json.loads(s.replace(\"'\", '\"').replace('True', 'true').replace('False', 'false').replace('None', 'null'))\n            except Exception:\n                return None\n    if isinstance(v, dict):\n        return [v]\n    if isinstance(v, list):\n        return [x for x in v if isinstance(x, dict)]\n    return None\ndef flat_list(prefix_re):\n    found = dict()\n    for k in list(vars.keys()):\n        m = re.search(prefix_re + r'\\.(\\d+)\\.(\\w+)$', str(k))\n        if m:\n            i = int(m.group(1))\n            if i not in found:\n                found[i] = dict()\n            found[i][m.group(2)] = vars.get(k)\n    if not found:\n        return None\n    return [found[i] for i in sorted(found.keys())]\ndef spoken(s):\n    s = str(s or '')\n    return ' '.join(ch for ch in s if ch.strip())\ndef today_iso():\n    return str(vars.get('now') or '')[:10]\n\ntry:\n    fl = to_list(vars.get('req_fields'))\n    if fl is None:\n        fl = flat_list(r'get_requirements_response\\.data\\.fields') or flat_list(r'load_requirements_response\\.data\\.fields')\n    fl = [f for f in (fl or []) if f.get('name')]\n    if not fl:\n        vars['req_state'] = 'error'\n        vars['req_text'] = 'unknown'\n        vars['req_json'] = '[]'\n    else:\n        clean = []\n        for f in fl:\n            opts = f.get('options')\n            if isinstance(opts, str):\n                try:\n                    opts = json.loads(opts.replace(\"'\", '\"'))\n                except Exception:\n                    opts = [o.strip() for o in opts.split(',') if o.strip()]\n            if not isinstance(opts, list):\n                opts = []\n            req = f.get('required')\n            req = (req is True) or (str(req).lower() == 'true')\n            clean.append(dict(name=str(f.get('name')), question=str(f.get('question') or ''), format=str(f.get('format') or 'text'), options=[str(o) for o in opts], required=req))\n        fmt_help = dict(text='free text, as the customer says it', digits='digits only', amount='a number above zero with at most two decimals, sent as a number', date='a date sent as YYYY-MM-DD; a date said only in numbers is day, then month, then year', postcode='exactly five digits', choice='one of the options, matched by meaning')\n        lines = []\n        reqd = [c for c in clean if c['required']]\n        opt = [c for c in clean if not c['required']]\n        lines.append('REQUIRED FIELDS, ask them in this order, one per turn, using the question text:')\n        i = 0\n        for c in reqd:\n            i += 1\n            s = str(i) + '. field name \"' + c['name'] + '\" | question: \"' + c['question'] + '\" | format: ' + c['format'] + ' (' + fmt_help.get(c['format'], c['format']) + ')'\n            if c['options']:\n                s += ' | options: ' + ', '.join(c['options'])\n            lines.append(s)\n        if opt:\n            lines.append('OPTIONAL FIELDS (mention them once, together, after the required ones; take one only if the customer offers it):')\n            for c in opt:\n                s = '- field name \"' + c['name'] + '\" | question: \"' + c['question'] + '\" | format: ' + c['format'] + ' (' + fmt_help.get(c['format'], c['format']) + ')'\n                if c['options']:\n                    s += ' | options: ' + ', '.join(c['options'])\n                lines.append(s)\n        else:\n            lines.append('There are no optional fields.')\n        lines.append('Field names allowed in create_application.fields: ' + ', '.join(c['name'] for c in clean) + '. Nothing else.')\n        vars['req_text'] = '\\n'.join(lines)\n        vars['req_json'] = json.dumps(clean)\n        vars['req_state'] = 'ok'\nexcept Exception as e:\n    vars['req_state'] = 'error'\n    vars['req_text'] = 'unknown'\n    vars['req_json'] = '[]'\n    vars['req_error'] = str(e)\n"
+         "default": "\nimport datetime, json, re\nPHRASE = dict(card_replacement='card replacement', address_change='address change', limit_increase='credit card limit increase')\nWORDS = dict(received='received and waiting', in_review='being reviewed', more_info_needed='waiting for information from you', approved='approved', rejected='not approved')\ndef to_list(v):\n    if isinstance(v, str):\n        s = v.strip()\n        if s == '__none__' or s == '':\n            return None\n        try:\n            v = json.loads(s)\n        except Exception:\n            try:\n                v = json.loads(s.replace(\"'\", '\"').replace('True', 'true').replace('False', 'false').replace('None', 'null'))\n            except Exception:\n                return None\n    if isinstance(v, dict):\n        return [v]\n    if isinstance(v, list):\n        return [x for x in v if isinstance(x, dict)]\n    return None\ndef flat_list(prefix_re):\n    found = dict()\n    for k in list(vars.keys()):\n        m = re.search(prefix_re + r'\\.(\\d+)\\.(\\w+)$', str(k))\n        if m:\n            i = int(m.group(1))\n            if i not in found:\n                found[i] = dict()\n            found[i][m.group(2)] = vars.get(k)\n    if not found:\n        return None\n    return [found[i] for i in sorted(found.keys())]\ndef spoken(s):\n    s = str(s or '')\n    return ' '.join(ch for ch in s if ch.strip())\ndef today_iso():\n    return str(vars.get('now') or '')[:10]\n\ntry:\n    fl = to_list(vars.get('req_fields'))\n    if fl is None:\n        fl = flat_list(r'get_requirements_response\\.data\\.fields') or flat_list(r'load_requirements_response\\.data\\.fields')\n    fl = [f for f in (fl or []) if f.get('name')]\n    if not fl:\n        vars['req_state'] = 'error'\n        vars['req_text'] = 'unknown'\n        vars['req_json'] = '[]'\n    else:\n        clean = []\n        for idx, f in enumerate(fl):\n            opts = f.get('options')\n            if not opts:\n                got = dict()\n                for k in list(vars.keys()):\n                    m = re.search(r'(?:get_requirements|load_requirements)_response\\.data\\.fields\\.' + str(idx) + r'\\.options\\.(\\d+)$', str(k))\n                    if m:\n                        got[int(m.group(1))] = str(vars.get(k))\n                if got:\n                    opts = [got[j] for j in sorted(got.keys())]\n            if isinstance(opts, str):\n                try:\n                    opts = json.loads(opts.replace(\"'\", '\"'))\n                except Exception:\n                    opts = [o.strip() for o in opts.split(',') if o.strip()]\n            if not isinstance(opts, list):\n                opts = []\n            req = f.get('required')\n            req = (req is True) or (str(req).lower() == 'true')\n            clean.append(dict(name=str(f.get('name')), question=str(f.get('question') or ''), format=str(f.get('format') or 'text'), options=[str(o) for o in opts], required=req))\n        fmt_help = dict(text='free text, as the customer says it', digits='digits only', amount='a number above zero with at most two decimals, sent as a number', date='a date sent as YYYY-MM-DD; a date said only in numbers is day, then month, then year', postcode='exactly five digits', choice='one of the options, matched by meaning')\n        lines = []\n        reqd = [c for c in clean if c['required']]\n        opt = [c for c in clean if not c['required']]\n        lines.append('REQUIRED FIELDS, ask them in this order, one per turn, using the question text:')\n        i = 0\n        for c in reqd:\n            i += 1\n            s = str(i) + '. field name \"' + c['name'] + '\" | question: \"' + c['question'] + '\" | format: ' + c['format'] + ' (' + fmt_help.get(c['format'], c['format']) + ')'\n            if c['options']:\n                s += ' | options: ' + ', '.join(c['options'])\n            lines.append(s)\n        if opt:\n            lines.append('OPTIONAL FIELDS (mention them once, together, after the required ones; take one only if the customer offers it):')\n            for c in opt:\n                s = '- field name \"' + c['name'] + '\" | question: \"' + c['question'] + '\" | format: ' + c['format'] + ' (' + fmt_help.get(c['format'], c['format']) + ')'\n                if c['options']:\n                    s += ' | options: ' + ', '.join(c['options'])\n                lines.append(s)\n        else:\n            lines.append('There are no optional fields.')\n        lines.append('Field names allowed in create_application.fields: ' + ', '.join(c['name'] for c in clean) + '. Nothing else.')\n        vars['req_text'] = '\\n'.join(lines)\n        vars['req_json'] = json.dumps(clean)\n        vars['req_state'] = 'ok'\nexcept Exception as e:\n    vars['req_state'] = 'error'\n    vars['req_text'] = 'unknown'\n    vars['req_json'] = '[]'\n    vars['req_error'] = str(e)\n"
         },
         "timeout_ms": {
          "type": "number",
@@ -1304,7 +1272,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/create_application"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/create_application"
         },
         "method": {
          "type": "string",
@@ -1316,10 +1284,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -1375,7 +1339,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
         },
         "method": {
          "type": "string",
@@ -1387,10 +1351,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -1436,7 +1396,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -1448,10 +1408,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -1491,6 +1447,14 @@
      "pre_process_code": "\ntry:\n    b = config.get('body')\n    if isinstance(b, dict):\n        o = b.get('outcome')\n        if o != 'transferred':\n            if str(vars.get('created_any')) == 'yes':\n                b['outcome'] = 'application_created'\n            elif str(vars.get('status_any')) == 'yes' and o in ('not_verified', 'no_action'):\n                b['outcome'] = 'status_given'\n        if b.get('outcome') in ('application_created', 'status_given'):\n            b.pop('reason', None)\nexcept Exception:\n    pass\n"
     }
    ],
+   "extraction_schema": [
+    {
+     "name": "bad_answers_this_field",
+     "type": "integer",
+     "description": "How many answers IN A ROW the customer has given to the application question currently being asked that do not fit its format (for example a vague amount, a postcode that is not exactly five digits, 'I don't know', or asking the agent to choose). 0 when the latest answer fits or when a new question was just asked. Security questions do not count.",
+     "min_confidence": 0.6
+    }
+   ],
    "max_node_turns": 60,
    "transitions": [
     {
@@ -1503,6 +1467,20 @@
         "variable": "create_state",
         "operator": "equals",
         "operand": "ok"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "incomplete_offer",
+     "description": "three answers that do not fit",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "bad_answers_this_field",
+        "operator": "greater_than",
+        "operand": 2
        }
       ]
      }
@@ -1680,7 +1658,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/find_applications"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/find_applications"
         },
         "method": {
          "type": "string",
@@ -1692,10 +1670,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -1814,7 +1788,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/create_application"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/create_application"
         },
         "method": {
          "type": "string",
@@ -1826,10 +1800,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -1939,7 +1909,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
         },
         "method": {
          "type": "string",
@@ -1951,10 +1921,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -2113,7 +2079,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
         },
         "method": {
          "type": "string",
@@ -2125,10 +2091,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -2258,6 +2220,252 @@
         "operand": "decline"
        }
       ]
+     }
+    }
+   ]
+  },
+  "incomplete_offer": {
+   "name": "incomplete_offer",
+   "node_type": "conversation",
+   "on_enter": {
+    "type": "tts",
+    "text": "I am sorry, I still cannot use that answer. Would you like me to transfer you to the applications team, who can help you complete the application?"
+   },
+   "on_enter_first_entry_only": true,
+   "task_message": "You offered a transfer to the applications team because three answers did not fit the same field.\n- If they accept: call transfer_to_agent with queue applications.\n- If they decline: say \"All right.\" and nothing else; do not call close_call.\nNever say the application was received.",
+   "tools": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_agent",
+      "handler": "__function__:api_call",
+      "description": "Hand the call to a person. applications: the customer accepted the offered transfer. general: the customer insists on a person.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "enum": [
+            "applications",
+            "general"
+           ],
+           "default": "{{transfer_queue_choice}}",
+           "description": "One of: applications, general."
+          }
+         },
+         "required": [
+          "queue"
+         ]
+        }
+       }
+      }
+     },
+     "post_process_code": "\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\nexcept Exception:\n    pass\n",
+     "pre_process_code": "\ntry:\n    b = config.get('body')\n    if isinstance(b, dict) and b.get('queue'):\n        vars['transfer_queue'] = str(b.get('queue'))\nexcept Exception:\n    pass\n"
+    }
+   ],
+   "extraction_schema": [
+    {
+     "name": "offer_answer",
+     "type": "string",
+     "enum_values": [
+      "accept",
+      "decline"
+     ],
+     "description": "The customer's answer to the offered transfer to the applications team: accept or decline. Empty if they have not answered it.",
+     "min_confidence": 0.7
+    }
+   ],
+   "max_node_turns": 10,
+   "max_turn_transition": "close_incomplete",
+   "transitions": [
+    {
+     "target_node": "close_transfer_security",
+     "description": "transferred to security",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "transfer_to_agent_args.queue",
+        "operator": "equals",
+        "operand": "security"
+       },
+       {
+        "variable": "transfer_queue",
+        "operator": "equals",
+        "operand": "security"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "close_transfer_applications",
+     "description": "transferred to applications",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "transfer_to_agent_args.queue",
+        "operator": "equals",
+        "operand": "applications"
+       },
+       {
+        "variable": "transfer_queue",
+        "operator": "equals",
+        "operand": "applications"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "close_transfer_general",
+     "description": "transferred to general",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "transfer_to_agent_args.queue",
+        "operator": "equals",
+        "operand": "general"
+       },
+       {
+        "variable": "transfer_queue",
+        "operator": "equals",
+        "operand": "general"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "xfer_applications",
+     "description": "accepted",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "offer_answer",
+        "operator": "equals",
+        "operand": "accept"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "close_incomplete",
+     "description": "declined",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "offer_answer",
+        "operator": "equals",
+        "operand": "decline"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "close_incomplete": {
+   "name": "close_incomplete",
+   "node_type": "api_request",
+   "passthrough": true,
+   "passthrough_default_transition": "end_call",
+   "on_enter": {
+    "type": "tts",
+    "text": "To sum up, the application was not submitted because a required answer was missing; you can call us again when you have it. Thank you for calling Freya Bank, goodbye."
+   },
+   "disable_inactivity_monitor": true,
+   "pre_actions": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 1
+     },
+     "function": {
+      "name": "close_call",
+      "handler": "__function__:api_call",
+      "description": "close_call",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "outcome": {
+           "type": "string",
+           "default": "no_action"
+          },
+          "reason": {
+           "type": "string",
+           "default": "incomplete"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     }
+    }
+   ],
+   "response_mapping": [],
+   "suppress_tool_results": true,
+   "transitions": [
+    {
+     "target_node": "end_call",
+     "description": "always",
+     "condition": {
+      "operator": "always"
      }
     }
    ]
@@ -2494,7 +2702,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/get_application"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/get_application"
         },
         "method": {
          "type": "string",
@@ -2506,10 +2714,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -2550,7 +2754,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/find_applications"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/find_applications"
         },
         "method": {
          "type": "string",
@@ -2562,10 +2766,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -2611,7 +2811,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
         },
         "method": {
          "type": "string",
@@ -2623,10 +2823,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -2671,7 +2867,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -2683,10 +2879,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -2830,7 +3022,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
         },
         "method": {
          "type": "string",
@@ -2842,10 +3034,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -2906,7 +3094,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -2918,10 +3106,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -2986,7 +3170,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -2998,10 +3182,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -3066,7 +3246,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -3078,10 +3258,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -3146,7 +3322,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -3158,10 +3334,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -3226,7 +3398,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -3238,10 +3410,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -3306,7 +3474,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -3318,10 +3486,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -3382,7 +3546,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -3394,10 +3558,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -3458,7 +3618,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -3470,10 +3630,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -3562,7 +3718,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://d720-176-41-224-110.ngrok-free.app/v1/close_call"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/close_call"
         },
         "method": {
          "type": "string",
@@ -3574,10 +3730,6 @@
           "Content-Type": {
            "type": "string",
            "default": "application/json"
-          },
-          "ngrok-skip-browser-warning": {
-           "type": "string",
-           "default": "true"
           }
          }
         },
@@ -3615,17 +3767,14 @@
      }
     }
    ]
-  }
- },
- "global_nodes": {
-  "security_transfer": {
-   "name": "security_transfer",
+  },
+  "xfer_security": {
+   "name": "xfer_security",
    "node_type": "api_request",
    "passthrough": true,
    "passthrough_default_transition": "close_security_silent",
    "on_enter": {
-    "type": "tts",
-    "text": "That is a security matter, so I am transferring you to our security team right away. Thank you for calling Freya Bank, goodbye."
+    "type": "silent"
    },
    "disable_inactivity_monitor": true,
    "pre_actions": [
@@ -3644,7 +3793,7 @@
        "properties": {
         "url": {
          "type": "string",
-         "default": "https://freya-bank-mock.freyavoice.workers.dev/v1/transfer_to_agent"
+         "default": "https://ef9c-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
         },
         "method": {
          "type": "string",
@@ -3688,6 +3837,50 @@
       "operator": "always"
      }
     }
+   ]
+  }
+ },
+ "global_nodes": {
+  "security_transfer": {
+   "name": "security_transfer",
+   "node_type": "code",
+   "passthrough": true,
+   "passthrough_default_transition": "xfer_security",
+   "on_enter": {
+    "type": "tts",
+    "text": "That is a security matter, so I am transferring you to our security team right away. Thank you for calling Freya Bank, goodbye."
+   },
+   "disable_inactivity_monitor": true,
+   "pre_actions": [
+    {
+     "type": "function",
+     "function": {
+      "name": "code_exec",
+      "handler": "__function__:code_exec",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "code": {
+         "type": "string",
+         "default": "vars['announced'] = 'yes'\n"
+        },
+        "timeout_ms": {
+         "type": "number",
+         "default": 10000
+        }
+       }
+      }
+     }
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "xfer_security",
+     "description": "always",
+     "condition": {
+      "operator": "always"
+     }
+    }
    ],
    "description": "Transfers a security matter to the security team at once",
    "condition": {
@@ -3706,6 +3899,7 @@
     "pre_recheck",
     "recheck",
     "recheck_eval",
+    "close_incomplete",
     "mark_service_error",
     "created",
     "announce_created",
@@ -3721,6 +3915,7 @@
     "close_service_error",
     "end_call",
     "retry_submit",
+    "xfer_security",
     "close_security_silent"
    ]
   }

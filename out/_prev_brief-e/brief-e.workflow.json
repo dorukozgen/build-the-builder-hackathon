@@ -1,0 +1,2702 @@
+{
+ "initial_node": "info",
+ "system_prompt": "You are the digital assistant of Freya Bank answering the phone. Customers call about Freya Bank's products and campaigns. Speak English, one to three short sentences per turn, one question at a time. Correct information is the goal, not a sale.\nToday is {{now}} (the call variable `now`). Judge campaign dates only against it, never against the real clock.\n\nHard rules in every step:\n- Every fact about a campaign comes from a tool result in this call (list_campaigns, get_campaign). Never mention a rate, fee, bonus, limit or date the tool did not return. Never add, round, shorten or soften a condition. When the conditions are asked for, read every item of `conditions` and every item of `exclusions`.\n- If a campaign's summary and its conditions disagree, the conditions govern; say that the detailed conditions are what counts.\n- A personal question about rates, fees or limits (\"what rate would I get\", \"how much would I pay\"): say personal terms are set when an application is decided; quote the `fees` text only as the general terms.\n- If the customer misunderstands a condition, correct it once with the tool's words; if they insist, do not argue.\n- Several questions: answer them one at a time, in the order asked.\n- Never propose or mention a campaign the customer did not ask about, unless get_consent returned marketing true in this call; then at most one other active campaign for the same product, once, after their own question is answered. If the customer asks why you suggest nothing, or wants to change their marketing preference: it can be changed in the mobile app or at a branch; you cannot change it.\n- Never say \"you qualify\", \"you are approved\" or guarantee approval. Never state an eligibility the check did not return.\n- A complaint about a campaign (a bonus not received, a condition applied differently): do not argue, promise nothing, offer a transfer to the general team. Accepted: call transfer_to_general. Declined: close as no_action, out_of_scope.\n- A request for a person: ask once whether you can help first. If they insist, call transfer_to_general.\n- A product with no campaign in list_campaigns that the customer wants: say applications for it are handled by the sales team and offer the transfer. Accepted: call transfer_to_sales. Declined: close as no_action, out_of_scope.\n- A question the tools cannot answer: say you do not have that information.\n- Never claim something was done (received, transferred, checked) without the tool result saying so. If a tool fails, say so.\n- After every tool result, speak to the customer or call the next tool; never end a turn with nothing. Follow the `what_to_do_next` field of a tool result.\n- Ending: when the customer has nothing else, say in one sentence what was done and what they can expect, thank them and say goodbye, then call close_call (exactly once, the last tool call).",
+ "nodes": {
+  "info": {
+   "name": "info",
+   "node_type": "conversation",
+   "task_message": "The caller is NOT verified. Use no name. Give general product and campaign information without any security questions.\nFind out which product or campaign the customer means and name it back. If they do not know a name, call list_campaigns and read the names of the active campaigns for the product they mention, at most three; if more than three are active, first ask which product feature they care about. Call get_campaign before giving any campaign fact.\nPropose nothing the customer did not ask about.\nIf the customer wants to know whether THEY are eligible, wants to apply, or asks about their own marketing preference status, call start_security_check: it asks the security questions. Do not ask them yourself and do not call it for general information.\nA lost or stolen card, an unrecognised transaction or a code given to someone is handled automatically; ask no details.",
+   "tools": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "list_campaigns",
+      "handler": "__function__:api_call",
+      "description": "List Freya Bank's campaigns. CALL it when the customer does not know a campaign name, asks what campaigns exist for a product, or wants a product and you must check whether it has a campaign.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/list_campaigns"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d) and isinstance(d.get('campaigns'), list):\n        act = []\n        for c in d['campaigns']:\n            if isinstance(c, dict):\n                c['status_today'] = _status(c)\n                if c['status_today'] == 'active':\n                    act.append(str(c.get('name')) + ' (' + str(c.get('product')) + ')')\n        d['active_campaigns_today'] = act\n        d['what_to_do_next'] = 'status_today says which campaigns are active today. Name only active ones, at most three for the product asked about; if more than three are active for it, ask first which product feature matters most. Mention a campaign the customer did not ask about only if the rules allow it.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The campaign list could not be loaded. Say you do not have that information right now.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "get_campaign",
+      "handler": "__function__:api_call",
+      "description": "Get one campaign's full details. CALL it before you say anything about a campaign's conditions, exclusions, fees, dates or how to apply.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/get_campaign"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "campaign_id": {
+           "type": "string",
+           "description": "campaign_id exactly as list_campaigns returned it",
+           "default": "{{cmp_id}}"
+          }
+         },
+         "required": [
+          "campaign_id"
+         ]
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        st = _status(d)\n        d['status_today'] = st\n        try:\n            vars['e_informed'] = 'yes'\n        except Exception:\n            pass\n        if st == 'expired':\n            d['what_to_do_next'] = 'This campaign has ENDED. Say it ended on ' + str(d.get('valid_to')) + ' and that its terms are no longer available. Do not describe its conditions as available.'\n        elif st == 'not_started':\n            d['what_to_do_next'] = 'This campaign has NOT STARTED. Say it starts on ' + str(d.get('valid_from')) + '.'\n        else:\n            d['what_to_do_next'] = 'Active campaign. Answer only what was asked. When the conditions are asked for, read EVERY item of conditions and EVERY item of exclusions word for word, nothing added, rounded or softened. If the summary differs from the conditions, the conditions govern: say so.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The campaign could not be loaded. Say you do not have that information right now.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_sales",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the sales team. CALL it only after the customer accepted a transfer to the sales team.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "sales"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'sales'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_general",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the general team (a person). CALL it when the customer accepted a transfer for a complaint, or insists on a person after you asked once whether you can help.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "general"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'general'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "close_call",
+      "handler": "__function__:api_call",
+      "description": "End the call record. CALL it exactly once, as the very last tool call, right after your one-sentence summary, thanks and goodbye.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/close_call"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "outcome": {
+           "type": "string",
+           "enum": [
+            "informed",
+            "not_eligible",
+            "applied",
+            "transferred",
+            "not_verified",
+            "no_action"
+           ],
+           "description": "informed: information given, nothing else. not_eligible: eligibility false (not not_checked). applied: application received. transferred: a transfer was done. not_verified: identity failed or declined and nothing else handled. no_action: nothing done (declined a transfer, or the application failed twice).",
+           "default": "{{close_outcome}}"
+          },
+          "reason": {
+           "type": "string",
+           "enum": [
+            "sales",
+            "human",
+            "security",
+            "failed",
+            "declined",
+            "out_of_scope",
+            "service_error",
+            ""
+           ],
+           "description": "transferred: sales, human or security. not_verified: failed (three wrong answers) or declined. no_action: out_of_scope or service_error. Empty for informed, not_eligible, applied.",
+           "default": "{{close_reason}}"
+          }
+         },
+         "required": [
+          "outcome"
+         ]
+        }
+       }
+      }
+     },
+     "pre_process_code": "\ntry:\n    b = config.get('body')\n    if isinstance(b, dict):\n        o = str(b.get('outcome') or '')\n        r = b.get('reason')\n        tq = str(vars.get('e_transfer_queue') or '')\n        if tq:\n            o = 'transferred'\n            r = dict(sales='sales', general='human', security='security').get(tq, r)\n        elif str(vars.get('e_applied') or '') == 'yes':\n            o = 'applied'\n        elif str(vars.get('e_not_eligible') or '') == 'yes':\n            o = 'not_eligible'\n        elif o == 'not_verified' and str(vars.get('e_informed') or '') == 'yes':\n            o = 'informed'\n        elif o == 'transferred':\n            o = 'informed' if str(vars.get('e_informed') or '') == 'yes' else 'no_action'\n            r = 'out_of_scope'\n        elif o in ('applied', 'not_eligible'):\n            o = 'informed'\n        if o == 'not_verified':\n            wl = str(vars.get('verify_identity_response.data.wrong_answers_left') or '')\n            r = 'failed' if wl == '0' else (r if r in ('failed', 'declined') else 'declined')\n        if o == 'no_action' and r not in ('out_of_scope', 'service_error'):\n            r = 'service_error' if int(vars.get('e_app_fail') or 0) >= 2 else 'out_of_scope'\n        b['outcome'] = o\n        if o in ('informed', 'applied', 'not_eligible'):\n            b.pop('reason', None)\n        else:\n            b['reason'] = r\nexcept Exception:\n    pass\n",
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    vars['e_closed'] = 'yes'\nexcept Exception:\n    pass\n"
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "end",
+     "description": "close_call was recorded",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "e_closed",
+        "operator": "equals",
+        "operand": "yes"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "true"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "True"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "identity",
+     "description": "start_security_check: the customer asks about their OWN eligibility, wants to apply, or asks about their own marketing consent",
+     "is_tool_call": true,
+     "condition": {
+      "operator": "matches_intent",
+      "description": "start_security_check: the customer asks about their OWN eligibility, wants to apply, or asks about their own marketing consent"
+     }
+    }
+   ],
+   "max_node_turns": 60,
+   "on_enter": {
+    "type": "tts",
+    "text": "Thank you for calling Freya Bank. You are speaking with a digital assistant and this call is recorded. How can I help you today?"
+   },
+   "on_enter_first_entry_only": true
+  },
+  "identity": {
+   "name": "identity",
+   "node_type": "conversation",
+   "task_message": "Before eligibility, an application or consent can be handled, ask two security questions, one at a time: first the date of birth, then the last four digits of the phone number on file. Call verify_identity after EACH answer: date_of_birth as YYYY-MM-DD however it was said (a date given only in numbers is day, then month, then year); phone_last4 as four digits. Never reveal or hint at the right answer. Use no name yet.\nIf the customer asks why: explain once that the questions protect their account.\nIf they still refuse after that explanation, call skip_security_check (general information can still be given).\nDo not give eligibility or application answers in this step.",
+   "tools": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "verify_identity",
+      "handler": "__function__:api_call",
+      "description": "Check ONE security answer. CALL it every time the customer answers a security question, before you say anything about the answer.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/verify_identity"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "field": {
+           "type": "string",
+           "enum": [
+            "date_of_birth",
+            "phone_last4"
+           ],
+           "description": "date_of_birth or phone_last4",
+           "default": "{{id_field}}"
+          },
+          "answer": {
+           "type": "string",
+           "description": "date_of_birth as YYYY-MM-DD (a date said only in numbers is day, then month, then year); phone_last4 as exactly four digits",
+           "default": "{{id_answer}}"
+          }
+         },
+         "required": [
+          "field",
+          "answer"
+         ]
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if d is None:\n        result['what_to_do_next'] = 'The check did not go through. It is not a wrong answer. Ask the same question again.'\n    elif not _ok(d):\n        d['what_to_do_next'] = 'The answer could not be read. It is not a wrong answer. Ask the same question again.'\n    elif str(d.get('all_verified')).lower() == 'true':\n        d['what_to_do_next'] = 'Both answers are verified. Identity is confirmed.'\n    elif d.get('hint') == 'day_month_swapped':\n        d['what_to_do_next'] = 'Not a wrong answer. Ask for the date of birth again and ask the customer to say the month as a word.'\n    elif str(d.get('wrong_answers_left')) == '0':\n        d['what_to_do_next'] = 'Three wrong answers: the check has ended. Say that eligibility and applications cannot continue on this call, and that general information can still be given.'\n    elif str(d.get('verified')).lower() == 'true':\n        d['what_to_do_next'] = 'That answer is correct. Now ask the next security question: the last four digits of the phone number on file.'\n    else:\n        d['what_to_do_next'] = 'That answer did not match. Do not reveal the right value. Ask the same question once more.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_sales",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the sales team. CALL it only after the customer accepted a transfer to the sales team.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "sales"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'sales'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_general",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the general team (a person). CALL it when the customer accepted a transfer for a complaint, or insists on a person after you asked once whether you can help.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "general"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'general'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "close_call",
+      "handler": "__function__:api_call",
+      "description": "End the call record. CALL it exactly once, as the very last tool call, right after your one-sentence summary, thanks and goodbye.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/close_call"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "outcome": {
+           "type": "string",
+           "enum": [
+            "informed",
+            "not_eligible",
+            "applied",
+            "transferred",
+            "not_verified",
+            "no_action"
+           ],
+           "description": "informed: information given, nothing else. not_eligible: eligibility false (not not_checked). applied: application received. transferred: a transfer was done. not_verified: identity failed or declined and nothing else handled. no_action: nothing done (declined a transfer, or the application failed twice).",
+           "default": "{{close_outcome}}"
+          },
+          "reason": {
+           "type": "string",
+           "enum": [
+            "sales",
+            "human",
+            "security",
+            "failed",
+            "declined",
+            "out_of_scope",
+            "service_error",
+            ""
+           ],
+           "description": "transferred: sales, human or security. not_verified: failed (three wrong answers) or declined. no_action: out_of_scope or service_error. Empty for informed, not_eligible, applied.",
+           "default": "{{close_reason}}"
+          }
+         },
+         "required": [
+          "outcome"
+         ]
+        }
+       }
+      }
+     },
+     "pre_process_code": "\ntry:\n    b = config.get('body')\n    if isinstance(b, dict):\n        o = str(b.get('outcome') or '')\n        r = b.get('reason')\n        tq = str(vars.get('e_transfer_queue') or '')\n        if tq:\n            o = 'transferred'\n            r = dict(sales='sales', general='human', security='security').get(tq, r)\n        elif str(vars.get('e_applied') or '') == 'yes':\n            o = 'applied'\n        elif str(vars.get('e_not_eligible') or '') == 'yes':\n            o = 'not_eligible'\n        elif o == 'not_verified' and str(vars.get('e_informed') or '') == 'yes':\n            o = 'informed'\n        elif o == 'transferred':\n            o = 'informed' if str(vars.get('e_informed') or '') == 'yes' else 'no_action'\n            r = 'out_of_scope'\n        elif o in ('applied', 'not_eligible'):\n            o = 'informed'\n        if o == 'not_verified':\n            wl = str(vars.get('verify_identity_response.data.wrong_answers_left') or '')\n            r = 'failed' if wl == '0' else (r if r in ('failed', 'declined') else 'declined')\n        if o == 'no_action' and r not in ('out_of_scope', 'service_error'):\n            r = 'service_error' if int(vars.get('e_app_fail') or 0) >= 2 else 'out_of_scope'\n        b['outcome'] = o\n        if o in ('informed', 'applied', 'not_eligible'):\n            b.pop('reason', None)\n        else:\n            b['reason'] = r\nexcept Exception:\n    pass\n",
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    vars['e_closed'] = 'yes'\nexcept Exception:\n    pass\n"
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "end",
+     "description": "close_call was recorded",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "e_closed",
+        "operator": "equals",
+        "operand": "yes"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "true"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "True"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "verified",
+     "description": "identity verified",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "verify_identity_response.data.all_verified",
+        "operator": "equals",
+        "operand": "true"
+       },
+       {
+        "variable": "verify_identity_response.data.all_verified",
+        "operator": "equals",
+        "operand": "True"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "limited",
+     "description": "three wrong answers",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "verify_identity_response.data.wrong_answers_left",
+        "operator": "equals",
+        "operand": "0"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "limited",
+     "description": "skip_security_check: the customer refused the security questions again after one explanation",
+     "is_tool_call": true,
+     "condition": {
+      "operator": "matches_intent",
+      "description": "skip_security_check: the customer refused the security questions again after one explanation"
+     }
+    }
+   ],
+   "max_node_turns": 60,
+   "on_enter": {
+    "type": "llm",
+    "prompt": "Say briefly that for this you first need two security questions, then ask for the date of birth. Use no name."
+   },
+   "on_enter_first_entry_only": true
+  },
+  "limited": {
+   "name": "limited",
+   "node_type": "conversation",
+   "task_message": "Identity is NOT verified on this call (the check failed or the customer declined it). Eligibility checks, applications and consent cannot be handled on this call; say so if asked. Use no name.\nGeneral product and campaign information may still be given: call list_campaigns or get_campaign as needed. Propose nothing the customer did not ask about.\nIf the customer wants nothing else, say in one sentence what happened, thank them, say goodbye and call close_call: outcome informed if you gave campaign information, otherwise not_verified with reason failed (three wrong answers) or declined (refused the questions).",
+   "tools": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "list_campaigns",
+      "handler": "__function__:api_call",
+      "description": "List Freya Bank's campaigns. CALL it when the customer does not know a campaign name, asks what campaigns exist for a product, or wants a product and you must check whether it has a campaign.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/list_campaigns"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d) and isinstance(d.get('campaigns'), list):\n        act = []\n        for c in d['campaigns']:\n            if isinstance(c, dict):\n                c['status_today'] = _status(c)\n                if c['status_today'] == 'active':\n                    act.append(str(c.get('name')) + ' (' + str(c.get('product')) + ')')\n        d['active_campaigns_today'] = act\n        d['what_to_do_next'] = 'status_today says which campaigns are active today. Name only active ones, at most three for the product asked about; if more than three are active for it, ask first which product feature matters most. Mention a campaign the customer did not ask about only if the rules allow it.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The campaign list could not be loaded. Say you do not have that information right now.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "get_campaign",
+      "handler": "__function__:api_call",
+      "description": "Get one campaign's full details. CALL it before you say anything about a campaign's conditions, exclusions, fees, dates or how to apply.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/get_campaign"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "campaign_id": {
+           "type": "string",
+           "description": "campaign_id exactly as list_campaigns returned it",
+           "default": "{{cmp_id}}"
+          }
+         },
+         "required": [
+          "campaign_id"
+         ]
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        st = _status(d)\n        d['status_today'] = st\n        try:\n            vars['e_informed'] = 'yes'\n        except Exception:\n            pass\n        if st == 'expired':\n            d['what_to_do_next'] = 'This campaign has ENDED. Say it ended on ' + str(d.get('valid_to')) + ' and that its terms are no longer available. Do not describe its conditions as available.'\n        elif st == 'not_started':\n            d['what_to_do_next'] = 'This campaign has NOT STARTED. Say it starts on ' + str(d.get('valid_from')) + '.'\n        else:\n            d['what_to_do_next'] = 'Active campaign. Answer only what was asked. When the conditions are asked for, read EVERY item of conditions and EVERY item of exclusions word for word, nothing added, rounded or softened. If the summary differs from the conditions, the conditions govern: say so.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The campaign could not be loaded. Say you do not have that information right now.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_sales",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the sales team. CALL it only after the customer accepted a transfer to the sales team.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "sales"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'sales'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_general",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the general team (a person). CALL it when the customer accepted a transfer for a complaint, or insists on a person after you asked once whether you can help.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "general"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'general'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "close_call",
+      "handler": "__function__:api_call",
+      "description": "End the call record. CALL it exactly once, as the very last tool call, right after your one-sentence summary, thanks and goodbye.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/close_call"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "outcome": {
+           "type": "string",
+           "enum": [
+            "informed",
+            "not_eligible",
+            "applied",
+            "transferred",
+            "not_verified",
+            "no_action"
+           ],
+           "description": "informed: information given, nothing else. not_eligible: eligibility false (not not_checked). applied: application received. transferred: a transfer was done. not_verified: identity failed or declined and nothing else handled. no_action: nothing done (declined a transfer, or the application failed twice).",
+           "default": "{{close_outcome}}"
+          },
+          "reason": {
+           "type": "string",
+           "enum": [
+            "sales",
+            "human",
+            "security",
+            "failed",
+            "declined",
+            "out_of_scope",
+            "service_error",
+            ""
+           ],
+           "description": "transferred: sales, human or security. not_verified: failed (three wrong answers) or declined. no_action: out_of_scope or service_error. Empty for informed, not_eligible, applied.",
+           "default": "{{close_reason}}"
+          }
+         },
+         "required": [
+          "outcome"
+         ]
+        }
+       }
+      }
+     },
+     "pre_process_code": "\ntry:\n    b = config.get('body')\n    if isinstance(b, dict):\n        o = str(b.get('outcome') or '')\n        r = b.get('reason')\n        tq = str(vars.get('e_transfer_queue') or '')\n        if tq:\n            o = 'transferred'\n            r = dict(sales='sales', general='human', security='security').get(tq, r)\n        elif str(vars.get('e_applied') or '') == 'yes':\n            o = 'applied'\n        elif str(vars.get('e_not_eligible') or '') == 'yes':\n            o = 'not_eligible'\n        elif o == 'not_verified' and str(vars.get('e_informed') or '') == 'yes':\n            o = 'informed'\n        elif o == 'transferred':\n            o = 'informed' if str(vars.get('e_informed') or '') == 'yes' else 'no_action'\n            r = 'out_of_scope'\n        elif o in ('applied', 'not_eligible'):\n            o = 'informed'\n        if o == 'not_verified':\n            wl = str(vars.get('verify_identity_response.data.wrong_answers_left') or '')\n            r = 'failed' if wl == '0' else (r if r in ('failed', 'declined') else 'declined')\n        if o == 'no_action' and r not in ('out_of_scope', 'service_error'):\n            r = 'service_error' if int(vars.get('e_app_fail') or 0) >= 2 else 'out_of_scope'\n        b['outcome'] = o\n        if o in ('informed', 'applied', 'not_eligible'):\n            b.pop('reason', None)\n        else:\n            b['reason'] = r\nexcept Exception:\n    pass\n",
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    vars['e_closed'] = 'yes'\nexcept Exception:\n    pass\n"
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "end",
+     "description": "close_call was recorded",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "e_closed",
+        "operator": "equals",
+        "operand": "yes"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "true"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "True"
+       }
+      ]
+     }
+    }
+   ],
+   "max_node_turns": 60,
+   "on_enter": {
+    "type": "llm",
+    "prompt": "If the security check failed with three wrong answers, say that eligibility and applications cannot continue on this call but general information can still be given. If the customer declined, say you can give general information only. Then ask if there is anything else."
+   },
+   "on_enter_first_entry_only": true
+  },
+  "verified": {
+   "name": "verified",
+   "node_type": "conversation",
+   "task_message": "The customer is verified. Address them as {{title}} {{last_name}}.\nContinue with what the customer asked. For eligibility or an application, call check_eligibility with the campaign_id (call list_campaigns first if you do not have it).\nBefore mentioning any campaign the customer did not ask about, call get_consent.\nIf check_eligibility says not_checked or fails, offer a transfer to the sales team; accepted: call transfer_to_sales.\nAn application can be started only after a passing eligibility check; never start one otherwise.\nIf the customer wants nothing else, summarise in one sentence, thank them, say goodbye and call close_call.",
+   "tools": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "list_campaigns",
+      "handler": "__function__:api_call",
+      "description": "List Freya Bank's campaigns. CALL it when the customer does not know a campaign name, asks what campaigns exist for a product, or wants a product and you must check whether it has a campaign.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/list_campaigns"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d) and isinstance(d.get('campaigns'), list):\n        act = []\n        for c in d['campaigns']:\n            if isinstance(c, dict):\n                c['status_today'] = _status(c)\n                if c['status_today'] == 'active':\n                    act.append(str(c.get('name')) + ' (' + str(c.get('product')) + ')')\n        d['active_campaigns_today'] = act\n        d['what_to_do_next'] = 'status_today says which campaigns are active today. Name only active ones, at most three for the product asked about; if more than three are active for it, ask first which product feature matters most. Mention a campaign the customer did not ask about only if the rules allow it.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The campaign list could not be loaded. Say you do not have that information right now.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "get_campaign",
+      "handler": "__function__:api_call",
+      "description": "Get one campaign's full details. CALL it before you say anything about a campaign's conditions, exclusions, fees, dates or how to apply.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/get_campaign"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "campaign_id": {
+           "type": "string",
+           "description": "campaign_id exactly as list_campaigns returned it",
+           "default": "{{cmp_id}}"
+          }
+         },
+         "required": [
+          "campaign_id"
+         ]
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        st = _status(d)\n        d['status_today'] = st\n        try:\n            vars['e_informed'] = 'yes'\n        except Exception:\n            pass\n        if st == 'expired':\n            d['what_to_do_next'] = 'This campaign has ENDED. Say it ended on ' + str(d.get('valid_to')) + ' and that its terms are no longer available. Do not describe its conditions as available.'\n        elif st == 'not_started':\n            d['what_to_do_next'] = 'This campaign has NOT STARTED. Say it starts on ' + str(d.get('valid_from')) + '.'\n        else:\n            d['what_to_do_next'] = 'Active campaign. Answer only what was asked. When the conditions are asked for, read EVERY item of conditions and EVERY item of exclusions word for word, nothing added, rounded or softened. If the summary differs from the conditions, the conditions govern: say so.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The campaign could not be loaded. Say you do not have that information right now.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "get_consent",
+      "handler": "__function__:api_call",
+      "description": "Read the customer's marketing consent. CALL it before you mention ANY campaign the customer did not ask about.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/get_consent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        m = str(d.get('marketing')).lower() == 'true'\n        vars['e_marketing'] = 'yes' if m else 'no'\n        d['what_to_do_next'] = ('Marketing consent is given: after the customer question is fully answered you may mention at most ONE other active campaign for the same product, once.' if m else 'No marketing consent: answer only what was asked and propose nothing else.')\n    elif d is not None:\n        d['what_to_do_next'] = 'Consent could not be read. Treat it as no consent: propose nothing.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "check_eligibility",
+      "handler": "__function__:api_call",
+      "description": "Check the customer's eligibility for one campaign. CALL it when the customer asks whether they can get a campaign, or wants to apply.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/check_eligibility"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "campaign_id": {
+           "type": "string",
+           "description": "campaign_id exactly as list_campaigns returned it",
+           "default": "{{elig_cmp_id}}"
+          }
+         },
+         "required": [
+          "campaign_id"
+         ]
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\nREASONS = {'existing_product': 'you already have this product', 'already_enrolled': 'you are already in this campaign', 'age': 'the age condition is not met', 'income_not_on_file': 'we have no income information on file; a branch can add it', 'account_status': 'your account status does not allow it; the general team can explain'}\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    vars['e_elig_new'] = 'yes'\n    if _ok(d) and str(d.get('eligible')).lower() == 'true':\n        vars['e_elig_state'] = 'eligible'\n        d['what_to_do_next'] = 'Say exactly: \"You meet the conditions we can check. The final decision is made on the application.\" Never say the customer qualifies or is approved. If the customer wants to apply, read back the campaign name and the product and ask \"Shall I start the application?\".'\n    elif _ok(d):\n        r = str(d.get('reason') or '')\n        if r == 'not_checked':\n            vars['e_elig_state'] = 'not_checked'\n            d['what_to_do_next'] = 'Say the check could not be done now and offer a transfer to the sales team. Do not start an application.'\n        else:\n            vars['e_elig_state'] = 'not_eligible'\n            vars['e_not_eligible'] = 'yes'\n            d['what_to_do_next'] = 'Not eligible. Say: \"' + REASONS.get(r, 'the conditions are not met') + '\". Do not start an application and propose no other campaign unless the customer asks.'\n    else:\n        vars['e_elig_state'] = 'error'\n        if d is not None:\n            d['what_to_do_next'] = 'The check failed. Say the check could not be done now and offer a transfer to the sales team. Do not state any eligibility.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_sales",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the sales team. CALL it only after the customer accepted a transfer to the sales team.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "sales"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'sales'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_general",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the general team (a person). CALL it when the customer accepted a transfer for a complaint, or insists on a person after you asked once whether you can help.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "general"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'general'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "close_call",
+      "handler": "__function__:api_call",
+      "description": "End the call record. CALL it exactly once, as the very last tool call, right after your one-sentence summary, thanks and goodbye.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/close_call"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "outcome": {
+           "type": "string",
+           "enum": [
+            "informed",
+            "not_eligible",
+            "applied",
+            "transferred",
+            "not_verified",
+            "no_action"
+           ],
+           "description": "informed: information given, nothing else. not_eligible: eligibility false (not not_checked). applied: application received. transferred: a transfer was done. not_verified: identity failed or declined and nothing else handled. no_action: nothing done (declined a transfer, or the application failed twice).",
+           "default": "{{close_outcome}}"
+          },
+          "reason": {
+           "type": "string",
+           "enum": [
+            "sales",
+            "human",
+            "security",
+            "failed",
+            "declined",
+            "out_of_scope",
+            "service_error",
+            ""
+           ],
+           "description": "transferred: sales, human or security. not_verified: failed (three wrong answers) or declined. no_action: out_of_scope or service_error. Empty for informed, not_eligible, applied.",
+           "default": "{{close_reason}}"
+          }
+         },
+         "required": [
+          "outcome"
+         ]
+        }
+       }
+      }
+     },
+     "pre_process_code": "\ntry:\n    b = config.get('body')\n    if isinstance(b, dict):\n        o = str(b.get('outcome') or '')\n        r = b.get('reason')\n        tq = str(vars.get('e_transfer_queue') or '')\n        if tq:\n            o = 'transferred'\n            r = dict(sales='sales', general='human', security='security').get(tq, r)\n        elif str(vars.get('e_applied') or '') == 'yes':\n            o = 'applied'\n        elif str(vars.get('e_not_eligible') or '') == 'yes':\n            o = 'not_eligible'\n        elif o == 'not_verified' and str(vars.get('e_informed') or '') == 'yes':\n            o = 'informed'\n        elif o == 'transferred':\n            o = 'informed' if str(vars.get('e_informed') or '') == 'yes' else 'no_action'\n            r = 'out_of_scope'\n        elif o in ('applied', 'not_eligible'):\n            o = 'informed'\n        if o == 'not_verified':\n            wl = str(vars.get('verify_identity_response.data.wrong_answers_left') or '')\n            r = 'failed' if wl == '0' else (r if r in ('failed', 'declined') else 'declined')\n        if o == 'no_action' and r not in ('out_of_scope', 'service_error'):\n            r = 'service_error' if int(vars.get('e_app_fail') or 0) >= 2 else 'out_of_scope'\n        b['outcome'] = o\n        if o in ('informed', 'applied', 'not_eligible'):\n            b.pop('reason', None)\n        else:\n            b['reason'] = r\nexcept Exception:\n    pass\n",
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    vars['e_closed'] = 'yes'\nexcept Exception:\n    pass\n"
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "end",
+     "description": "close_call was recorded",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "e_closed",
+        "operator": "equals",
+        "operand": "yes"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "true"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "True"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "mark_eligible",
+     "description": "eligibility passed",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "logic": "and",
+        "conditions": [
+         {
+          "variable": "e_elig_new",
+          "operator": "equals",
+          "operand": "yes"
+         },
+         {
+          "variable": "e_elig_state",
+          "operator": "equals",
+          "operand": "eligible"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "max_node_turns": 60,
+   "on_enter": {
+    "type": "llm",
+    "prompt": "Thank the customer by title and last name, say the identity is confirmed, then continue with their request: for eligibility or an application call check_eligibility now with the campaign_id (list_campaigns first if needed)."
+   },
+   "on_enter_first_entry_only": true
+  },
+  "mark_eligible": {
+   "name": "mark_eligible",
+   "node_type": "code",
+   "passthrough": true,
+   "passthrough_default_transition": "eligible",
+   "on_enter": {
+    "type": "silent"
+   },
+   "disable_inactivity_monitor": true,
+   "pre_actions": [
+    {
+     "type": "function",
+     "function": {
+      "name": "code_exec",
+      "handler": "__function__:code_exec",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "code": {
+         "type": "string",
+         "default": "\ntry:\n    vars['e_elig_new'] = 'no'\n    c = vars.get('check_eligibility_args.campaign_id') or vars.get('elig_cmp_id')\n    if c:\n        vars['e_campaign'] = str(c)\nexcept Exception:\n    pass\n"
+        },
+        "timeout_ms": {
+         "type": "number",
+         "default": 10000
+        }
+       }
+      }
+     }
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "eligible",
+     "description": "always",
+     "condition": {
+      "operator": "always"
+     }
+    }
+   ]
+  },
+  "eligible": {
+   "name": "eligible",
+   "node_type": "conversation",
+   "task_message": "The customer is verified ({{title}} {{last_name}}) and the eligibility check for campaign {{e_campaign}} PASSED. If you have not yet said it, say exactly: 'You meet the conditions we can check. The final decision is made on the application.' Never say they qualify or are approved.\nIf the customer wants to apply: read back the campaign name and the product and ask exactly \"Shall I start the application?\". Call start_application only after a clear yes. If start_application fails, call it once more; if it fails again, say it could not be started and offer a transfer to the sales team (accepted: transfer_to_sales; declined: close as no_action, service_error).\nIf the customer asks about another campaign's eligibility, call check_eligibility for it. Before mentioning any campaign the customer did not ask about, call get_consent.\nIf the customer wants nothing else, summarise in one sentence, thank them, say goodbye and call close_call.",
+   "tools": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "list_campaigns",
+      "handler": "__function__:api_call",
+      "description": "List Freya Bank's campaigns. CALL it when the customer does not know a campaign name, asks what campaigns exist for a product, or wants a product and you must check whether it has a campaign.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/list_campaigns"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d) and isinstance(d.get('campaigns'), list):\n        act = []\n        for c in d['campaigns']:\n            if isinstance(c, dict):\n                c['status_today'] = _status(c)\n                if c['status_today'] == 'active':\n                    act.append(str(c.get('name')) + ' (' + str(c.get('product')) + ')')\n        d['active_campaigns_today'] = act\n        d['what_to_do_next'] = 'status_today says which campaigns are active today. Name only active ones, at most three for the product asked about; if more than three are active for it, ask first which product feature matters most. Mention a campaign the customer did not ask about only if the rules allow it.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The campaign list could not be loaded. Say you do not have that information right now.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "get_campaign",
+      "handler": "__function__:api_call",
+      "description": "Get one campaign's full details. CALL it before you say anything about a campaign's conditions, exclusions, fees, dates or how to apply.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/get_campaign"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "campaign_id": {
+           "type": "string",
+           "description": "campaign_id exactly as list_campaigns returned it",
+           "default": "{{cmp_id}}"
+          }
+         },
+         "required": [
+          "campaign_id"
+         ]
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        st = _status(d)\n        d['status_today'] = st\n        try:\n            vars['e_informed'] = 'yes'\n        except Exception:\n            pass\n        if st == 'expired':\n            d['what_to_do_next'] = 'This campaign has ENDED. Say it ended on ' + str(d.get('valid_to')) + ' and that its terms are no longer available. Do not describe its conditions as available.'\n        elif st == 'not_started':\n            d['what_to_do_next'] = 'This campaign has NOT STARTED. Say it starts on ' + str(d.get('valid_from')) + '.'\n        else:\n            d['what_to_do_next'] = 'Active campaign. Answer only what was asked. When the conditions are asked for, read EVERY item of conditions and EVERY item of exclusions word for word, nothing added, rounded or softened. If the summary differs from the conditions, the conditions govern: say so.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The campaign could not be loaded. Say you do not have that information right now.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "get_consent",
+      "handler": "__function__:api_call",
+      "description": "Read the customer's marketing consent. CALL it before you mention ANY campaign the customer did not ask about.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/get_consent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        m = str(d.get('marketing')).lower() == 'true'\n        vars['e_marketing'] = 'yes' if m else 'no'\n        d['what_to_do_next'] = ('Marketing consent is given: after the customer question is fully answered you may mention at most ONE other active campaign for the same product, once.' if m else 'No marketing consent: answer only what was asked and propose nothing else.')\n    elif d is not None:\n        d['what_to_do_next'] = 'Consent could not be read. Treat it as no consent: propose nothing.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "check_eligibility",
+      "handler": "__function__:api_call",
+      "description": "Check the customer's eligibility for one campaign. CALL it when the customer asks whether they can get a campaign, or wants to apply.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/check_eligibility"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "campaign_id": {
+           "type": "string",
+           "description": "campaign_id exactly as list_campaigns returned it",
+           "default": "{{elig_cmp_id}}"
+          }
+         },
+         "required": [
+          "campaign_id"
+         ]
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\nREASONS = {'existing_product': 'you already have this product', 'already_enrolled': 'you are already in this campaign', 'age': 'the age condition is not met', 'income_not_on_file': 'we have no income information on file; a branch can add it', 'account_status': 'your account status does not allow it; the general team can explain'}\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    vars['e_elig_new'] = 'yes'\n    if _ok(d) and str(d.get('eligible')).lower() == 'true':\n        vars['e_elig_state'] = 'eligible'\n        d['what_to_do_next'] = 'Say exactly: \"You meet the conditions we can check. The final decision is made on the application.\" Never say the customer qualifies or is approved. If the customer wants to apply, read back the campaign name and the product and ask \"Shall I start the application?\".'\n    elif _ok(d):\n        r = str(d.get('reason') or '')\n        if r == 'not_checked':\n            vars['e_elig_state'] = 'not_checked'\n            d['what_to_do_next'] = 'Say the check could not be done now and offer a transfer to the sales team. Do not start an application.'\n        else:\n            vars['e_elig_state'] = 'not_eligible'\n            vars['e_not_eligible'] = 'yes'\n            d['what_to_do_next'] = 'Not eligible. Say: \"' + REASONS.get(r, 'the conditions are not met') + '\". Do not start an application and propose no other campaign unless the customer asks.'\n    else:\n        vars['e_elig_state'] = 'error'\n        if d is not None:\n            d['what_to_do_next'] = 'The check failed. Say the check could not be done now and offer a transfer to the sales team. Do not state any eligibility.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "start_application",
+      "handler": "__function__:api_call",
+      "description": "Start the application for the campaign whose eligibility check just passed. CALL it only after you read back the campaign name and product, asked \"Shall I start the application?\" and the customer said a clear yes.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/start_application"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "campaign_id": {
+           "type": "string",
+           "description": "campaign_id of the campaign that passed check_eligibility",
+           "default": "{{e_campaign}}"
+          }
+         },
+         "required": [
+          "campaign_id"
+         ]
+        }
+       }
+      }
+     },
+     "pre_process_code": "\ntry:\n    c = vars.get('e_campaign')\n    b = config.get('body')\n    if isinstance(b, dict) and c:\n        b['campaign_id'] = c\nexcept Exception:\n    pass\n",
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d) and d.get('application_id'):\n        a = str(d.get('application_id'))\n        vars['e_applied'] = 'yes'\n        vars['e_app_id'] = a\n        words = dict(zip('0123456789-', ['zero','one','two','three','four','five','six','seven','eight','nine','dash']))\n        vars['e_app_spoken'] = ', '.join(words.get(ch, ch) for ch in a if ch.strip())\n        d['what_to_do_next'] = 'The application is received.'\n    else:\n        n = int(vars.get('e_app_fail') or 0) + 1\n        vars['e_app_fail'] = n\n        msg = 'The application was NOT started. Never say it was received. '\n        msg += ('Call start_application once more now.' if n < 2 else 'Say it could not be started and offer a transfer to the sales team.')\n        if d is not None:\n            d['what_to_do_next'] = msg\n        elif isinstance(result, dict):\n            result['what_to_do_next'] = msg\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_sales",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the sales team. CALL it only after the customer accepted a transfer to the sales team.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "sales"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'sales'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_general",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the general team (a person). CALL it when the customer accepted a transfer for a complaint, or insists on a person after you asked once whether you can help.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "general"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'general'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "close_call",
+      "handler": "__function__:api_call",
+      "description": "End the call record. CALL it exactly once, as the very last tool call, right after your one-sentence summary, thanks and goodbye.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/close_call"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "outcome": {
+           "type": "string",
+           "enum": [
+            "informed",
+            "not_eligible",
+            "applied",
+            "transferred",
+            "not_verified",
+            "no_action"
+           ],
+           "description": "informed: information given, nothing else. not_eligible: eligibility false (not not_checked). applied: application received. transferred: a transfer was done. not_verified: identity failed or declined and nothing else handled. no_action: nothing done (declined a transfer, or the application failed twice).",
+           "default": "{{close_outcome}}"
+          },
+          "reason": {
+           "type": "string",
+           "enum": [
+            "sales",
+            "human",
+            "security",
+            "failed",
+            "declined",
+            "out_of_scope",
+            "service_error",
+            ""
+           ],
+           "description": "transferred: sales, human or security. not_verified: failed (three wrong answers) or declined. no_action: out_of_scope or service_error. Empty for informed, not_eligible, applied.",
+           "default": "{{close_reason}}"
+          }
+         },
+         "required": [
+          "outcome"
+         ]
+        }
+       }
+      }
+     },
+     "pre_process_code": "\ntry:\n    b = config.get('body')\n    if isinstance(b, dict):\n        o = str(b.get('outcome') or '')\n        r = b.get('reason')\n        tq = str(vars.get('e_transfer_queue') or '')\n        if tq:\n            o = 'transferred'\n            r = dict(sales='sales', general='human', security='security').get(tq, r)\n        elif str(vars.get('e_applied') or '') == 'yes':\n            o = 'applied'\n        elif str(vars.get('e_not_eligible') or '') == 'yes':\n            o = 'not_eligible'\n        elif o == 'not_verified' and str(vars.get('e_informed') or '') == 'yes':\n            o = 'informed'\n        elif o == 'transferred':\n            o = 'informed' if str(vars.get('e_informed') or '') == 'yes' else 'no_action'\n            r = 'out_of_scope'\n        elif o in ('applied', 'not_eligible'):\n            o = 'informed'\n        if o == 'not_verified':\n            wl = str(vars.get('verify_identity_response.data.wrong_answers_left') or '')\n            r = 'failed' if wl == '0' else (r if r in ('failed', 'declined') else 'declined')\n        if o == 'no_action' and r not in ('out_of_scope', 'service_error'):\n            r = 'service_error' if int(vars.get('e_app_fail') or 0) >= 2 else 'out_of_scope'\n        b['outcome'] = o\n        if o in ('informed', 'applied', 'not_eligible'):\n            b.pop('reason', None)\n        else:\n            b['reason'] = r\nexcept Exception:\n    pass\n",
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    vars['e_closed'] = 'yes'\nexcept Exception:\n    pass\n"
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "end",
+     "description": "close_call was recorded",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "e_closed",
+        "operator": "equals",
+        "operand": "yes"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "true"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "True"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "applied",
+     "description": "application received",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "e_applied",
+        "operator": "equals",
+        "operand": "yes"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "app_failed",
+     "description": "application failed twice",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "e_app_fail",
+        "operator": "greater_than",
+        "operand": 1
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "mark_eligible",
+     "description": "another eligibility passed",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "logic": "and",
+        "conditions": [
+         {
+          "variable": "e_elig_new",
+          "operator": "equals",
+          "operand": "yes"
+         },
+         {
+          "variable": "e_elig_state",
+          "operator": "equals",
+          "operand": "eligible"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "reset_elig",
+     "description": "another eligibility did not pass",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "logic": "and",
+        "conditions": [
+         {
+          "variable": "e_elig_new",
+          "operator": "equals",
+          "operand": "yes"
+         },
+         {
+          "variable": "e_elig_state",
+          "operator": "not_equals",
+          "operand": "eligible"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "max_node_turns": 60,
+   "on_enter": {
+    "type": "llm",
+    "prompt": "Say exactly: \"You meet the conditions we can check. The final decision is made on the application.\" Then, if the customer already asked to apply, read back the campaign name and product and ask \"Shall I start the application?\"; otherwise ask whether they would like to apply or need anything else."
+   }
+  },
+  "reset_elig": {
+   "name": "reset_elig",
+   "node_type": "code",
+   "passthrough": true,
+   "passthrough_default_transition": "verified",
+   "on_enter": {
+    "type": "silent"
+   },
+   "disable_inactivity_monitor": true,
+   "pre_actions": [
+    {
+     "type": "function",
+     "function": {
+      "name": "code_exec",
+      "handler": "__function__:code_exec",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "code": {
+         "type": "string",
+         "default": "vars['e_elig_new'] = 'no'\n"
+        },
+        "timeout_ms": {
+         "type": "number",
+         "default": 10000
+        }
+       }
+      }
+     }
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "verified",
+     "description": "always",
+     "condition": {
+      "operator": "always"
+     }
+    }
+   ]
+  },
+  "applied": {
+   "name": "applied",
+   "node_type": "conversation",
+   "task_message": "The application was received, application id {{e_app_id}}; you have read it back. Do not start another application.\nAnswer any further question with the tools. If the customer wants nothing else: say in one sentence that the application was received and the decision comes within five business days by SMS, thank them, say goodbye and call close_call with outcome applied.",
+   "tools": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "list_campaigns",
+      "handler": "__function__:api_call",
+      "description": "List Freya Bank's campaigns. CALL it when the customer does not know a campaign name, asks what campaigns exist for a product, or wants a product and you must check whether it has a campaign.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/list_campaigns"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d) and isinstance(d.get('campaigns'), list):\n        act = []\n        for c in d['campaigns']:\n            if isinstance(c, dict):\n                c['status_today'] = _status(c)\n                if c['status_today'] == 'active':\n                    act.append(str(c.get('name')) + ' (' + str(c.get('product')) + ')')\n        d['active_campaigns_today'] = act\n        d['what_to_do_next'] = 'status_today says which campaigns are active today. Name only active ones, at most three for the product asked about; if more than three are active for it, ask first which product feature matters most. Mention a campaign the customer did not ask about only if the rules allow it.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The campaign list could not be loaded. Say you do not have that information right now.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "get_campaign",
+      "handler": "__function__:api_call",
+      "description": "Get one campaign's full details. CALL it before you say anything about a campaign's conditions, exclusions, fees, dates or how to apply.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/get_campaign"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "campaign_id": {
+           "type": "string",
+           "description": "campaign_id exactly as list_campaigns returned it",
+           "default": "{{cmp_id}}"
+          }
+         },
+         "required": [
+          "campaign_id"
+         ]
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        st = _status(d)\n        d['status_today'] = st\n        try:\n            vars['e_informed'] = 'yes'\n        except Exception:\n            pass\n        if st == 'expired':\n            d['what_to_do_next'] = 'This campaign has ENDED. Say it ended on ' + str(d.get('valid_to')) + ' and that its terms are no longer available. Do not describe its conditions as available.'\n        elif st == 'not_started':\n            d['what_to_do_next'] = 'This campaign has NOT STARTED. Say it starts on ' + str(d.get('valid_from')) + '.'\n        else:\n            d['what_to_do_next'] = 'Active campaign. Answer only what was asked. When the conditions are asked for, read EVERY item of conditions and EVERY item of exclusions word for word, nothing added, rounded or softened. If the summary differs from the conditions, the conditions govern: say so.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The campaign could not be loaded. Say you do not have that information right now.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "get_consent",
+      "handler": "__function__:api_call",
+      "description": "Read the customer's marketing consent. CALL it before you mention ANY campaign the customer did not ask about.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/get_consent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        m = str(d.get('marketing')).lower() == 'true'\n        vars['e_marketing'] = 'yes' if m else 'no'\n        d['what_to_do_next'] = ('Marketing consent is given: after the customer question is fully answered you may mention at most ONE other active campaign for the same product, once.' if m else 'No marketing consent: answer only what was asked and propose nothing else.')\n    elif d is not None:\n        d['what_to_do_next'] = 'Consent could not be read. Treat it as no consent: propose nothing.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_sales",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the sales team. CALL it only after the customer accepted a transfer to the sales team.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "sales"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'sales'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_general",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the general team (a person). CALL it when the customer accepted a transfer for a complaint, or insists on a person after you asked once whether you can help.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "general"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'general'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "close_call",
+      "handler": "__function__:api_call",
+      "description": "End the call record. CALL it exactly once, as the very last tool call, right after your one-sentence summary, thanks and goodbye.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/close_call"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "outcome": {
+           "type": "string",
+           "enum": [
+            "informed",
+            "not_eligible",
+            "applied",
+            "transferred",
+            "not_verified",
+            "no_action"
+           ],
+           "description": "informed: information given, nothing else. not_eligible: eligibility false (not not_checked). applied: application received. transferred: a transfer was done. not_verified: identity failed or declined and nothing else handled. no_action: nothing done (declined a transfer, or the application failed twice).",
+           "default": "{{close_outcome}}"
+          },
+          "reason": {
+           "type": "string",
+           "enum": [
+            "sales",
+            "human",
+            "security",
+            "failed",
+            "declined",
+            "out_of_scope",
+            "service_error",
+            ""
+           ],
+           "description": "transferred: sales, human or security. not_verified: failed (three wrong answers) or declined. no_action: out_of_scope or service_error. Empty for informed, not_eligible, applied.",
+           "default": "{{close_reason}}"
+          }
+         },
+         "required": [
+          "outcome"
+         ]
+        }
+       }
+      }
+     },
+     "pre_process_code": "\ntry:\n    b = config.get('body')\n    if isinstance(b, dict):\n        o = str(b.get('outcome') or '')\n        r = b.get('reason')\n        tq = str(vars.get('e_transfer_queue') or '')\n        if tq:\n            o = 'transferred'\n            r = dict(sales='sales', general='human', security='security').get(tq, r)\n        elif str(vars.get('e_applied') or '') == 'yes':\n            o = 'applied'\n        elif str(vars.get('e_not_eligible') or '') == 'yes':\n            o = 'not_eligible'\n        elif o == 'not_verified' and str(vars.get('e_informed') or '') == 'yes':\n            o = 'informed'\n        elif o == 'transferred':\n            o = 'informed' if str(vars.get('e_informed') or '') == 'yes' else 'no_action'\n            r = 'out_of_scope'\n        elif o in ('applied', 'not_eligible'):\n            o = 'informed'\n        if o == 'not_verified':\n            wl = str(vars.get('verify_identity_response.data.wrong_answers_left') or '')\n            r = 'failed' if wl == '0' else (r if r in ('failed', 'declined') else 'declined')\n        if o == 'no_action' and r not in ('out_of_scope', 'service_error'):\n            r = 'service_error' if int(vars.get('e_app_fail') or 0) >= 2 else 'out_of_scope'\n        b['outcome'] = o\n        if o in ('informed', 'applied', 'not_eligible'):\n            b.pop('reason', None)\n        else:\n            b['reason'] = r\nexcept Exception:\n    pass\n",
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    vars['e_closed'] = 'yes'\nexcept Exception:\n    pass\n"
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "end",
+     "description": "close_call was recorded",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "e_closed",
+        "operator": "equals",
+        "operand": "yes"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "true"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "True"
+       }
+      ]
+     }
+    }
+   ],
+   "max_node_turns": 60,
+   "on_enter": {
+    "type": "tts",
+    "text": "Your application is received. Your application number is {{e_app_spoken}}. This means we have received it, not that it is approved. The decision comes within five business days by SMS. Is there anything else I can help you with?"
+   },
+   "on_enter_first_entry_only": true
+  },
+  "app_failed": {
+   "name": "app_failed",
+   "node_type": "conversation",
+   "task_message": "The application could NOT be started (two attempts failed). Never say it was received. Say it could not be started and offer a transfer to the sales team. Accepted: call transfer_to_sales. Declined: say in one sentence what happened, thank them, say goodbye and call close_call with outcome no_action, reason service_error.",
+   "tools": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "transfer_to_sales",
+      "handler": "__function__:api_call",
+      "description": "Transfer the call to the sales team. CALL it only after the customer accepted a transfer to the sales team.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "sales"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     },
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    if _ok(d):\n        vars['e_transfer_queue'] = 'sales'\n        d['what_to_do_next'] = 'The transfer is done. Say in one sentence what was done, thank the customer, say goodbye, then call close_call.'\n    elif d is not None:\n        d['what_to_do_next'] = 'The transfer failed. Say so.'\nexcept Exception:\n    pass\n"
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "close_call",
+      "handler": "__function__:api_call",
+      "description": "End the call record. CALL it exactly once, as the very last tool call, right after your one-sentence summary, thanks and goodbye.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/close_call"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "outcome": {
+           "type": "string",
+           "enum": [
+            "informed",
+            "not_eligible",
+            "applied",
+            "transferred",
+            "not_verified",
+            "no_action"
+           ],
+           "description": "informed: information given, nothing else. not_eligible: eligibility false (not not_checked). applied: application received. transferred: a transfer was done. not_verified: identity failed or declined and nothing else handled. no_action: nothing done (declined a transfer, or the application failed twice).",
+           "default": "{{close_outcome}}"
+          },
+          "reason": {
+           "type": "string",
+           "enum": [
+            "sales",
+            "human",
+            "security",
+            "failed",
+            "declined",
+            "out_of_scope",
+            "service_error",
+            ""
+           ],
+           "description": "transferred: sales, human or security. not_verified: failed (three wrong answers) or declined. no_action: out_of_scope or service_error. Empty for informed, not_eligible, applied.",
+           "default": "{{close_reason}}"
+          }
+         },
+         "required": [
+          "outcome"
+         ]
+        }
+       }
+      }
+     },
+     "pre_process_code": "\ntry:\n    b = config.get('body')\n    if isinstance(b, dict):\n        o = str(b.get('outcome') or '')\n        r = b.get('reason')\n        tq = str(vars.get('e_transfer_queue') or '')\n        if tq:\n            o = 'transferred'\n            r = dict(sales='sales', general='human', security='security').get(tq, r)\n        elif str(vars.get('e_applied') or '') == 'yes':\n            o = 'applied'\n        elif str(vars.get('e_not_eligible') or '') == 'yes':\n            o = 'not_eligible'\n        elif o == 'not_verified' and str(vars.get('e_informed') or '') == 'yes':\n            o = 'informed'\n        elif o == 'transferred':\n            o = 'informed' if str(vars.get('e_informed') or '') == 'yes' else 'no_action'\n            r = 'out_of_scope'\n        elif o in ('applied', 'not_eligible'):\n            o = 'informed'\n        if o == 'not_verified':\n            wl = str(vars.get('verify_identity_response.data.wrong_answers_left') or '')\n            r = 'failed' if wl == '0' else (r if r in ('failed', 'declined') else 'declined')\n        if o == 'no_action' and r not in ('out_of_scope', 'service_error'):\n            r = 'service_error' if int(vars.get('e_app_fail') or 0) >= 2 else 'out_of_scope'\n        b['outcome'] = o\n        if o in ('informed', 'applied', 'not_eligible'):\n            b.pop('reason', None)\n        else:\n            b['reason'] = r\nexcept Exception:\n    pass\n",
+     "post_process_code": "\ndef _v():\n    try:\n        return vars\n    except Exception:\n        return dict()\ndef _data(res):\n    if isinstance(res, dict):\n        d = res.get('data')\n        if isinstance(d, dict):\n            return d\n    return None\ndef _ok(d):\n    return isinstance(d, dict) and (d.get('ok') is True or str(d.get('ok')).lower() == 'true')\ndef _today():\n    return str(_v().get('now') or '')[:10]\ndef _status(c):\n    t = _today()\n    f = str(c.get('valid_from') or '')[:10]\n    e = str(c.get('valid_to') or '')[:10]\n    if not t or not f or not e:\n        return 'unknown'\n    if t < f:\n        return 'not_started'\n    if t > e:\n        return 'expired'\n    return 'active'\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n    d = _data(result)\n    vars['e_closed'] = 'yes'\nexcept Exception:\n    pass\n"
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "end",
+     "description": "close_call was recorded",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "e_closed",
+        "operator": "equals",
+        "operand": "yes"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "true"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "True"
+       }
+      ]
+     }
+    }
+   ],
+   "max_node_turns": 60,
+   "on_enter": {
+    "type": "tts",
+    "text": "I am sorry, the application could not be started. I can transfer you to our sales team, who can help with it. Would you like that?"
+   },
+   "on_enter_first_entry_only": true
+  },
+  "xfer_security": {
+   "name": "xfer_security",
+   "node_type": "api_request",
+   "passthrough": true,
+   "passthrough_default_transition": "end",
+   "on_enter": {
+    "type": "tts",
+    "text": "I am transferring you to our security team now. Thank you for calling Freya Bank, goodbye."
+   },
+   "disable_inactivity_monitor": true,
+   "pre_actions": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 1
+     },
+     "function": {
+      "name": "transfer_security",
+      "handler": "__function__:api_call",
+      "description": "Transfer to security.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/transfer_to_agent"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "queue": {
+           "type": "string",
+           "default": "security"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     }
+    },
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "close_security",
+      "handler": "__function__:api_call",
+      "description": "Close.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://8486-176-41-224-110.ngrok-free.app/v1/close_call"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "outcome": {
+           "type": "string",
+           "default": "transferred"
+          },
+          "reason": {
+           "type": "string",
+           "default": "security"
+          }
+         },
+         "required": []
+        }
+       }
+      }
+     }
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "end",
+     "description": "always",
+     "condition": {
+      "operator": "always"
+     }
+    }
+   ]
+  },
+  "end": {
+   "name": "end",
+   "node_type": "end_call",
+   "on_enter": {
+    "type": "silent"
+   },
+   "disable_inactivity_monitor": true,
+   "transitions": [],
+   "terminal": {
+    "type": "function",
+    "function": {
+     "name": "call_closed",
+     "handler": "__function__:end_call",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "message_mode": {
+        "type": "string",
+        "default": "none"
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "global_nodes": {
+  "security": {
+   "name": "security",
+   "description": "A security matter: lost or stolen card, unrecognised transaction, a code given to someone",
+   "condition": {
+    "operator": "matches_intent",
+    "description": "The customer reports a lost or stolen card, a transaction they do not recognise, or that they gave a code or password to someone"
+   },
+   "task_message": "Ask no details. No tool call in this turn.",
+   "on_enter": {
+    "type": "silent"
+   },
+   "passthrough": true,
+   "passthrough_default_transition": "xfer_security",
+   "excluded_nodes": [
+    "end",
+    "xfer_security"
+   ],
+   "transitions": [
+    {
+     "target_node": "xfer_security",
+     "description": "always",
+     "condition": {
+      "operator": "always"
+     }
+    }
+   ]
+  }
+ },
+ "test_variables": {
+  "customer_id": "c_test",
+  "first_name": "Daniel",
+  "last_name": "Reyes",
+  "title": "Mr",
+  "now": "2026-10-14T11:00"
+ }
+}

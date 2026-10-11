@@ -1,3 +1,109 @@
+# Retrospective · brief-f · practice run 3 · 2026-10-11 15:19 (digest: reports/20261011-151930.digest.md)
+
+Skills: build-phone-agent + test-phone-agent. New agent `a2554b59-a2b1-44de-b7b6-7ea9b1e3e287`, workflow `3b655f93-6c8f-4556-95a3-d6298b48e3e8` (the v5 design of run 2, regenerated against the current tunnel and created fresh). The registry before this run is backed up in `.freya-agents.bak.json`.
+
+## Scores, in order
+No benchmark run completed. There is no hidden-brief estimate, so its confidence is none.
+| attempt | digest step | scope | result |
+|---|---|---|---|
+| 1 | ~26 | baseline, old agent `9b1b…`, GEN-01…25 | 404 "Agent not found": the workflow `d637…` was gone from Freya as well |
+| 2 | 43 | new agent, GEN-01…25 | killed by the 16m40 tool timeout; nothing written |
+| 3 | 52 | new agent, `--only` GEN-01,09,15,16, `timeout 560` | waited the whole time on "another simulation is running in this workspace" |
+Cause (step 55): the simulation `436b7e4c…`, named "cases 15:15:02", started 4 minutes before this session and was still `running` 32 minutes later. It was not started by this session, so I left it alone. Attempt 2 almost certainly waited behind it too. The last completed score is still run 05 of the first session: 13/16 generated.
+
+## What cost time or turns
+- Step 43: 16.7 of the 30 minutes went into one silent foreground run. The output went through `| tail`, so the "another simulation" waiting lines stayed invisible until the process was killed. The previous retro had already named this blocker.
+- Steps 26–41: the stored agent and workflow had vanished (404 on both). Checking that, backing up, dropping the slot and recreating cost about 1 minute. That went fine, following the earlier lesson.
+- Step 33: one throwaway script assumed `nodes` was a list (it is a dict); one turn lost.
+- Step 4 (concept research) was skipped as a separate step. The knowledge file's sections 3.7 and 4.4 cover applications, credit limits and approval-versus-receipt; nothing else was searched.
+- Untested edits carried over from run 2: the security-interrupt route, the invalid-answer counter, and the requirements-list parser. All are still unrun end to end.
+- No run was started before `--check`. No repeated command apart from the blocked benchmark.
+
+## Lessons for any brief
+- Before the first benchmark, list the workspace's running simulations. If one is running that you did not start, report it at once instead of queuing behind it.
+- Never pipe a benchmark through `tail`. Write its log to a file with a shell `timeout` under the 15-minute cut-off, so waiting lines and progress stay visible.
+- A stored workflow or agent can disappear between sessions. Probe the stored ids at step 1, not at the first benchmark.
+
+## Lessons for this brief only (not for the skill)
+- The brief-F mock still runs on port 8765 behind the ngrok tunnel `ef9c-…`, and the workflow is baked with that URL. A new tunnel needs `BRIEF_F_BASE=<url> py -3 out/gen_brief_f.py` and a re-save.
+- The tunnel also received a `/v1/get_campaign` call, so another brief's agent shares this mock host.
+- The 50 cases and the run-2 fixes (GEN-09, 15, 16) are still unrun. The next session should first run `--only GEN-09,GEN-15,GEN-16,GEN-01` once the workspace is free.
+
+## Lesson lines for the skill files (verbatim). NOT applied: the permission mode denied edits to both SKILL.md files; paste them into each `## Lessons` section by hand
+build-phone-agent `## Lessons`:
+- Check the interpreter name at step 1 (`python3` may be a store alias; try `py -3`) and use it everywhere.
+- At step 1, confirm that the stored `workflow_id`/`agent_id` still exist; on a 404, back up `.freya-agents.json`, drop the slot and save again.
+- Before writing cases, confirm that the mock, tunnel and tool API file the brief needs exist and answer, and that the saved workflow points at that host.
+- Put prescribed wording verbatim in a fixed line or prompt; the judge rejects paraphrases.
+- Count repeated invalid answers in a variable and route on it; never leave a count to the prompt.
+- A side effect from a global node goes in a normal action node that the global node routes to.
+- Write multi-line scripts with the file tool, not shell heredocs; unit-test every code snippet locally with fake vars.
+
+test-phone-agent `## Lessons`:
+- Before the first run, list the workspace's running simulations; if one you did not start is running, report it instead of queuing behind it.
+- Never pipe a benchmark through `tail`; log it to a file under a shell `timeout` below the cut-off so waiting and progress stay visible.
+- Size each run from the last run's seconds per case and split with `--only` when it would not fit the cut-off.
+- A wrong security answer in a case must be unrelated to the fixture's value; a swapped variant can trigger a hint that does not count as wrong.
+- Have the persona give the decisive fact first, before anything that could move the call into another branch.
+- Word each check with the same sentence boundaries as the rule, and never forbid a word the brief makes the agent say.
+- After a fix, re-run the failed cases with `--only`, then one full run, and keep a few minutes for the retrospective.
+
+---
+
+# Retrospective · brief-f · practice run 2 · 2026-10-11 13:09 (digest: reports/20261011-130949.digest.md)
+
+Skill: build-phone-agent-comprehensive-tests. Agent `9b1b1617-e7e7-48bd-bc0d-7c61b1a79678`, workflow `d637cb83-2898-415b-959c-4a13ce789db1` (saved as version 5).
+
+## Scores, in order
+No benchmark run of this build completed. Five attempts, all ended by Freya:
+| attempt | digest step | scope | result |
+|---|---|---|---|
+| 1 | 38 | baseline, old agent, 16 cases | 503 "API key validation is temporarily unavailable" |
+| 2 | 46 | baseline, old agent, 16 cases | 504 on POST /simulations |
+| 3 | 60 | baseline, old agent, 50 cases | waited on "another simulation is running in this workspace", then 503 |
+| 4 | 81 | fixed agent v5, 50 cases | same, 17 minutes lost |
+| 5 | 84 | fixed agent v5, --only GEN-09,15,16,17 | 504 |
+Last completed score is still run 05 of the previous session: 13/16 generated, no public set for brief F.
+
+## What cost time or turns
+- Steps 81–84: about 20 of the 40 minutes were spent waiting on Freya. Step 60 and step 81 both waited behind "another simulation is running in this workspace". A second Claude Code process started at 13:24 in the same folder, and at 13:40 it deleted this skill's SKILL.md and rewrote `build-phone-agent/SKILL.md`. The workspace was shared, so runs queued behind that session's simulations. I did not detect this until the retrospective (`git status`). I should have checked after the first "another simulation" message.
+- Steps 19–32: the tool API file that the brief-F mock and `--openapi` need (`tools/openapi-f.json`) was missing. I rebuilt it from the brief's section-4 table (a new file; no tool edited). The mock and an ngrok tunnel had to be started, and the generator's base URL made configurable (`BRIEF_F_BASE`).
+- Step 51: a long Python heredoc failed in the Bash tool (quote parsing). Step 71: a heredoc turned `\\n` into real newlines inside a generated Python string, which caused a SyntaxError (caught at step 74). Both cost a turn. Use the Write tool for any multi-line script.
+- Step 60: the 50-case baseline was started before checking whether 50 cases fit the 15-minute cut-off (16 cases took 275 s in run 05).
+- Edits never tested end to end: the GEN-09, GEN-15 and GEN-16 fixes (steps 67–77). Only the requirements-parsing fix was unit-tested locally (step 78).
+- No run was started before `--check`. No repeated command except the forced benchmark retries.
+
+## Lessons for any brief
+- When a benchmark waits on "another simulation is running", check for a concurrent session in the same workspace (`git status`, process list) before retrying.
+- When the platform fails, use the wait productively (cases, known fixes, unit tests) and shrink later attempts to `--only` the cases that test the fixes.
+- Write multi-line scripts with the file tool, not shell heredocs.
+- Unit-test code that reads flattened result keys with nested-list keys too (`x.0.options.1`).
+- Count repeated invalid answers in a variable and route on it; a prompt that asks the model to count miscounts.
+- A side effect from a global interrupt node belongs in a normal action node that the global node routes to.
+
+## Lessons for this brief only (not for the skill)
+- Brief F needs `tools/mock_bank_f.py`, a public tunnel, `tools/openapi-f.json` (rebuilt this run from section 4), `--openapi tools/openapi-f.json --host <tunnel>`, and `BRIEF_F_BASE=<tunnel>` when generating. The tunnel URL is baked into the saved workflow, so every new tunnel needs a re-save.
+- The mock's only fault is a slow first `create_application` (PUB-10 or `backend.faults`). Rule 21's "both attempts fail → service_error" branch cannot be played.
+- Fixes made, untested: the security interrupt now routes to `xfer_security`; the collect node counts `bad_answers_this_field` (extraction) and goes to `incomplete_offer` above 2; the requirements parser recovers `fields.N.options.M` keys.
+- The cases grew from 16 to 50 (GEN-17…GEN-50). Every brief rule is now cited. They are written but unrun, so a judge-ambiguous check may still need rewording.
+
+## Lesson lines for SKILL.md: NOT applied
+The skill file `.claude/skills/build-phone-agent-comprehensive-tests/SKILL.md` was deleted at 13:40 by another session working in this folder. I did not recreate it, to avoid clobbering that session's work. To apply these lines, paste them into its `## Lessons` section (currently "(none yet)"), or into the skill that replaced it:
+- Check the interpreter name at step 1 (`python3` may be a store alias) and use the working one everywhere.
+- Before writing cases, confirm that the mock, tunnel and tool API file the brief needs exist and answer; build a missing API file from the brief's tool table.
+- If a benchmark waits on "another simulation is running", check for a concurrent session in the workspace before retrying.
+- While the platform returns 5xx, write cases and fix known defects; after two failed attempts, retry only with `--only` on the cases that test the fixes.
+- When an agent already exists for the slot, read its last review first; its listed defects are the first fixes.
+- A wrong security answer in a case must be unrelated to the fixture's value; a swapped variant can trigger a hint that does not count as wrong.
+- When the brief prescribes wording, put it verbatim in a fixed line or prompt; the judge rejects paraphrases.
+- Write multi-line scripts with the file tool, not shell heredocs, and unit-test every code snippet locally with fake vars, including nested-list flattened keys.
+- Count repeated invalid answers in a variable and route on it; never leave a count to the prompt.
+- A side effect triggered from a global node goes into a normal action node that the global node routes to, and the route onward reads its result.
+- Size a full run against the 15-minute cut-off from the last run's seconds per case; split with `--only` when it would not fit.
+- After a fix, re-run the failed cases with `--only`, then one full run, and keep a few minutes for the retrospective.
+
+---
+
 # Retrospective · brief-f · practice run 2026-10-11 (digest: reports/20261011-021330.digest.md)
 
 ## Scores, in order
