@@ -1,0 +1,19 @@
+{
+  "team": "blanet-team",
+  "members": [
+    {
+      "name": "Doruk Özgen",
+      "email": "dorukozgen0@gmail.com"
+    },
+    {
+      "name": "Ümit Ulusoy",
+      "email": "umittulusoyy0@gmail.com"
+    }
+  ],
+  "repo": "https://github.com/dorukozgen/build-the-builder-hackathon",
+  "commit": "14784ca608e7f4b45cb0cb19960c73ccda86e0c2",
+  "run_command": "python3 builder/build.py {case_folder} {mock_url}",
+  "workflow": "submission/final.workflow.json",
+  "trace": "traces/final.log",
+  "mock_url": "https://freya-statement-debt-mock.dorukozgen0.workers.dev"
+}
