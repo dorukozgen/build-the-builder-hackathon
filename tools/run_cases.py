@@ -91,23 +91,82 @@ def session_body(case):
     if case.get("backend"): body["backend"] = case["backend"]
     return body
 
+# Calls played at the same time in one simulation (the API allows 1 to 1000). A simulation of N customers takes about N / concurrency
+# waves of a minute or so: at 5, 63 customers took 16 minutes, more than half a build. The agent's model is the limit, not the API:
+# too many calls at once and its turns slow past the 10 seconds after which a customer hangs up. tools/benchmark.py adapts the number
+# per slot from the measured turn times, between CONCURRENCY_MIN and CONCURRENCY_MAX; this is the starting point. freya.py is the kit's
+# client and stays as the kit ships it, so the simulation helpers live here.
+CONCURRENCY = int(os.environ.get("FREYA_SIM_CONCURRENCY", "16"))
+CONCURRENCY_MIN, CONCURRENCY_MAX = 5, 40
+
+
+def running_simulations():
+    """The simulations of the workspace that are still running, newest first: {id, name, status, createdAt}. [] when the listing fails."""
+    try:
+        r = freya.api("GET", "/api/v2/simulations", workspaceId=freya.workspace_id()); items = r.get("simulations") or r.get("items") or r
+        return sorted([s for s in items if isinstance(s, dict) and s.get("status") in ("running", "pending", "queued")], key=lambda s: s.get("createdAt") or "", reverse=True)
+    except Exception: return []
+
+
+def wait_simulation(sim_id, poll_s=10):
+    """Wait for a simulation to reach a final status and return it. A 5xx or a timeout while polling does not stop the simulation on
+    Freya, so the poll goes on (after a pause) instead of raising: raising made the caller start a second run that queued behind the first."""
+    import urllib.error
+    slips = 0
+    while True:
+        time.sleep(poll_s)
+        try:
+            s = freya.api("GET", f"/api/v2/simulations/{sim_id}"); s = s.get("simulation") or s; slips = 0
+        except (RuntimeError, urllib.error.URLError, TimeoutError, OSError) as e:
+            slips += 1
+            if slips > 20: raise RuntimeError(f"polling simulation {sim_id} failed 20 times in a row: {e}") from None
+            print(f"polling simulation {sim_id}: {str(e)[:120]} — it keeps running on Freya, polling again in 30 s", flush=True); time.sleep(30); continue
+        if s.get("status") in ("completed", "failed", "paused"): return s
+
+
+def start_simulation(agent_id, name, variables_by_persona, concurrency=None, max_seconds=420):
+    """Start a text simulation with the kit's request (freya.run_simulation's body), wait for it, return (simulation_id, iteration_id, status).
+    Names the simulation the workspace is busy with and how long this run has waited for it."""
+    body = {"agentId": agent_id, "name": name, "mode": "chat", "selectedPersonaIds": list(variables_by_persona),
+            "customerVariablesMap": variables_by_persona, "maxConcurrentCalls": concurrency or CONCURRENCY, "runsPerPersona": 1, "maxCallDurationSeconds": max_seconds,
+            "assistantLlmOverride": freya.AGENT_LLM, "routingLlmOverride": freya.AGENT_LLM, "extractionLlmOverride": freya.AGENT_LLM,
+            "personaLlmOverride": freya.SIM_LLM, "analysisLlmOverride": freya.SIM_LLM}
+    waited = 0
+    while True:                      # a workspace runs one simulation at a time: wait for the running one instead of failing
+        try: sim = freya.api("POST", "/api/v2/simulations", body); break
+        except RuntimeError as e:
+            if "concurrent simulations" not in str(e): raise
+            if waited == 0:
+                busy = running_simulations(); who = ", ".join(f"{s.get('name')!r} since {s.get('createdAt')}" for s in busy[:3]) or "unknown"
+                print(f"another simulation is running in this workspace ({who}); this run waits for it. "
+                      "If it is yours from a run that was cut off, it ends on its own; another builder's needs its builder to finish.", flush=True)
+            else: print(f"still waiting for the workspace, {waited // 60} min so far", flush=True)
+            time.sleep(30); waited += 30
+    sim_id = (sim.get("simulation") or sim)["id"]
+    print(f"simulation {sim_id} started, {len(variables_by_persona)} customers, {body['maxConcurrentCalls']} at a time", flush=True)
+    s = wait_simulation(sim_id)
+    its = freya.api("GET", f"/api/v2/simulations/{sim_id}/iterations"); its = its.get("iterations") or its.get("items") or its
+    return sim_id, its[0]["id"], s.get("status")
+
+
 def forget_personas(store=ROOT / ".personas.json"):
     """Drop the persona cache: its ids belong to another workspace (Freya answers "Persona not found"). The next ensure_personas recreates them."""
     store = pathlib.Path(store)
     if store.exists(): store.replace(store.with_suffix(".stale.json"))
 
 
-def run_once(agent_id, cases, ids, style=None):
-    """One simulation: every case once. Returns the scored rows. `style` is the run's --style, needed only to recreate stale personas."""
+def run_once(agent_id, cases, ids, style=None, concurrency=None):
+    """One simulation: every case once. Returns the scored rows. `style` is the run's --style, needed only to recreate stale personas;
+    `concurrency` is how many calls play at once (CONCURRENCY when None)."""
     # a generated case borrows a practice customer's bank data through `fixture` (tools/benchmark.py); a public case is its own fixture
     sessions = {c["id"]: http("/v1/practice/sessions", session_body(c))["variables"] for c in cases}
     t0 = time.time()
-    try: sim_id, it_id, status = freya.run_simulation(agent_id, f"cases {time.strftime('%H:%M:%S')}", {ids[c["id"]]: sessions[c["id"]] for c in cases})
+    try: sim_id, it_id, status = start_simulation(agent_id, f"cases {time.strftime('%H:%M:%S')}", {ids[c["id"]]: sessions[c["id"]] for c in cases}, concurrency)
     except RuntimeError as e:
         if "Persona not found" not in str(e): raise
         print("Freya does not know the cached personas (they belong to another workspace): recreating them once", flush=True)
         forget_personas(); ids.update(ensure_personas(cases, style))
-        sim_id, it_id, status = freya.run_simulation(agent_id, f"cases {time.strftime('%H:%M:%S')}", {ids[c["id"]]: sessions[c["id"]] for c in cases})
+        sim_id, it_id, status = start_simulation(agent_id, f"cases {time.strftime('%H:%M:%S')}", {ids[c["id"]]: sessions[c["id"]] for c in cases}, concurrency)
     took = time.time() - t0
     judge = {r["personaId"]: r for r in freya.get_iteration(sim_id, it_id)["runs"]}
     rows = []

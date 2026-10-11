@@ -611,7 +611,8 @@ def write_report(slot, run, history):
         if r["pass"]: L.append(f"- {r['id']} {r['title']} · {r['turns'] if r['turns'] is not None else '?'} turns · " + (" > ".join(c["tool"] for c in r["calls"]) or "no tools") + f" · slowest {r['slowest_turn_s']} s · `{r['transcript']}`")
     L += ["", "## Timing", "",
           f"median slowest agent turn {run['median_slowest_s']:.0f} s · worst {run['worst_slowest_s']:.0f} s · failed calls where the customer hung up: {run['hung_up']}"
-          + (" · **the agent was slow in this run; a re-run may score higher**" if run["slow"] else ""), "",
+          + (" · **the agent was slow in this run; a re-run may score higher**" if run["slow"] else ""),
+          (f"calls at a time: {run['concurrency']} in this run; next run {run['next_concurrency']} ({run['concurrency_note']})" if run.get("concurrency") else ""), "",
           "## What this run suggests", ""] + [f"- {s}" for s in suggest_next(run, history, run.get("minutes_used"))] + [""]
     return "\n".join(L)
 
@@ -637,6 +638,36 @@ def rule_ids_from(files):
         if not got: print(f"warning: no numbered rules found in {f} (a rule is a line that starts with `N.`)")
         ids += [r for r in got if r not in ids]
     return ids
+
+
+FAST_S, SLOW_S = 6.0, 10.0                                           # median slowest turn: under FAST_S the model has room; over SLOW_S customers hang up
+TUNNEL_MAX = 20                                                      # a free tunnel to a self-hosted mock rate-limits requests; keep its waves small
+
+
+def concurrency_file(slot): return ROOT / "results" / "bench" / slot / "concurrency.json"
+
+
+def pick_concurrency(slot, host=None):
+    """Calls at a time for this slot's next simulation: the value the last run settled on, else run_cases.CONCURRENCY. A self-hosted
+    mock behind a tunnel caps it at TUNNEL_MAX."""
+    try: n = int(json.loads(concurrency_file(slot).read_text(encoding="utf-8")).get("concurrency") or 0)
+    except (OSError, ValueError, AttributeError): n = 0
+    n = n or run_cases.CONCURRENCY
+    return max(run_cases.CONCURRENCY_MIN, min(n, TUNNEL_MAX if host else run_cases.CONCURRENCY_MAX))
+
+
+def adapt_concurrency(slot, used, median_slowest_s, hung_up, n_cases, host=None):
+    """After a run, settle the next run's concurrency from how the agent kept up: a fast median and no hang-up lets 1.5x more calls play
+    at once, a slow median or a hang-up halves them. Writes the decision for the next run and returns (next, reason)."""
+    cap = TUNNEL_MAX if host else run_cases.CONCURRENCY_MAX
+    if hung_up or median_slowest_s > SLOW_S:
+        nxt, why = max(run_cases.CONCURRENCY_MIN, used // 2), f"the agent was slow (median slowest turn {median_slowest_s:.0f} s, {hung_up} hang-up{'s' if hung_up != 1 else ''}): halved"
+    elif median_slowest_s < FAST_S and n_cases > used:
+        nxt, why = min(cap, int(used * 1.5)), f"the agent kept up (median slowest turn {median_slowest_s:.0f} s): raised"
+    else: nxt, why = used, "kept"
+    nxt = max(run_cases.CONCURRENCY_MIN, min(nxt, cap))
+    concurrency_file(slot).write_text(json.dumps({"concurrency": nxt, "after_run_with": used, "median_slowest_s": median_slowest_s, "hung_up": hung_up, "at": time.strftime("%Y-%m-%d %H:%M:%S")}, indent=1), encoding="utf-8")
+    return nxt, why
 
 
 def minutes_since_builder_start():
@@ -670,13 +701,15 @@ def run(a):
     if a.only: cases = select_only(cases, a.only)
     slot = slot_of(a.cases); out = ROOT / "results" / "bench" / slot; out.mkdir(parents=True, exist_ok=True)
     history = load_history(out / "history.jsonl"); n = len(history) + 1
-    busy = freya.running_simulations()
+    busy = run_cases.running_simulations()
     if busy: print("the workspace is busy: " + ", ".join(f"simulation {s.get('name')!r} ({s.get('status')}) since {s.get('createdAt')}" for s in busy[:3])
                    + ". This run queues behind it; a simulation of this size takes 3 to 11 minutes.", flush=True)
     ids = run_cases.ensure_personas(cases, a.style)
+    concurrency = pick_concurrency(slot, getattr(a, "host", None))
+    print(f"{len(cases)} customers, {concurrency} calls at a time: about {-(-len(cases) // concurrency)} wave{'s' if len(cases) > concurrency else ''} of a minute or so each", flush=True)
     reps_rows, total_s, n_reps = [], 0.0, max(1, a.reps)
     for rep in range(n_reps):
-        rows, sim_id, it_id, status, took, med = run_cases.run_once(a.agent_id, cases, ids, a.style)
+        rows, sim_id, it_id, status, took, med = run_cases.run_once(a.agent_id, cases, ids, a.style, concurrency)
         for r, c in zip(rows, cases):
             if c.get("suite") == "universal": r["failed"] = universal_failures(r["failed"]); r["pass"] = not r["failed"]
             r["forbidden"] = sorted({t for t in r["tools"] if t in (c.get("forbidden_tools") or [])})
@@ -699,9 +732,10 @@ def run(a):
                 if rep[k] is not r and rep[k].get("call_id"): extra[(c["id"], i)] = fetch(rep[k]["call_id"], f"{c['id']} rep {i}") or {}
     meta = {"n": n, "at": time.strftime("%Y-%m-%d %H:%M:%S"), "agent_id": a.agent_id, "version": agent_version(a.agent_id), "seconds": round(time.time() - t0),
             "style": a.style, "only": bool(a.only), "public": a.public, "uncovered_rules": cov.get("uncovered_rules"), "minutes_used": minutes_since_builder_start(),
-            "simulation_id": sim_id, "iteration_id": it_id, "status": status}
+            "simulation_id": sim_id, "iteration_id": it_id, "status": status, "concurrency": concurrency}
     turns = {cid: sum(m.get("role") in ("user", "assistant") for m in call.get("messages") or []) for cid, call in calls.items()}
     rec = build_run(meta, cases, reps_rows, history, turns, slot, every)
+    rec["next_concurrency"], rec["concurrency_note"] = adapt_concurrency(slot, concurrency, rec["median_slowest_s"], rec["hung_up"], len(cases), getattr(a, "host", None))
     (out / f"run-{n:02d}.json").write_text(json.dumps({**rec, "all_rows": reps_rows}, indent=1, ensure_ascii=False), encoding="utf-8")   # the raw record first
     history.append(history_line(rec))
     with open(out / "history.jsonl", "a", encoding="utf-8") as f: f.write(json.dumps(history[-1]) + "\n")

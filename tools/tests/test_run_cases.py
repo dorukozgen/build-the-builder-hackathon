@@ -35,7 +35,7 @@ def test_run_once_keeps_only_conversation_failures_for_universal_cases(monkeypat
     ledger = {"outcome": "no_promise", "reason": "refused", "promises": [], "notes": [], "callbacks": [], "transfers": [{"queue": "general"}],
               "calls": [{"tool": "transfer_to_agent", "args": {}, "result": {"ok": True}}, {"tool": "close_call", "args": {}, "result": {"ok": True}}]}
     monkeypatch.setattr(run_cases, "http", lambda path, body=None: {"variables": {"customer_id": "cust"}} if "sessions" in path else ledger)
-    monkeypatch.setattr(run_cases.freya, "run_simulation", lambda *a, **k: ("sim", "it", "completed"))
+    monkeypatch.setattr(run_cases, "start_simulation", lambda *a, **k: ("sim", "it", "completed"))
     monkeypatch.setattr(run_cases.freya, "get_iteration", lambda sim, it: {"runs": [{"personaId": "p-UNI-01", "outcome": "pass", "callId": None}, {"personaId": "p-GEN-01", "outcome": "pass", "callId": None}]})
     rows, *_ = run_cases.run_once("agent", [uni, gen], {"UNI-01": "p-UNI-01", "GEN-01": "p-GEN-01"})
     by = {r["id"]: r for r in rows}

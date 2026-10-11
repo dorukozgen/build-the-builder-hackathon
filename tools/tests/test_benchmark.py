@@ -526,13 +526,13 @@ def test_run_pools_the_results_of_one_saved_version(tmp_path, monkeypatch):
     cases_path = tmp_path / "brief-x.cases.json"
     cases_path.write_text(json.dumps([GOOD, dict(GOOD, id="GEN-02", title="Accepts the floor again")]), encoding="utf-8")
     outcomes = iter([{"GEN-01": True, "GEN-02": False}, {"GEN-02": True}, {"GEN-01": True}])
-    def run_once(agent_id, cases, ids, style=None):
+    def run_once(agent_id, cases, ids, style=None, concurrency=None):
         got = next(outcomes)
         return ([{"id": c["id"], "level": c["level"], "family": c["family"], "pass": got[c["id"]], "failed": [] if got[c["id"]] else ["outcome x"], "call_id": None,
                   "tools": [], "calls": [], "customer_id": "cust", "slowest_turn_s": 2.0, "ended": "assistant-ended-call"} for c in cases], "sim", "it", "completed", 1.0, 2.0)
     monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
     monkeypatch.setattr(B.run_cases, "run_once", run_once)
-    monkeypatch.setattr(B.freya, "running_simulations", lambda: [])
+    monkeypatch.setattr(B.run_cases, "running_simulations", lambda: [])
     args = lambda only=None: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=only, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"), skip_universal=False)
     B.run(args()); B.run(args("GEN-02"))
     out = tmp_path / "results" / "bench" / "brief-x"
@@ -599,12 +599,12 @@ def test_run_plays_universal_cases_and_scores_them_on_the_conversation(tmp_path,
     cases_path = tmp_path / "brief-x.cases.json"; cases_path.write_text(json.dumps([GOOD]), encoding="utf-8")
     failed = {"GEN-01": [], "UNI-01": ["outcome ('no_promise', 'refused'), expected (None, None)"],
               "UNI-02": ["outcome ('not_reached', 'callback'), expected (None, None)", "conversation: told the partner the amount"]}
-    def run_once(agent_id, cases, ids, style=None):
+    def run_once(agent_id, cases, ids, style=None, concurrency=None):
         return ([{"id": c["id"], "level": c["level"], "family": c["family"], "pass": not failed[c["id"]], "failed": list(failed[c["id"]]), "call_id": None,
                   "tools": [], "calls": [], "customer_id": "cust", "slowest_turn_s": 2.0, "ended": "assistant-ended-call"} for c in cases], "sim", "it", "completed", 1.0, 2.0)
     monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
     monkeypatch.setattr(B.run_cases, "run_once", run_once)
-    monkeypatch.setattr(B.freya, "running_simulations", lambda: [])
+    monkeypatch.setattr(B.run_cases, "running_simulations", lambda: [])
     args = lambda only=None: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=only, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"), skip_universal=False)
     B.run(args())
     out = tmp_path / "results" / "bench" / "brief-x"
@@ -627,12 +627,12 @@ def test_skip_universal_leaves_them_out_of_one_run(tmp_path, monkeypatch):
     (tmp_path / "universal-test-set.json").write_text(json.dumps([
         {"id": "UNI-01", "fixture": "PUB-01", "family": "Adversarial", "level": "medium", "title": "Injection", "rules": ["knowledge:9.4"], "script": "s", "checks": ["c"]}]), encoding="utf-8")
     cases_path = tmp_path / "brief-x.cases.json"; cases_path.write_text(json.dumps([GOOD]), encoding="utf-8")
-    def run_once(agent_id, cases, ids, style=None):
+    def run_once(agent_id, cases, ids, style=None, concurrency=None):
         return ([{"id": c["id"], "level": c["level"], "family": c["family"], "pass": True, "failed": [], "call_id": None, "tools": [], "calls": [], "customer_id": "cust",
                   "slowest_turn_s": 2.0, "ended": "assistant-ended-call"} for c in cases], "sim", "it", "completed", 1.0, 2.0)
     monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
     monkeypatch.setattr(B.run_cases, "run_once", run_once)
-    monkeypatch.setattr(B.freya, "running_simulations", lambda: [])
+    monkeypatch.setattr(B.run_cases, "running_simulations", lambda: [])
     args = lambda skip: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=None, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"), skip_universal=skip)
     B.run(args(False)); B.run(args(True))
     out = tmp_path / "results" / "bench" / "brief-x"
@@ -640,3 +640,27 @@ def test_skip_universal_leaves_them_out_of_one_run(tmp_path, monkeypatch):
     assert [r["id"] for r in json.loads((out / "run-02.json").read_text(encoding="utf-8"))["rows"]] == ["GEN-01"]
     st = json.loads((out / "run-02.json").read_text(encoding="utf-8"))["stats"]
     assert st["cases"]["UNI-01"]["runs"] == 1 and st["cases"]["GEN-01"]["runs"] == 2     # the universal case keeps its first result on this version
+
+
+# --- adaptive concurrency: calls at a time follow how the agent kept up ----------------------------------------------
+
+def test_concurrency_adapts_to_the_agents_speed(tmp_path, monkeypatch):
+    monkeypatch.setattr(B, "ROOT", tmp_path); (tmp_path / "results" / "bench" / "slot").mkdir(parents=True)
+    assert B.pick_concurrency("slot") == B.run_cases.CONCURRENCY                              # nothing settled yet: the starting point
+    nxt, why = B.adapt_concurrency("slot", 16, median_slowest_s=4.0, hung_up=0, n_cases=63)    # fast and no hang-up: 1.5x
+    assert nxt == 24 and why.startswith("the agent kept up") and B.pick_concurrency("slot") == 24
+    nxt, _ = B.adapt_concurrency("slot", 24, median_slowest_s=4.0, hung_up=0, n_cases=20)      # fewer cases than calls at a time: no point raising
+    assert nxt == 24
+    nxt, why = B.adapt_concurrency("slot", 24, median_slowest_s=12.0, hung_up=0, n_cases=63)   # slow: halved
+    assert nxt == 12 and why.startswith("the agent was slow")
+    nxt, _ = B.adapt_concurrency("slot", 12, median_slowest_s=5.0, hung_up=1, n_cases=63)      # a hang-up counts as slow
+    assert nxt == 6
+    nxt, _ = B.adapt_concurrency("slot", 6, median_slowest_s=20.0, hung_up=2, n_cases=63)      # never under the floor
+    assert nxt == B.run_cases.CONCURRENCY_MIN
+    for _ in range(6): nxt, _ = B.adapt_concurrency("slot", nxt, median_slowest_s=3.0, hung_up=0, n_cases=500)
+    assert nxt == B.run_cases.CONCURRENCY_MAX                                                  # never over the ceiling
+    assert B.pick_concurrency("slot", host="https://tunnel.example") == B.TUNNEL_MAX           # a tunnelled mock caps it lower
+    nxt, _ = B.adapt_concurrency("slot", 20, median_slowest_s=3.0, hung_up=0, n_cases=63, host="https://tunnel.example")
+    assert nxt == B.TUNNEL_MAX
+    (tmp_path / "results" / "bench" / "slot" / "concurrency.json").write_text("garbage", encoding="utf-8")
+    assert B.pick_concurrency("slot") == B.run_cases.CONCURRENCY                              # an unreadable file is the starting point again

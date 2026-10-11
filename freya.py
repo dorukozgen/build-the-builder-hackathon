@@ -89,37 +89,8 @@ def get_call(call_id):
 AGENT_LLM = {"provider": os.environ.get("FREYA_AGENT_PROVIDER", "experimental-5"), "model": os.environ.get("FREYA_AGENT_MODEL", "experimental-5")}
 SIM_LLM = {"provider": "google", "model": "gemini-3-flash-preview"}        # plays the customer and judges
 
-def running_simulations():
-    """The simulations of the workspace that are still running, newest first: {id, name, status, createdAt}. [] when the listing fails."""
-    try:
-        r = api("GET", "/api/v2/simulations", workspaceId=workspace_id()); items = r.get("simulations") or r.get("items") or r
-        return sorted([s for s in items if isinstance(s, dict) and s.get("status") in ("running", "pending", "queued")], key=lambda s: s.get("createdAt") or "", reverse=True)
-    except Exception: return []
-
-
-def wait_simulation(sim_id, poll_s=10):
-    """Wait for a simulation to reach a final status and return it. A 5xx or a timeout while polling does not stop the simulation on
-    Freya, so the poll goes on (after a pause) instead of raising: raising made the caller start a second run that queued behind the first."""
-    slips = 0
-    while True:
-        time.sleep(poll_s)
-        try:
-            s = api("GET", f"/api/v2/simulations/{sim_id}"); s = s.get("simulation") or s; slips = 0
-        except (RuntimeError, urllib.error.URLError, TimeoutError, OSError) as e:
-            slips += 1
-            if slips > 20: raise RuntimeError(f"polling simulation {sim_id} failed 20 times in a row: {e}") from None
-            print(f"polling simulation {sim_id}: {str(e)[:120]} — it keeps running on Freya, polling again in 30 s", flush=True); time.sleep(30); continue
-        if s.get("status") in ("completed", "failed", "paused"): return s
-
-
-# Calls played at the same time in one simulation. A simulation of N customers takes about N / concurrency waves of a minute or so:
-# at 5, 63 customers took 16 minutes, more than half a build. 10 halves the waves; if Freya refuses it, lower it here or in the environment.
-SIM_CONCURRENCY = int(os.environ.get("FREYA_SIM_CONCURRENCY", "10"))
-
-
-def run_simulation(agent_id, name, variables_by_persona, max_seconds=420, concurrency=SIM_CONCURRENCY):
-    """Start a text simulation, wait for it, return (simulation_id, iteration_id, status)."""
-    waited = 0
+def run_simulation(agent_id, name, variables_by_persona, max_seconds=420, concurrency=int(os.environ.get("FREYA_SIM_CONCURRENCY", "5"))):
+    """Start a text simulation, wait for it, return (simulation_id, iteration_id)."""
     while True:                      # a workspace runs one simulation at a time: wait for the running one instead of failing
         try:
             sim = api("POST", "/api/v2/simulations", {
@@ -130,13 +101,11 @@ def run_simulation(agent_id, name, variables_by_persona, max_seconds=420, concur
             break
         except RuntimeError as e:
             if "concurrent simulations" not in str(e): raise
-            busy = running_simulations(); who = ", ".join(f"{s.get('name')!r} since {s.get('createdAt')}" for s in busy[:3]) or "unknown"
-            print(f"another simulation is running in this workspace ({who}); this run waits for it, {waited // 60} min so far. "
-                  "If it is yours from a run that was cut off, it ends on its own; another builder's needs its builder to finish." if waited == 0 else
-                  f"still waiting for the workspace, {waited // 60} min so far", flush=True)
-            time.sleep(30); waited += 30
+            print("another simulation is running in this workspace, waiting 30 s", flush=True); time.sleep(30)
     sim_id = (sim.get("simulation") or sim)["id"]
-    print(f"simulation {sim_id} started, {len(variables_by_persona)} customers", flush=True)
-    s = wait_simulation(sim_id)
+    while True:
+        time.sleep(10)
+        s = api("GET", f"/api/v2/simulations/{sim_id}"); s = s.get("simulation") or s
+        if s.get("status") in ("completed", "failed", "paused"): break
     its = api("GET", f"/api/v2/simulations/{sim_id}/iterations"); its = its.get("iterations") or its.get("items") or its
     return sim_id, its[0]["id"], s.get("status")
