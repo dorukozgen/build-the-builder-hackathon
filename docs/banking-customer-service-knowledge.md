@@ -743,7 +743,67 @@ Where appropriate, the handoff record may include the following fields:
 
 Sensitive information must not be added to the handoff summary unnecessarily.
 
-## 10.3. Termination
+## 10.3. Tool Failure Handling and Retry Logic
+
+When critical write operations (such as `create_promise`, `create_application`, `transfer_to_agent`) fail, the agent must handle the failure explicitly and safely.
+
+### 10.3.1. Failure Detection
+
+The agent must check the tool response status before proceeding:
+
+- Verify `ok: true` or equivalent success indicator in the response
+- Do not assume success based solely on the HTTP status code (200 OK)
+- Parse error messages or `what_to_do_next` fields when present
+- Distinguish between validation errors, timeout errors, and service errors
+
+### 10.3.2. Retry Pattern for Write Operations
+
+For critical write operations that fail:
+
+1. **Acknowledge the failure to the customer:** "I'm having a technical problem" or similar
+2. **Retry the operation once** with the same parameters
+3. **Verify the retry result** before announcing success
+4. **If retry succeeds:** Proceed normally and confirm success to the customer
+5. **If retry fails:** Inform the customer the operation could not be completed
+
+**Important constraints:**
+- Never retry more than once without explicit verification
+- Never retry indefinitely (avoid infinite loops)
+- For idempotent operations (like checking if an application exists), verify the current state before retrying a create operation
+- Document which operations are safe to retry and which require checking first
+
+### 10.3.3. Customer Communication During Failures
+
+The agent must be honest and accurate about operation status:
+
+- **Never say "recorded", "created", "scheduled", or "confirmed" until `ok: true` is verified**
+- When a failure occurs: Acknowledge it clearly without technical jargon
+- When retrying: Brief pause or acknowledgment ("Let me try that again")
+- When retry succeeds: Confirm the successful completion
+- When retry fails: Offer alternative paths (human handoff, callback, manual completion)
+
+### 10.3.4. Appropriate Error Outcomes
+
+When an operation cannot be completed after retry:
+
+- Use appropriate close reasons: `service_error`, `incomplete`, `technical_issue`
+- Preserve the context of what was attempted
+- Do not leave the customer with false expectations
+- Offer appropriate next steps (call back, visit branch, try mobile app)
+
+### 10.3.5. Tool Failure Test Coverage
+
+Agents should be tested with simulated tool failures to ensure:
+
+- Failures are detected correctly
+- Retry logic executes as intended  
+- Customer is informed appropriately
+- No false success messages are delivered
+- Appropriate outcomes are recorded
+
+Mock fixtures like PUB-10 (which fails `create_promise` on the first attempt) should be used to validate this behavior.
+
+## 10.4. Termination
 
 Every workflow must have an appropriate termination path.
 
@@ -997,6 +1057,9 @@ When using this document, the Core Builder should adhere to the following princi
 15. Link critical rules to sources and tests whenever possible.
 16. Do not base the agent's behavior solely on textual instructions; enforce critical authorization controls at the appropriate system layers.
 17. When the task scope changes, re-evaluate the related requirements, guard policies and tests.
+18. **The `close_call` tool must always be the final tool call before ending the conversation.** No other tool may be called after `close_call` except `end_call`. Correct sequence: `transfer_to_agent` → `close_call` → `end_call`, or `create_promise` → `close_call` → `end_call`. Never: `close_call` → `transfer_to_agent` or any other tool after close.
+19. **Implement explicit retry logic for critical write operations.** When tools like `create_promise` or `create_application` fail with `ok: false`, the agent must: (1) acknowledge the failure to the customer ("I'm having a technical problem"), (2) retry the operation once (never retry more than once without checking), (3) verify the second attempt's result before claiming success, (4) if the retry also fails, inform the customer the operation could not be completed and close with an appropriate error reason.
+20. **Validate write operation results before announcing success.** Never say "recorded", "scheduled", "created", or "confirmed" to the customer until the tool response explicitly returns `ok: true`. The agent must check the actual API response, not assume success from the call being made.
 
 ---
 
