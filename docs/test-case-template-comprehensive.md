@@ -1,8 +1,8 @@
 # Test cases for a phone agent (Comprehensive Coverage)
 
-**This is an enhanced version of test-case-template.md with increased test count and adversarial scenario guidance for robust hidden brief preparation.**
+**The builder's test template: increased test count and adversarial scenario guidance for robust hidden brief preparation.**
 
-The builder writes `tests/<slot>.cases.json` before it writes the workflow: a JSON list of cases, one per scenario, in the shape of `public-test-set.json` plus three fields. `tools/benchmark.py` checks the file, runs it against the agent on Freya's simulator and scores it the way the organisers do. `<slot>` is the brief's file name without `.md`.
+The builder writes `tests/<slot>.cases.json` from the brief, after it builds the agent: a JSON list of cases, one per scenario, in the shape of `public-test-set.json` plus three fields. `tools/benchmark.py` checks the file, runs it against the agent on Freya's simulator and scores it the way the organisers do. `<slot>` is the brief's file name without `.md`.
 
 Every `--check` that passes, and every run, also writes `tests/<slot>.test-set.json`: the same cases with the fixture's `variables`, `identity`, `products` and `faults` merged in, in the key order of `public-test-set.json`, the generated fields (`fixture`, `rules`, `forbidden_tools`, ...) after them. It is derived: never edit it, edit the cases file and run `--check` again. It is what the simulator actually plays, and `python3 tools/run_cases.py <agent_id> --cases tests/<slot>.test-set.json` runs it with the kit's own runner.
 

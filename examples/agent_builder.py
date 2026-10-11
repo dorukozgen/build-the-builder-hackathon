@@ -2,10 +2,10 @@
 
     pip install claude-agent-sdk
     python3 examples/agent_builder.py briefs/brief-a.md
-    python3 examples/agent_builder.py --self-improve briefs/brief-a.md   # practice run: the builder also reviews its own trace and updates the skill's lessons
+    python3 examples/agent_builder.py --self-improve briefs/brief-a.md   # practice run: the builder also reviews its own trace and updates the skills' lessons
 
-It runs Claude through the Claude Agent SDK with one skill, `.claude/skills/build-phone-agent`.
-The skill is the builder's knowledge. Improve the skill and you improve every agent it builds.
+It runs Claude through the Claude Agent SDK with two skills in `.claude/skills`: `build-phone-agent` builds the agent,
+then `test-phone-agent` tests it and fixes what fails. The skills are the builder's knowledge. Improve them and you improve every agent they build.
 Needs FREYA_API_KEY and FREYA_BANK_TEAM_KEY (see env.example) and a Claude login or ANTHROPIC_API_KEY.
 Every message of the run is written to traces/<start time>.jsonl. That file is the trace you submit.
 
@@ -83,7 +83,7 @@ async def main(briefs, self_improve=False):
     options = ClaudeAgentOptions(
         cwd=KIT,
         model=os.environ.get("BUILDER_MODEL", "claude-opus-5-5"),
-        skills=["build-phone-agent"],          # the skill in .claude/skills
+        skills=["build-phone-agent", "test-phone-agent"],   # the skills in .claude/skills
         setting_sources=["project"],           # only this folder's settings, not your own
         allowed_tools=["Read", "Write", "Edit", "Glob", "Grep", "Bash", "WebSearch", "WebFetch"],   # web: research concepts the knowledge file lacks
         permission_mode="dontAsk",             # anything not listed above is refused
@@ -93,8 +93,9 @@ async def main(briefs, self_improve=False):
         # the builder stops when Claude ends its turn, so a test left in the background is never read.
         env={"BASH_DEFAULT_TIMEOUT_MS": "900000", "BASH_MAX_TIMEOUT_MS": "1200000", "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS": "1"},
     )
-    prompt = "Use the build-phone-agent skill to build a phone agent for: " + " ".join(briefs)
-    if self_improve: prompt += ". This is a practice run: when the build is done, do the Retrospective step of the skill."
+    prompt = ("Use the build-phone-agent skill to build a phone agent for: " + " ".join(briefs) + ". "
+              "Once the agent is built, use the test-phone-agent skill to test it and improve it.")
+    if self_improve: prompt += " This is a practice run: at the end, do the Retrospective step of the test-phone-agent skill."
     beat = asyncio.create_task(heartbeat())
     try:
         with trace.open("w") as out:
