@@ -26,7 +26,7 @@ CRITICAL_FAMILIES = {"Happy path", "Identity failure", "Date edges", "Amount edg
 def play(agent_id, cases, results, style=None):
     """One simulation of `cases`, scored as benchmark.py scores them (ledger, judge, forbidden tools, applications). Adds each case's result
     to results[case][style], the style being `style`, else the case's own, else "none", as in benchmark.pool. Returns (passed, seconds)."""
-    rows, _, _, _, took, _ = run_cases.run_once(agent_id, cases, run_cases.ensure_personas(cases, style))
+    rows, _, _, _, took, _ = run_cases.run_once(agent_id, cases, run_cases.ensure_personas(cases, style), style)
     passed = 0
     for r, c in zip(rows, cases):
         ok = bool(r["pass"]) and not set(r["tools"]) & set(c.get("forbidden_tools") or []) and not B.applications_failed(c.get("expected") or {}, r.get("calls") or [])

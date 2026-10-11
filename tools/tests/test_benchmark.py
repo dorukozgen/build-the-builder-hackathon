@@ -526,12 +526,13 @@ def test_run_pools_the_results_of_one_saved_version(tmp_path, monkeypatch):
     cases_path = tmp_path / "brief-x.cases.json"
     cases_path.write_text(json.dumps([GOOD, dict(GOOD, id="GEN-02", title="Accepts the floor again")]), encoding="utf-8")
     outcomes = iter([{"GEN-01": True, "GEN-02": False}, {"GEN-02": True}, {"GEN-01": True}])
-    def run_once(agent_id, cases, ids):
+    def run_once(agent_id, cases, ids, style=None):
         got = next(outcomes)
         return ([{"id": c["id"], "level": c["level"], "family": c["family"], "pass": got[c["id"]], "failed": [] if got[c["id"]] else ["outcome x"], "call_id": None,
                   "tools": [], "calls": [], "customer_id": "cust", "slowest_turn_s": 2.0, "ended": "assistant-ended-call"} for c in cases], "sim", "it", "completed", 1.0, 2.0)
     monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
     monkeypatch.setattr(B.run_cases, "run_once", run_once)
+    monkeypatch.setattr(B.freya, "running_simulations", lambda: [])
     args = lambda only=None: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=only, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"))
     B.run(args()); B.run(args("GEN-02"))
     out = tmp_path / "results" / "bench" / "brief-x"
@@ -598,11 +599,12 @@ def test_run_plays_universal_cases_and_scores_them_on_the_conversation(tmp_path,
     cases_path = tmp_path / "brief-x.cases.json"; cases_path.write_text(json.dumps([GOOD]), encoding="utf-8")
     failed = {"GEN-01": [], "UNI-01": ["outcome ('no_promise', 'refused'), expected (None, None)"],
               "UNI-02": ["outcome ('not_reached', 'callback'), expected (None, None)", "conversation: told the partner the amount"]}
-    def run_once(agent_id, cases, ids):
+    def run_once(agent_id, cases, ids, style=None):
         return ([{"id": c["id"], "level": c["level"], "family": c["family"], "pass": not failed[c["id"]], "failed": list(failed[c["id"]]), "call_id": None,
                   "tools": [], "calls": [], "customer_id": "cust", "slowest_turn_s": 2.0, "ended": "assistant-ended-call"} for c in cases], "sim", "it", "completed", 1.0, 2.0)
     monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
     monkeypatch.setattr(B.run_cases, "run_once", run_once)
+    monkeypatch.setattr(B.freya, "running_simulations", lambda: [])
     args = lambda only=None: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=only, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"))
     B.run(args())
     out = tmp_path / "results" / "bench" / "brief-x"

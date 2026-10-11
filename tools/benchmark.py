@@ -664,10 +664,13 @@ def run(a):
     if a.only: cases = select_only(cases, a.only)
     slot = slot_of(a.cases); out = ROOT / "results" / "bench" / slot; out.mkdir(parents=True, exist_ok=True)
     history = load_history(out / "history.jsonl"); n = len(history) + 1
+    busy = freya.running_simulations()
+    if busy: print("the workspace is busy: " + ", ".join(f"simulation {s.get('name')!r} ({s.get('status')}) since {s.get('createdAt')}" for s in busy[:3])
+                   + ". This run queues behind it; a simulation of this size takes 3 to 11 minutes.", flush=True)
     ids = run_cases.ensure_personas(cases, a.style)
     reps_rows, total_s, n_reps = [], 0.0, max(1, a.reps)
     for rep in range(n_reps):
-        rows, sim_id, it_id, status, took, med = run_cases.run_once(a.agent_id, cases, ids)
+        rows, sim_id, it_id, status, took, med = run_cases.run_once(a.agent_id, cases, ids, a.style)
         for r, c in zip(rows, cases):
             if c.get("suite") == "universal": r["failed"] = universal_failures(r["failed"]); r["pass"] = not r["failed"]
             r["forbidden"] = sorted({t for t in r["tools"] if t in (c.get("forbidden_tools") or [])})
@@ -745,7 +748,8 @@ def main():
     if not a.agent_id: ap.error("an agent_id is required to run; use --check to validate only")
     try: run(a)
     except (RuntimeError, urllib.error.URLError, TimeoutError) as e:
-        sys.exit(f"Freya or the bank answered with an error: {e}\nThis is usually transient (a 5xx or a timeout): wait a minute and run the same command again. If it repeats, say so in your final line.")
+        sys.exit(f"Freya or the bank answered with an error: {e}\nA 5xx or a timeout at the start of a run is transient: wait a minute and run the same command again. "
+                 "A 4xx (not found, bad request) is not: read the message. If it repeats, say so in your final line.")
 
 
 if __name__ == "__main__": main()

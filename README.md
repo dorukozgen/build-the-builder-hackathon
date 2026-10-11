@@ -27,7 +27,7 @@ python3 tools/run_cases.py <agent_id> --brief A            # ten practice custom
 pip install claude-agent-sdk
 python3 examples/agent_builder.py briefs/brief-a.md
 python3 examples/agent_builder.py briefs/brief-a.md briefs/brief-b.md   # Brief B builds on Brief A, so pass both
-python3 examples/agent_builder.py --self-improve briefs/brief-a.md   # practice run: the builder also reviews its own trace and updates the skill's lessons
+python3 examples/agent_builder.py --self-improve briefs/brief-a.md   # practice run: the builder also reviews its own trace and updates docs/builder-lessons.md
 python3 tools/benchmark.py <agent_id> --cases tests/brief-a.cases.json --rules briefs/brief-a.md --public A   # what the builder runs on itself
 ```
 
@@ -55,7 +55,8 @@ python3 tools/benchmark.py <agent_id> --cases tests/brief-a.cases.json --rules b
 | `docs/tools-and-code.md` | Tools that call an API, code steps, hooks, where a tool's response lands. |
 | `docs/api.md` | The API calls a builder needs. |
 | `tools/benchmark.py` | Run the scenarios the builder wrote (plus the public customers) on the simulator and write an analysis report with every transcript. |
-| `tools/trace_review.py` | Digest a builder trace for the builder's own retrospective. |
+| `tools/trace_review.py` | A short digest of a builder trace for the builder's own retrospective: test runs, saves, errors, time lost waiting. `--full` adds the step-by-step timeline. |
+| `docs/builder-lessons.md` | What the practice runs taught, read by both skills and updated by the retrospective. It lives outside `.claude/` because the builder's permission mode refuses edits there. |
 | `docs/test-case-template.md` | How the builder writes `tests/<slot>.cases.json`, the scenarios it tests itself on. `benchmark.py` derives `tests/<slot>.test-set.json` from it, in the shape of `public-test-set.json`. |
 
 ## How you are scored

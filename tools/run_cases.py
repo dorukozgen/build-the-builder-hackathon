@@ -68,7 +68,7 @@ def main():
     reps, total_s = [], 0
     for rep in range(a.reps):
         for attempt in range(1 + a.rerun_if_slow):                   # organisers: a run made while the model was slow is thrown away and repeated
-            rows, sim_id, it_id, status, took, med = run_once(a.agent_id, cases, ids)
+            rows, sim_id, it_id, status, took, med = run_once(a.agent_id, cases, ids, a.style)
             if med <= 10 or attempt == a.rerun_if_slow: break
             print(f"-- run discarded: median slowest turn {med:.0f} s. Waiting 5 minutes, then repeating it.\n", flush=True); time.sleep(300)
         reps.append(rows); total_s += took
@@ -91,12 +91,23 @@ def session_body(case):
     if case.get("backend"): body["backend"] = case["backend"]
     return body
 
-def run_once(agent_id, cases, ids):
-    """One simulation: every case once. Returns the scored rows."""
+def forget_personas(store=ROOT / ".personas.json"):
+    """Drop the persona cache: its ids belong to another workspace (Freya answers "Persona not found"). The next ensure_personas recreates them."""
+    store = pathlib.Path(store)
+    if store.exists(): store.replace(store.with_suffix(".stale.json"))
+
+
+def run_once(agent_id, cases, ids, style=None):
+    """One simulation: every case once. Returns the scored rows. `style` is the run's --style, needed only to recreate stale personas."""
     # a generated case borrows a practice customer's bank data through `fixture` (tools/benchmark.py); a public case is its own fixture
     sessions = {c["id"]: http("/v1/practice/sessions", session_body(c))["variables"] for c in cases}
     t0 = time.time()
-    sim_id, it_id, status = freya.run_simulation(agent_id, f"cases {time.strftime('%H:%M:%S')}", {ids[c["id"]]: sessions[c["id"]] for c in cases})
+    try: sim_id, it_id, status = freya.run_simulation(agent_id, f"cases {time.strftime('%H:%M:%S')}", {ids[c["id"]]: sessions[c["id"]] for c in cases})
+    except RuntimeError as e:
+        if "Persona not found" not in str(e): raise
+        print("Freya does not know the cached personas (they belong to another workspace): recreating them once", flush=True)
+        forget_personas(); ids.update(ensure_personas(cases, style))
+        sim_id, it_id, status = freya.run_simulation(agent_id, f"cases {time.strftime('%H:%M:%S')}", {ids[c["id"]]: sessions[c["id"]] for c in cases})
     took = time.time() - t0
     judge = {r["personaId"]: r for r in freya.get_iteration(sim_id, it_id)["runs"]}
     rows = []

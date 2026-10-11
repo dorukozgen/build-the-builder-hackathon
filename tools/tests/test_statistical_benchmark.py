@@ -17,7 +17,7 @@ def test_play_scores_like_benchmark(monkeypatch):
     fx = B.load_fixtures()
     cases = [B.merge_with_fixture(CASE, fx), B.merge_with_fixture(dict(CASE, id="GEN-02", forbidden_tools=["transfer_to_agent"], style="pieces"), fx)]
     monkeypatch.setattr(S.run_cases, "ensure_personas", lambda cases, style=None: {})
-    monkeypatch.setattr(S.run_cases, "run_once", lambda agent, cases, ids: (rows(cases, {"GEN-01", "GEN-02"}, ["transfer_to_agent"]), "s", "i", "completed", 5.0, 1.0))
+    monkeypatch.setattr(S.run_cases, "run_once", lambda agent, cases, ids, style=None: (rows(cases, {"GEN-01", "GEN-02"}, ["transfer_to_agent"]), "s", "i", "completed", 5.0, 1.0))
     results = {}
     assert S.play("a", cases, results) == (1, 5.0)                     # GEN-02 called a tool it forbids: a fail, as in benchmark.py
     S.play("a", cases, results, "corrects")
@@ -38,7 +38,7 @@ def test_main_saves_after_every_simulation_and_keeps_a_stopped_run(tmp_path, mon
     monkeypatch.setattr(S, "ROOT", tmp_path)
     p = tmp_path / "brief-x.cases.json"; p.write_text(json.dumps([CASE]), encoding="utf-8")
     calls = {"n": 0}
-    def run_once(agent, cases, ids):
+    def run_once(agent, cases, ids, style=None):
         calls["n"] += 1
         if calls["n"] == 3: raise KeyboardInterrupt
         return rows(cases, {"GEN-01"} if calls["n"] == 1 else set()), "s", "i", "completed", 1.0, 1.0
@@ -57,7 +57,7 @@ def test_style_sweep_without_critical_cases_is_skipped(tmp_path, monkeypatch, ca
     monkeypatch.setattr(S, "ROOT", tmp_path)
     p = tmp_path / "brief-x.cases.json"; p.write_text(json.dumps([dict(CASE, family="Out of scope")]), encoding="utf-8")
     played = []
-    def run_once(agent, cases, ids):
+    def run_once(agent, cases, ids, style=None):
         played.append(len(cases)); return rows(cases, {"GEN-01"}), "s", "i", "completed", 1.0, 1.0
     monkeypatch.setattr(S.run_cases, "ensure_personas", lambda cases, style=None: {})
     monkeypatch.setattr(S.run_cases, "run_once", run_once)
