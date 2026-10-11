@@ -112,7 +112,12 @@ def wait_simulation(sim_id, poll_s=10):
         if s.get("status") in ("completed", "failed", "paused"): return s
 
 
-def run_simulation(agent_id, name, variables_by_persona, max_seconds=420, concurrency=int(os.environ.get("FREYA_SIM_CONCURRENCY", "5"))):
+# Calls played at the same time in one simulation. A simulation of N customers takes about N / concurrency waves of a minute or so:
+# at 5, 63 customers took 16 minutes, more than half a build. 10 halves the waves; if Freya refuses it, lower it here or in the environment.
+SIM_CONCURRENCY = int(os.environ.get("FREYA_SIM_CONCURRENCY", "10"))
+
+
+def run_simulation(agent_id, name, variables_by_persona, max_seconds=420, concurrency=SIM_CONCURRENCY):
     """Start a text simulation, wait for it, return (simulation_id, iteration_id, status)."""
     waited = 0
     while True:                      # a workspace runs one simulation at a time: wait for the running one instead of failing

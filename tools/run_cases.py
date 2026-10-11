@@ -116,6 +116,9 @@ def run_once(agent_id, cases, ids, style=None):
         r = score_ledger(c, led)
         j = judge.get(ids[c["id"]], {})                      # the conversation checks, read from the transcript by the judge model
         if j.get("outcome") != "pass": r["failed"].append("conversation: " + " ".join(str(j.get("reason") or "no verdict").split())[:400])
+        if c.get("suite") == "universal":                    # a universal case has no expected records: only what holds for every brief counts
+            keep = ("conversation:", "not closed with close_call", "before identity was verified", "not on the line")
+            r["failed"] = [f for f in r["failed"] if any(k in f for k in keep)]
         r["pass"] = not r["failed"]
         rows.append({"id": c["id"], "level": c["level"], "family": c["family"], "pass": r["pass"], "failed": r["failed"], "call_id": j.get("callId"), "tools": [x["tool"] for x in led["calls"]], "calls": led["calls"], "customer_id": sessions[c["id"]]["customer_id"]})
         print(("PASS" if r["pass"] else "FAIL"), c["id"], f"{c['level']:<6}", f"{c['family']:<14}", "|", " > ".join(x["tool"].replace("verify_identity", "verify").replace("create_promise", "promise") for x in led["calls"]) or "(no tool calls)")

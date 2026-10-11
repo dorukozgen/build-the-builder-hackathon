@@ -533,7 +533,7 @@ def test_run_pools_the_results_of_one_saved_version(tmp_path, monkeypatch):
     monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
     monkeypatch.setattr(B.run_cases, "run_once", run_once)
     monkeypatch.setattr(B.freya, "running_simulations", lambda: [])
-    args = lambda only=None: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=only, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"))
+    args = lambda only=None: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=only, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"), skip_universal=False)
     B.run(args()); B.run(args("GEN-02"))
     out = tmp_path / "results" / "bench" / "brief-x"
     st = json.loads((out / "run-02.json").read_text(encoding="utf-8"))["stats"]
@@ -605,16 +605,38 @@ def test_run_plays_universal_cases_and_scores_them_on_the_conversation(tmp_path,
     monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
     monkeypatch.setattr(B.run_cases, "run_once", run_once)
     monkeypatch.setattr(B.freya, "running_simulations", lambda: [])
-    args = lambda only=None: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=only, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"))
+    args = lambda only=None: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=only, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"), skip_universal=False)
     B.run(args())
     out = tmp_path / "results" / "bench" / "brief-x"
     rows = {r["id"]: r for r in json.loads((out / "run-01.json").read_text(encoding="utf-8"))["rows"]}
     assert rows["UNI-01"]["pass"] is True                                          # its outcome is the brief's business
     assert rows["UNI-02"]["pass"] is False and rows["UNI-02"]["failed"] == ["conversation: told the partner the amount"]
     assert "generated 1/1 · universal 1/2 · total 2/3" in (out / "latest.md").read_text(encoding="utf-8")
-    assert "universal cases count only the conversation" in capsys.readouterr().out
+    assert "universal cases, judged on the conversation" in capsys.readouterr().out
     hidden = json.loads((out / "run-01.json").read_text(encoding="utf-8"))["stats"]["hidden"]
     assert hidden["expected"] == 60 and hidden["universal_left_out"] == 2          # GEN-01 alone: counting the failed UNI-02 would say 40
     assert "the universal cases are left out" in (out / "latest.md").read_text(encoding="utf-8")
     B.run(args("GEN-01"))
     assert [r["id"] for r in json.loads((out / "run-02.json").read_text(encoding="utf-8"))["rows"]] == ["GEN-01"]   # --only leaves them out
+
+
+def test_skip_universal_leaves_them_out_of_one_run(tmp_path, monkeypatch):
+    import argparse
+    monkeypatch.setattr(B, "ROOT", tmp_path)
+    (tmp_path / ".freya-agents.json").write_text(json.dumps({"brief-x": {"workflow_id": "w", "agent_id": "agent-x", "version": 3}}), encoding="utf-8")   # one saved version: the runs pool
+    (tmp_path / "universal-test-set.json").write_text(json.dumps([
+        {"id": "UNI-01", "fixture": "PUB-01", "family": "Adversarial", "level": "medium", "title": "Injection", "rules": ["knowledge:9.4"], "script": "s", "checks": ["c"]}]), encoding="utf-8")
+    cases_path = tmp_path / "brief-x.cases.json"; cases_path.write_text(json.dumps([GOOD]), encoding="utf-8")
+    def run_once(agent_id, cases, ids, style=None):
+        return ([{"id": c["id"], "level": c["level"], "family": c["family"], "pass": True, "failed": [], "call_id": None, "tools": [], "calls": [], "customer_id": "cust",
+                  "slowest_turn_s": 2.0, "ended": "assistant-ended-call"} for c in cases], "sim", "it", "completed", 1.0, 2.0)
+    monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
+    monkeypatch.setattr(B.run_cases, "run_once", run_once)
+    monkeypatch.setattr(B.freya, "running_simulations", lambda: [])
+    args = lambda skip: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=None, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"), skip_universal=skip)
+    B.run(args(False)); B.run(args(True))
+    out = tmp_path / "results" / "bench" / "brief-x"
+    assert [r["id"] for r in json.loads((out / "run-01.json").read_text(encoding="utf-8"))["rows"]] == ["GEN-01", "UNI-01"]
+    assert [r["id"] for r in json.loads((out / "run-02.json").read_text(encoding="utf-8"))["rows"]] == ["GEN-01"]
+    st = json.loads((out / "run-02.json").read_text(encoding="utf-8"))["stats"]
+    assert st["cases"]["UNI-01"]["runs"] == 1 and st["cases"]["GEN-01"]["runs"] == 2     # the universal case keeps its first result on this version

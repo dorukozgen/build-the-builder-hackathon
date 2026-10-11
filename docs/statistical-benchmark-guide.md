@@ -86,7 +86,7 @@ When a case has results in more than one speaking style on the version (from `--
 - A result counts only for the same text of its case: editing a case's script, expectation, checks, fixture, forbidden tools or third-party flag starts its count again.
 - A pass and then a fail on one saved version is flakiness, not a regression: the report calls a case fixed or regressed only across a save.
 - An `--only` run adds results for its cases; the other cases keep theirs.
-- The universal cases (`universal-test-set.json`), which every run plays, pool and count like any other case.
+- The universal cases (`universal-test-set.json`), which every full run plays, pool and count like any other case. A run with `--skip-universal` adds no result for them; their earlier results on the version stay in the pool.
 
 ## `statistical_benchmark.py` (outside a build)
 

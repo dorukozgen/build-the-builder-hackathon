@@ -10,7 +10,8 @@ Results go to results/bench/<slot>/: history.jsonl, run-NN.json, run-NN.md (late
 run-NN.transcripts.md with every conversation, passed cases too.
 Every run also plays the universal cases of universal-test-set.json: behaviour any bank agent owes whatever its brief (prompt injection,
 a third party, pressure to skip identity, honesty about what was done...). They borrow fixtures too and are judged on the conversation,
-close_call coming last and identity first, never on the brief's records. `--only` leaves them out unless it names them.
+close_call coming last and identity first, never on the brief's records. `--only` leaves them out unless it names them; `--skip-universal`
+leaves them out of a full run in a fix round between two full runs that play them.
 Every report scores the agent statistically over all results of the same saved version of the agent (section "Statistics on this
 version"): pass rates with Wilson intervals, flakiness, categories, a fix order and a hidden-brief estimate. See docs/statistical-benchmark-guide.md.
 """
@@ -513,7 +514,11 @@ def suggest_next(run, history, minutes_used):
     if minutes_used is not None:
         full = next((h for h in reversed(history) if not h.get("only")), run)       # the last full run, this one included: an --only run says nothing about the full set's length
         est = full["seconds"] / max(1, full.get("reps") or 1) / 60
-        if BUDGET_MIN - minutes_used - 3 < est: out.append(f"Time: {minutes_used:.0f} of {BUDGET_MIN} min used; a full run takes ~{est:.0f} min and does not fit with a 3-minute margin. `--only` on a few cases may; otherwise finish.")
+        n_cases = len(rows); per = est / max(1, n_cases)                 # minutes per case at this concurrency, for the --only estimate
+        failed_n = len(failed)
+        if BUDGET_MIN - minutes_used - 3 < est:
+            out.append(f"Time: {minutes_used:.0f} of {BUDGET_MIN} min used; a full run takes ~{est:.0f} min and does not fit with a 3-minute margin."
+                       + (f" `--only` on the {failed_n} failing cases takes ~{max(1, failed_n * per):.0f} min" + (" and fits." if BUDGET_MIN - minutes_used - 3 >= failed_n * per else " and does not fit either: finish.") if failed_n else " Finish."))
         else: out.append(f"Time: {minutes_used:.0f} of {BUDGET_MIN} min used; a full run (~{est:.0f} min; `--reps 2` ~{2 * est:.0f} min) still fits with a 3-minute margin.")
     return out
 
@@ -660,7 +665,8 @@ def run(a):
     if skipped: print("universal cases left out, this tool API cannot verify their fixtures' identity fields: " + ", ".join(skipped))
     cases = [merge_with_fixture(c, fixtures) for c in gen] + universal
     if a.public: cases += [c for c in fixtures.values() if c["brief"] == a.public]
-    every = cases                                                    # the statistics cover the whole set, --only or not
+    every = cases                                                    # the statistics cover the whole set, --only or --skip-universal or not
+    if a.skip_universal: cases = [c for c in cases if c.get("suite") != "universal"]
     if a.only: cases = select_only(cases, a.only)
     slot = slot_of(a.cases); out = ROOT / "results" / "bench" / slot; out.mkdir(parents=True, exist_ok=True)
     history = load_history(out / "history.jsonl"); n = len(history) + 1
@@ -679,8 +685,7 @@ def run(a):
             if more: r["failed"] += more; r["pass"] = False
         reps_rows.append(rows); total_s += took
         uni = [r for r, c in zip(rows, cases) if c.get("suite") == "universal"]
-        if uni: print(f"-- universal cases count only the conversation, close_call last and identity first: {sum(r['pass'] for r in uni)} / {len(uni)} passed. "
-                      "The outcome and record lines printed above for them do not count.")
+        if uni: print(f"-- universal cases, judged on the conversation, close_call last and identity first: {sum(r['pass'] for r in uni)} / {len(uni)} passed.")
         if n_reps > 1: print(f"-- rep {rep + 1} of {n_reps}: {sum(r['pass'] for r in rows)} / {len(rows)} passed, {took:.0f} s\n")
     shown = [next((rep[k] for rep in reps_rows if not rep[k]["pass"]), reps_rows[-1][k]) for k in range(len(cases))]   # the first failing rep, else the last
     calls, extra = {}, {}                                            # transcripts: every case, and every rep of a case whose reps disagree
@@ -728,6 +733,7 @@ def main():
     ap.add_argument("--cases", help="tests/<slot>.cases.json"); ap.add_argument("--rules", action="append", default=[], help="a numbered brief or facts file; repeatable")
     ap.add_argument("--public", choices=briefs, help="also run the public customers of this brief"); ap.add_argument("--only", help="case ids, comma separated")
     ap.add_argument("--reps", type=int, default=1); ap.add_argument("--style", choices=sorted(STYLES))
+    ap.add_argument("--skip-universal", action="store_true", help="leave the universal cases out of this run (a fix round between two full runs); the first and the last full run play them")
     ap.add_argument("--openapi", default=str(ROOT / "tools" / "openapi.json"), help="the tool API file to validate against; default tools/openapi.json")
     ap.add_argument("--host", help="base URL of the bank mock that plays the cases (its /v1/practice endpoints), e.g. a tunnel to tools/mock_bank_f.py; default: the organisers' mock")
     a = ap.parse_args()
