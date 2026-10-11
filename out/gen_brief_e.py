@@ -198,10 +198,17 @@ except Exception:
 # Rule 21/22: start_application only for a campaign whose check_eligibility returned true. Enforced in code.
 START_PRE = """try:
     b = config.get('body')
-    ok_ids = str(vars.get('eligible_ids') or '')
+    ids = set(x for x in str(vars.get('eligible_ids') or '').split('|') if x)
+    last_cid = str(vars.get('check_eligibility_args.campaign_id') or '')
+    last_ok = str(vars.get('check_eligibility_response.data.eligible') or '').lower() == 'true'
+    if last_ok and last_cid:
+        ids.add(last_cid)
     cid = str(b.get('campaign_id') or '') if isinstance(b, dict) else ''
-    if (not cid) or ('|' + cid) not in (ok_ids + '|') and ('|' + cid + '|') not in (ok_ids + '|'):
-        config['url'] = config.get('url', '').replace('/start_application', '/start_application_blocked_not_checked')
+    if cid and cid in ids:
+        vars['start_blocked'] = 'no'
+    else:
+        vars['start_blocked'] = 'yes'
+        config['url'] = str(config.get('url') or '').replace('/start_application', '/start_application_blocked_not_checked')
 except Exception:
     pass
 """
@@ -225,7 +232,9 @@ START_POST = """try:
             fails += 1
             vars['start_fails'] = str(fails)
             err = d.get('error') if isinstance(d, dict) else ''
-            if 'blocked' in str(result.get('message', '')) or err == 'not found':
+            if str(vars.get('start_blocked') or '') == 'yes':
+                fails -= 1
+                vars['start_fails'] = str(fails)
                 msg = 'Nothing was started: an application can only start for a campaign whose eligibility check for this customer returned eligible true. Run check_eligibility for it first.'
             elif fails < 2:
                 msg = 'The application was NOT started. Call start_application once more now, with the same campaign_id.'
@@ -279,17 +288,18 @@ CLOSE_PRE = """try:
         qmap = {'sales': 'sales', 'general': 'human', 'security': 'security'}
         tq = str(vars.get('transfer_to_agent_args.queue') or '')
         tok = str(vars.get('transfer_to_agent_response.data.ok') or '').lower()
+        er = str(vars.get('check_eligibility_response.data.reason') or '')
+        applied = str(vars.get('application_done') or '') == 'yes' or str(vars.get('start_application_response.data.application_id') or '') not in ('', 'None')
+        not_elig = str(vars.get('not_eligible_seen') or '') == 'yes' or er in ('existing_product', 'already_enrolled', 'age', 'income_not_on_file', 'account_status')
+        info = ok('get_campaign_success_count') and str(vars.get('get_campaign_response.data.name') or '') not in ('', 'None')
         if ok('transfer_to_agent_success_count') and tq in qmap and tok != 'false':
             outcome, reason = 'transferred', qmap[tq]
-        elif str(vars.get('application_done') or '') == 'yes':
+        elif applied:
             outcome, reason = 'applied', ''
-        elif str(vars.get('not_eligible_seen') or '') == 'yes':
+        elif not_elig:
             outcome, reason = 'not_eligible', ''
-        elif outcome == 'informed' or ((ok('get_campaign_success_count') or ok('list_campaigns_success_count')) and outcome in ('not_verified', 'no_action', '')):
-            if outcome == 'no_action' and reason == 'service_error':
-                pass
-            else:
-                outcome, reason = 'informed', ''
+        elif outcome == 'informed' or (info and outcome in ('not_verified', '') ) or (info and outcome == 'no_action' and reason == 'out_of_scope'):
+            outcome, reason = 'informed', ''
         if outcome == 'not_verified':
             if str(vars.get('verify_identity_response.data.wrong_answers_left') or '') == '0':
                 reason = 'failed'
@@ -410,7 +420,8 @@ def conv(name, task, tools, transitions, on_enter=None, extraction=None):
 
 
 SETUP_CODE = """try:
-    vars['marketing_state'] = 'unknown (not checked: propose nothing)'
+    vars['marketing_consent'] = 'unknown'
+    vars['start_blocked'] = 'no'
     vars['eligible_ids'] = ''
     vars['not_eligible_seen'] = 'no'
     vars['application_done'] = 'no'
@@ -453,7 +464,7 @@ wf = {
         "load_consent": {"name": "load_consent", "node_type": "api_request", "passthrough": True, "passthrough_default_transition": "verified",
                          "on_enter": {"type": "silent"}, "disable_inactivity_monitor": True,
                          "pre_actions": [CONSENT_PRE_ACTION],
-                         "response_mapping": [],
+                         "response_mapping": [{"path": "data.marketing", "variable": "marketing_consent"}],
                          "transitions": [{"target_node": "verified", "description": "always", "condition": {"operator": "always"}}]},
         "verified": conv("verified", VERIFIED_TASK, [T_ELIG, T_START, T_LIST, T_GET, T_TRANSFER, T_CLOSE], [],
                          on_enter={"type": "llm", "prompt": "Thank the customer by title and last name in a few words, then continue with what they asked (for an eligibility question or an application, call check_eligibility now)."}),
@@ -468,7 +479,7 @@ wf = {
 # consent value from the flattened result too (if the post-hook vars write is not kept)
 wf["nodes"]["verified"]["task_message"] = wf["nodes"]["verified"]["task_message"].replace(
     "Marketing preference: {{marketing_state}}.",
-    "Marketing preference (marketing consent): {{marketing_state}}. If that line does not say true, treat it as false.")
+    "Marketing preference (marketing consent): {{marketing_consent}}. If that value is not true, treat it as false.")
 
 out = pathlib.Path(__file__).resolve().parent / "brief-e.workflow.json"
 s = json.dumps(wf, indent=1, ensure_ascii=False)
