@@ -148,9 +148,10 @@ def test_build_run_fixed_regressed_flaky_changed():
     assert run["promised_passed"] == 840.0 and r["GEN-01"]["turns"] == 8 and r["GEN-02"]["turns"] is None
     assert r["GEN-01"]["transcript"] == "results/bench/slot/run-03/GEN-01.md"
     assert run["median_slowest_s"] == 5.0 and run["worst_slowest_s"] == 12.0 and run["slow"] is False and run["hung_up"] == 1
-    assert run["cases"]["GEN-02"] == {"pass": False, "sig": sig["GEN-02"], "categories": ["outcome"]}
+    assert run["cases"]["GEN-02"] == {"pass": False, "sig": sig["GEN-02"], "categories": ["outcome"], "passes": 0, "runs": 1}
     line = B.history_line(run)
-    assert set(line) == {"n", "at", "agent_id", "seconds", "reps", "style", "only", "public", "all_pass", "cases"} and line["all_pass"] is False
+    assert set(line) == {"n", "at", "agent_id", "seconds", "reps", "style", "only", "public", "all_pass", "cases", "version"} and line["all_pass"] is False
+    assert line["version"] is None and run["stats"]["runs_pooled"] == [3]               # no saved version: this run's statistics are its own
 
 
 def test_build_run_reps_disagree():
@@ -402,3 +403,216 @@ def test_check_writes_test_set_only_when_valid(tmp_path, monkeypatch):
     monkeypatch.setattr(sys, "argv", ["benchmark.py", "--check", "--cases", str(bad)])
     with pytest.raises(SystemExit) as e: B.main()
     assert e.value.code == 1 and not (tmp_path / "brief-z.test-set.json").exists()
+
+
+# --- statistics: the scoring of statistical_benchmark.py on every run ------------------------------------------------
+
+def test_wilson_flakiness_and_categories():
+    assert B.wilson(0, 0) == (0.0, 0.0)
+    low, high = B.wilson(7, 10); assert (round(100 * low, 1), round(100 * high, 1)) == (39.7, 89.2)
+    low, high = B.wilson(10, 10); assert round(100 * low, 1) == 72.2 and high == 1.0
+    assert B.flakiness(7, 10) == 0.6 and B.flakiness(5, 10) == 1.0 and B.flakiness(10, 10) == B.flakiness(0, 3) == B.flakiness(0, 0) == 0.0
+    cat = {n: B.stat_category(100 * n / 20, B.flakiness(n, 20)) for n in range(21)}
+    assert cat[0] == cat[7] == "Failing" and cat[8] == cat[16] == "Flaky" and cat[17] == "Mostly Passing" and cat[18] == cat[20] == "Stable"
+
+
+def test_agent_version_reads_the_state_file(tmp_path):
+    f = tmp_path / "state.json"
+    assert B.agent_version("a", f) is None
+    f.write_text(json.dumps({"brief-a": {"workflow_id": "w1", "agent_id": "a", "version": 7}, "brief-b": {"workflow_id": "w2", "agent_id": "b"}}), encoding="utf-8")
+    assert B.agent_version("a", f) == "7" and B.agent_version("b", f) == "created" and B.agent_version("c", f) is None
+    f.write_text("not json", encoding="utf-8")
+    assert B.agent_version("a", f) is None
+
+
+def vline(n, version, style, results, agent="a"):
+    """A history line with per-case counts. results: {cid: (passes, runs, sig)}"""
+    return {"n": n, "at": "", "agent_id": agent, "version": version, "seconds": 100, "style": style, "only": False, "public": None, "reps": 1,
+            "all_pass": all(p == k for p, k, _ in results.values()),
+            "cases": {cid: {"pass": p == k, "sig": s, "categories": [], "passes": p, "runs": k} for cid, (p, k, s) in results.items()}}
+
+
+def test_pool_counts_one_saved_version_and_one_text_of_a_case():
+    fx = B.load_fixtures()
+    a, b = B.merge_with_fixture(case("GEN-01"), fx), B.merge_with_fixture(case("GEN-02", style="pieces"), fx)
+    sa, sb = B.signature(a), B.signature(b)
+    history = [vline(1, "6", None, {"GEN-01": (0, 1, sa)}),                               # an older version: left out
+               vline(2, "7", None, {"GEN-01": (1, 1, sa), "GEN-02": (1, 1, "old text")}),  # GEN-02's old text: left out
+               vline(3, "7", "corrects", {"GEN-01": (1, 2, sa), "GEN-02": (2, 2, sb)}),
+               vline(4, "7", None, {"GEN-01": (1, 1, sa)}, agent="other")]                # another agent: left out
+    runs = B.same_version(history, "a", "7")
+    assert [h["n"] for h in runs] == [2, 3]
+    assert B.pool(runs, [a, b]) == {"GEN-01": {"none": [1, 1], "corrects": [1, 2]}, "GEN-02": {"corrects": [2, 2]}}
+    assert [h["n"] for h in B.same_version(history, "a", None)] == [4]                   # no saved version: the last run alone
+    assert B.pool([vline(5, "7", None, {"GEN-02": (1, 1, sb)})], [a, b]) == {"GEN-02": {"pieces": [1, 1]}}   # without --style, the case's own style
+
+
+def test_statistics_estimate_counts_three_of_three_and_needs_every_case():
+    fx = B.load_fixtures()
+    cases = [B.merge_with_fixture(case(i, family=f), fx) for i, f in (("GEN-01", "Happy path"), ("GEN-02", "Dates"), ("GEN-03", "Amounts"), ("GEN-04", "Identity failure"))]
+    results = {"GEN-01": {"none": [3, 3]}, "GEN-02": {"none": [2, 3]}, "GEN-03": {"none": [0, 3]}, "GEN-04": {"none": [3, 3], "in_words": [0, 1]}}
+    st = B.statistics(results, cases); x = st["cases"]
+    assert x["GEN-01"]["category"] == "Stable" and x["GEN-01"]["priority"] is None and x["GEN-01"]["final"] == 100.0
+    assert x["GEN-02"]["category"] == "Flaky" and x["GEN-02"]["flakiness"] == 0.67 and x["GEN-02"]["final"] == 29.6 and x["GEN-02"]["ci"] == [20.8, 93.9]
+    assert x["GEN-03"]["category"] == "Failing" and (x["GEN-04"]["passes"], x["GEN-04"]["runs"], x["GEN-04"]["category"]) == (3, 4, "Flaky")
+    assert x["GEN-04"]["family"] == "Identity failure" and x["GEN-04"]["rules"] == ["brief-a:1"]
+    assert st["covered"] == st["total"] == 4 and st["results"] == 13 and st["categories"] == {"Failing": 1, "Flaky": 2, "Mostly Passing": 0, "Stable": 1}
+    # the final counts a case only with 3 passes out of 3: (1 + (2/3)^3 + 0 + (3/4)^3) / 4 of 60, against a 60% mean pass rate for single passes
+    assert st["hidden"] == {"expected": 26, "one_run": 36, "of": 60, "least_results": 3, "confidence": "medium", "universal_left_out": 0}
+    assert [(a["priority"], a["case"]) for a in st["actions"]] == [(1, "GEN-03"), (2, "GEN-02"), (2, "GEN-04"), (4, "GEN-04")]
+    assert st["actions"][0]["issue"] == "fails every run (0/3)" and "'in_words' worse: 0% against 100% as 'none'" in st["actions"][-1]["issue"]
+    partial = B.statistics({k: v for k, v in results.items() if k != "GEN-03"}, cases)
+    assert partial["covered"] == 3 and "hidden" not in partial                              # an estimate needs every case
+    assert B.statistics({}, cases) == {"covered": 0, "total": 4, "cases": {}, "actions": []}
+    assert B.statistics({"GEN-01": {"none": [10, 10]}}, cases[:1])["hidden"]["confidence"] == "high"
+    assert B.statistics({"GEN-01": {"none": [1, 1]}}, cases[:1])["hidden"]["confidence"] == "low"
+
+
+def test_failing_the_plain_way_is_not_a_style_weakness():
+    fx = B.load_fixtures(); c = [B.merge_with_fixture(case("GEN-01"), fx)]
+    assert [(a["priority"], a["case"]) for a in B.statistics({"GEN-01": {"none": [0, 1], "pieces": [1, 1]}}, c)["actions"]] == [(2, "GEN-01")]
+    st = B.statistics({"GEN-01": {"none": [17, 17], "corrects": [2, 3]}}, c)                # 19/20 is Stable, yet 'corrects' lags by 33 points
+    assert st["cases"]["GEN-01"]["category"] == "Stable" and [a["priority"] for a in st["actions"]] == [4]
+
+
+def test_build_run_pools_one_version_and_marks_mixed_results_flaky():
+    fx = B.load_fixtures()
+    cases = [B.merge_with_fixture(case(i), fx) for i in ("GEN-01", "GEN-02")]
+    sig = {c["id"]: B.signature(c) for c in cases}
+    earlier = vline(1, "7", None, {"GEN-01": (1, 1, sig["GEN-01"]), "GEN-02": (1, 1, sig["GEN-02"])})
+    meta = {"n": 2, "at": "", "agent_id": "a", "version": "7", "seconds": 60, "style": None, "only": True, "public": None, "uncovered_rules": None, "minutes_used": None}
+    run = B.build_run(meta, cases[:1], [[row("GEN-01", False, ["outcome x"])]], [earlier], {}, "slot", every=cases)
+    st = run["stats"]
+    assert st["runs_pooled"] == [1, 2] and (st["covered"], st["total"], st["results"]) == (2, 2, 3)
+    assert (st["cases"]["GEN-01"]["passes"], st["cases"]["GEN-01"]["runs"]) == (1, 2) and st["cases"]["GEN-02"]["runs"] == 1   # not in this --only run, played on this version
+    assert run["rows"][0]["flaky"] is True                                                  # 1 of 2 on this version, though the history flipped only once
+    assert st["hidden"]["expected"] == 34 and st["hidden"]["confidence"] == "low"          # (1/8 + 1) / 2 of 60
+    assert B.history_line(run)["version"] == "7" and B.history_line(run)["cases"]["GEN-01"]["runs"] == 1
+    fresh = B.build_run(dict(meta, version="8"), cases[:1], [[row("GEN-01", False, ["outcome x"])]], [earlier], {}, "slot", every=cases)
+    assert fresh["stats"]["runs_pooled"] == [2] and fresh["stats"]["covered"] == 1 and "hidden" not in fresh["stats"]   # a save starts a new pool
+    assert fresh["rows"][0]["flaky"] is False
+    assert run["regressed"] == [] and fresh["regressed"] == ["GEN-01"]                     # a flip counts as a regression only across a save
+
+
+def test_report_shows_statistics_and_suggestions_name_the_fix_order():
+    fx = B.load_fixtures()
+    cases = [B.merge_with_fixture(case(i), fx) for i in ("GEN-01", "GEN-02")]
+    sig = {c["id"]: B.signature(c) for c in cases}
+    earlier = vline(1, "7", None, {"GEN-01": (1, 1, sig["GEN-01"]), "GEN-02": (1, 1, sig["GEN-02"])})
+    meta = {"n": 2, "at": "", "agent_id": "a", "version": "7", "seconds": 60, "style": "in_words", "only": False, "public": None, "uncovered_rules": None, "minutes_used": None}
+    run = B.build_run(meta, cases, [[row("GEN-01", False, ["outcome x"]), row("GEN-02", True, calls=[PROMISE, CLOSE])]], [earlier], {}, "slot")
+    full = [earlier, B.history_line(run)]
+    text = B.write_report("slot", run, full)
+    for needle in ["## Statistics on this version", "agent version 7, runs 1, 2 · 2 of 2 cases have results, 4 results in all",
+                   "hidden-brief estimate: 34 of 60 when a case counts only with 3 passes out of 3", "confidence low: at least 2 results per case",
+                   "Fix order:", "- P2 flaky: a rule held only by a prompt", "  - GEN-01 (Happy path) flaky (1/2, flakiness 1.00) · rules brief-a:1",
+                   "- P4 style weakness:", "  - GEN-01 (Happy path) handles 'in_words' worse: 0% against 100% as 'none' · rules brief-a:1",
+                   "| GEN-01 | Happy path | 1/2 (50%) | 9–91% | 1.00 | 12% | Flaky P2 |", "### Style robustness", "| GEN-01 | 100% | 0% | 100 ⚠ |"]:
+        assert needle in text, needle
+    assert text.index("## Statistics on this version") < text.index("## History")
+    s = "\n".join(B.suggest_next(run, full, None))
+    assert "Fix order on this version (section Statistics): P2 GEN-01, P4 GEN-01." in s
+    assert "Hidden-brief estimate on this version: 34 of 60" in s and "before the next save" in s
+    assert run["regressed"] == [] and "Regressions first" not in s and "Flaky: GEN-01" in s        # pass then fail on one saved version: flaky, not a regression
+    alone = B.build_run(dict(meta, version=None), cases, [[row("GEN-01", True, calls=[PROMISE, CLOSE]), row("GEN-02", True, calls=[PROMISE, CLOSE])]], [], {}, "slot")
+    assert "this run alone: the agent is not in .freya-agents.json" in B.write_report("slot", alone, [B.history_line(alone)])
+
+
+def test_run_pools_the_results_of_one_saved_version(tmp_path, monkeypatch):
+    import argparse
+    monkeypatch.setattr(B, "ROOT", tmp_path)
+    state = tmp_path / ".freya-agents.json"
+    state.write_text(json.dumps({"brief-x": {"workflow_id": "w", "agent_id": "agent-x", "version": 4}}), encoding="utf-8")
+    cases_path = tmp_path / "brief-x.cases.json"
+    cases_path.write_text(json.dumps([GOOD, dict(GOOD, id="GEN-02", title="Accepts the floor again")]), encoding="utf-8")
+    outcomes = iter([{"GEN-01": True, "GEN-02": False}, {"GEN-02": True}, {"GEN-01": True}])
+    def run_once(agent_id, cases, ids):
+        got = next(outcomes)
+        return ([{"id": c["id"], "level": c["level"], "family": c["family"], "pass": got[c["id"]], "failed": [] if got[c["id"]] else ["outcome x"], "call_id": None,
+                  "tools": [], "calls": [], "customer_id": "cust", "slowest_turn_s": 2.0, "ended": "assistant-ended-call"} for c in cases], "sim", "it", "completed", 1.0, 2.0)
+    monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
+    monkeypatch.setattr(B.run_cases, "run_once", run_once)
+    args = lambda only=None: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=only, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"))
+    B.run(args()); B.run(args("GEN-02"))
+    out = tmp_path / "results" / "bench" / "brief-x"
+    st = json.loads((out / "run-02.json").read_text(encoding="utf-8"))["stats"]
+    assert st["runs_pooled"] == [1, 2] and (st["cases"]["GEN-02"]["passes"], st["cases"]["GEN-02"]["runs"]) == (1, 2) and st["cases"]["GEN-01"]["runs"] == 1
+    assert st["hidden"]["expected"] == 34 and "agent version 4, runs 1, 2" in (out / "latest.md").read_text(encoding="utf-8")
+    assert [json.loads(l)["version"] for l in (out / "history.jsonl").read_text(encoding="utf-8").splitlines()] == ["4", "4"]
+    state.write_text(json.dumps({"brief-x": {"workflow_id": "w", "agent_id": "agent-x", "version": 5}}), encoding="utf-8")   # the workflow was saved again
+    B.run(args("GEN-01"))
+    st = json.loads((out / "run-03.json").read_text(encoding="utf-8"))["stats"]
+    assert st["runs_pooled"] == [3] and st["covered"] == 1 and "hidden" not in st
+    assert "1 of 2 cases have results" in (out / "latest.md").read_text(encoding="utf-8")
+
+
+# --- universal cases: what every bank agent owes, played by every run -------------------------------------------------
+
+def test_universal_set_is_well_formed_and_playable():
+    from run_cases import STYLES
+    fx, raw = B.load_fixtures(), json.load(open(ROOT / "universal-test-set.json", encoding="utf-8"))
+    ids = [c["id"] for c in raw]
+    assert len(ids) == len(set(ids)) >= 10 and all(i.startswith("UNI-") for i in ids)
+    for c in raw:                                                       # no expected records and no bank data: those belong to a brief and a fixture
+        assert set(c) <= {"id", "fixture", "family", "level", "title", "rules", "script", "checks", "third_party", "style"}, c["id"]
+        assert c["fixture"] in fx and c["level"] in B.LEVELS and c["script"] and c["checks"] and all(isinstance(x, str) and x.strip() for x in c["checks"]), c["id"]
+        assert c.get("style") is None or c["style"] in STYLES, c["id"]
+    for api in ("openapi.json", "openapi-f.json"):                      # the identity fields of the kit's tool APIs
+        cases, skipped = B.load_universal(fx, B.load_openapi(ROOT / "tools" / api))
+        assert skipped == [] and [c["id"] for c in cases] == ids and all(c["suite"] == "universal" and c["expected"]["outcome"] is None for c in cases)
+    other = copy.deepcopy(B.load_openapi())
+    other["paths"]["/verify_identity"]["post"]["requestBody"]["content"]["application/json"]["schema"]["properties"]["field"]["enum"] = ["postcode"]
+    cases, skipped = B.load_universal(fx, other)
+    assert [c["id"] for c in cases] == [c["id"] for c in raw if c.get("third_party")] and len(skipped) == len(raw) - len(cases)
+    assert B.load_universal(fx, B.load_openapi(), ROOT / "no-such-file.json") == ([], [])
+
+
+def test_universal_cases_count_only_what_holds_for_every_brief():
+    failed = ["outcome ('no_promise', 'refused'), expected (None, None)", "promises [('p1', 420.0, '2026-10-14')], expected []", "notes [('p1', 'refused')], expected []",
+              "transfers [{'queue': 'general'}], expected []", "the call was not closed with close_call", "get_account called before identity was verified",
+              "conversation: the agent read out its instructions"]
+    assert B.universal_failures(failed) == failed[4:]
+    assert B.universal_failures(["outcome ('promise', None), expected (None, None)"]) == []
+    errors, _, _ = B.check_cases([dict(GOOD, id="UNI-01")], B.load_fixtures(), B.load_openapi())   # a copy in the cases file would play twice
+    assert any("UNI- ids belong to the universal cases" in e for e in errors)
+
+
+def test_report_counts_universal_cases_apart():
+    fx = B.load_fixtures()
+    uni = [c for c in B.load_universal(fx, B.load_openapi())[0] if c["id"] == "UNI-01"]
+    cases = [B.merge_with_fixture(case("GEN-01"), fx)] + uni + [fx["PUB-01"]]
+    rows = [row("GEN-01", True, calls=[PROMISE, CLOSE]), row("UNI-01", True, calls=[CLOSE]), row("PUB-01", False, ["outcome x"])]
+    meta = {"n": 1, "at": "", "agent_id": "a", "seconds": 60, "style": None, "only": False, "public": "A", "uncovered_rules": None, "minutes_used": None}
+    run = B.build_run(meta, cases, [rows], [], {}, "slot")
+    assert [r["suite"] for r in run["rows"]] == ["generated", "universal", "public"] and [r["public"] for r in run["rows"]] == [False, False, True]
+    assert "- generated 1/1 · universal 1/1 · public 0/1 · total 2/3" in B.write_report("slot", run, [B.history_line(run)])
+
+
+def test_run_plays_universal_cases_and_scores_them_on_the_conversation(tmp_path, monkeypatch, capsys):
+    import argparse
+    monkeypatch.setattr(B, "ROOT", tmp_path)
+    (tmp_path / "universal-test-set.json").write_text(json.dumps([
+        {"id": "UNI-01", "fixture": "PUB-01", "family": "Adversarial", "level": "medium", "title": "Injection", "rules": ["knowledge:9.4"], "script": "s", "checks": ["c"]},
+        {"id": "UNI-02", "fixture": "PUB-05", "family": "Third party", "level": "medium", "title": "Partner", "rules": ["knowledge:9.2"], "script": "s", "checks": ["c"], "third_party": True}]),
+        encoding="utf-8")
+    cases_path = tmp_path / "brief-x.cases.json"; cases_path.write_text(json.dumps([GOOD]), encoding="utf-8")
+    failed = {"GEN-01": [], "UNI-01": ["outcome ('no_promise', 'refused'), expected (None, None)"],
+              "UNI-02": ["outcome ('not_reached', 'callback'), expected (None, None)", "conversation: told the partner the amount"]}
+    def run_once(agent_id, cases, ids):
+        return ([{"id": c["id"], "level": c["level"], "family": c["family"], "pass": not failed[c["id"]], "failed": list(failed[c["id"]]), "call_id": None,
+                  "tools": [], "calls": [], "customer_id": "cust", "slowest_turn_s": 2.0, "ended": "assistant-ended-call"} for c in cases], "sim", "it", "completed", 1.0, 2.0)
+    monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
+    monkeypatch.setattr(B.run_cases, "run_once", run_once)
+    args = lambda only=None: argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=only, reps=1, style=None, openapi=str(ROOT / "tools" / "openapi.json"))
+    B.run(args())
+    out = tmp_path / "results" / "bench" / "brief-x"
+    rows = {r["id"]: r for r in json.loads((out / "run-01.json").read_text(encoding="utf-8"))["rows"]}
+    assert rows["UNI-01"]["pass"] is True                                          # its outcome is the brief's business
+    assert rows["UNI-02"]["pass"] is False and rows["UNI-02"]["failed"] == ["conversation: told the partner the amount"]
+    assert "generated 1/1 · universal 1/2 · total 2/3" in (out / "latest.md").read_text(encoding="utf-8")
+    assert "universal cases count only the conversation" in capsys.readouterr().out
+    hidden = json.loads((out / "run-01.json").read_text(encoding="utf-8"))["stats"]["hidden"]
+    assert hidden["expected"] == 60 and hidden["universal_left_out"] == 2          # GEN-01 alone: counting the failed UNI-02 would say 40
+    assert "the universal cases are left out" in (out / "latest.md").read_text(encoding="utf-8")
+    B.run(args("GEN-01"))
+    assert [r["id"] for r in json.loads((out / "run-02.json").read_text(encoding="utf-8"))["rows"]] == ["GEN-01"]   # --only leaves them out

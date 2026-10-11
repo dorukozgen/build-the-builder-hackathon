@@ -5,11 +5,16 @@
     python3 tools/benchmark.py <agent_id> --cases tests/<slot>.cases.json [--rules FILE ...] [--public A|B] [--only ID,ID] [--reps N] [--style S]
 
 A generated case borrows the bank data of one practice customer, its `fixture`: identity answers, products, `now` and the
-injected fault. The script, the expected records and the checks are the case's own. Format: docs/test-case-template.md.
+injected fault. The script, the expected records and the checks are the case's own. Format: docs/test-case-template-comprehensive.md.
 Results go to results/bench/<slot>/: history.jsonl, run-NN.json, run-NN.md (latest.md is a copy), run-NN/<case>.md and
 run-NN.transcripts.md with every conversation, passed cases too.
+Every run also plays the universal cases of universal-test-set.json: behaviour any bank agent owes whatever its brief (prompt injection,
+a third party, pressure to skip identity, honesty about what was done...). They borrow fixtures too and are judged on the conversation,
+close_call coming last and identity first, never on the brief's records. `--only` leaves them out unless it names them.
+Every report scores the agent statistically over all results of the same saved version of the agent (section "Statistics on this
+version"): pass rates with Wilson intervals, flakiness, categories, a fix order and a hidden-brief estimate. See docs/statistical-benchmark-guide.md.
 """
-import argparse, collections, datetime, hashlib, json, pathlib, re, shutil, sys, time, urllib.error
+import argparse, collections, datetime, hashlib, json, math, pathlib, re, shutil, sys, time, urllib.error
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "tools"))
 if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")   # the console and the builder read UTF-8
@@ -25,6 +30,7 @@ EXPECTED_KEYS = ("outcome", "promises", "notes", "callbacks", "transfers")
 RULE_LINE = re.compile(r"^\s*(\d+)\.\s")
 TIME_RE = re.compile(r"^\d{2}:\d{2}$")
 BUDGET_MIN = 30                                                      # a builder run, tests included
+FINAL_RUNS, HIDDEN_CASES = 3, 60                                     # the final plays each unseen customer 3 times and counts it only when all 3 pass
 
 
 def load_fixtures(path=ROOT / "public-test-set.json"):
@@ -98,6 +104,7 @@ def check_cases(cases, fixtures, openapi, rule_ids=None):
             elif k not in REQUIRED + OPTIONAL: err(f"unknown field `{k}`")
         if counts[c.get("id")] > 1: err("duplicate id")
         if cid in fixtures: err("id collides with a public case")
+        if str(cid).startswith("UNI-"): err("UNI- ids belong to the universal cases, which every run plays already; do not copy them, name yours GEN-…")
         fx = fixtures.get(c.get("fixture"))
         if fx is None: err(f"unknown fixture {c.get('fixture')!r}; see --fixtures")
         if c.get("level") not in LEVELS: err(f"level must be one of {', '.join(LEVELS)}")
@@ -195,6 +202,39 @@ def merge_with_fixture(case, fixtures):
     return out
 
 
+# Universal cases: behaviour any bank phone agent owes whatever its brief (universal-test-set.json). Every run plays them on top of the
+# cases file. They have no expected records, so they are scored on what holds for every brief: the judge's reading of the conversation,
+# close_call coming last, no account tool before identity, no forbidden tool. The outcome and the records belong to the brief.
+UNIVERSAL_KEEP = {"conversation", "not_closed", "before_identity", "forbidden_tool"}
+NO_EXPECTATION = {"outcome": None, "reason": None, "promises": [], "notes": [], "callbacks": [], "transfers": []}   # a placeholder the scorer can read
+
+
+def load_universal(fixtures, openapi, path=None):
+    """The universal cases, merged with their fixtures. Returns (cases, skipped): a case whose fixture's identity fields this tool API
+    cannot verify is skipped, as --check refuses such a generated case. No file, no universal cases."""
+    path = pathlib.Path(path or ROOT / "universal-test-set.json")
+    if not path.exists(): return [], []
+    fields, cases, skipped = enums(openapi).get("verify_identity", {}).get("field"), [], []
+    for c in json.load(open(path, encoding="utf-8")):
+        if fields and not c.get("third_party") and set(fixtures[c["fixture"]]["identity"]) - set(fields): skipped.append(c["id"]); continue
+        cases.append({**merge_with_fixture(c, fixtures), "expected": dict(NO_EXPECTATION), "suite": "universal"})
+    return cases, skipped
+
+
+def universal_failures(failed):
+    """The failures that count for a universal case: those in UNIVERSAL_KEEP. A mismatch with the placeholder records does not."""
+    return [f for f in failed if set(classify([f])) & UNIVERSAL_KEEP]
+
+
+def print_universal(fixtures, openapi):
+    cases, skipped = load_universal(fixtures, openapi)
+    if not cases and not skipped: return
+    print(f"\nuniversal cases, played by every run on top of the cases file and judged on the conversation, not on the records ({len(cases)}"
+          + (f"; this tool API cannot play {', '.join(skipped)}" if skipped else "") + "):")
+    for c in cases:
+        print(f"  {c['id']} {c['title']} · {c['family']} · fixture {c['fixture']}" + (f" · style {c['style']}" if c.get("style") else "") + (" · third party" if c.get("third_party") else ""))
+
+
 PUBLIC_ORDER = ("id", "brief", "family", "level", "title", "variables", "identity", "products", "faults", "script", "expected", "checks")
 
 
@@ -284,8 +324,117 @@ def case_history(history, cid):
     return [h["cases"][cid]["pass"] for h in history if cid in h["cases"]]
 
 
-def build_run(meta, cases, reps_rows, history, turns_by_id, slot):
-    """The run record. reps_rows: run_cases.run_once rows, one list per repetition; history: the slot's earlier runs."""
+# Statistics: the scoring of tools/statistical_benchmark.py, on every run. A case's results pool across every run of the same saved
+# version of the agent (the version freya.save_workflow writes to .freya-agents.json), so --only, --reps and --style runs add up.
+STAT_CATEGORIES = ("Failing", "Flaky", "Mostly Passing", "Stable")
+PRIORITY = {"Failing": 1, "Flaky": 2, "Mostly Passing": 3}           # P4 is a speaking style a case handles worse; Stable needs nothing
+STYLE_GAP = 30                                                       # points between a case's best and worst style that make a style weakness
+FIX = {1: "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong",
+       2: "P2 flaky: a rule held only by a prompt, an ambiguous route or a weak condition; compare a passing and a failing transcript, then move the rule into a route or code",
+       3: "P3 mostly passing: the final counts a case only when it passes 3 runs out of 3; read a failing transcript",
+       4: "P4 style weakness: the step that hears the answer must understand a customer who talks that way"}
+
+
+def wilson(passes, runs, z=1.96):
+    """Wilson score interval of a pass rate, as fractions (low, high). Sound for the few runs a build affords; (0, 0) without runs."""
+    if not runs: return 0.0, 0.0
+    p, d = passes / runs, 1 + z * z / runs
+    mid, half = (p + z * z / (2 * runs)) / d, z * math.sqrt(p * (1 - p) / runs + z * z / (4 * runs * runs)) / d
+    return max(0.0, mid - half), min(1.0, mid + half)
+
+
+def flakiness(passes, runs):
+    """0.0 when every run agrees (all pass or all fail), 1.0 at a 50% pass rate: 1 - |2p - 1|."""
+    return round(1 - abs(2 * passes / runs - 1), 2) if runs else 0.0
+
+
+def stat_category(rate, flak):
+    """Stable from a 90% pass rate. From 70% Flaky when the flakiness is above 0.3 (under 85%), else Mostly Passing. Flaky from 40%, Failing below."""
+    if rate >= 90: return "Stable"
+    if rate >= 70: return "Flaky" if flak > 0.3 else "Mostly Passing"
+    return "Flaky" if rate >= 40 else "Failing"
+
+
+def case_stats(results):
+    """One case's statistics from its results, {style: [passes, runs]}. `final`: its chance to pass 3 runs out of 3, as the final counts."""
+    passes, runs = sum(p for p, _ in results.values()), sum(n for _, n in results.values())
+    rate, flak, (low, high) = (100 * passes / runs if runs else 0.0), flakiness(passes, runs), wilson(passes, runs)
+    cat = stat_category(rate, flak)
+    return {"passes": passes, "runs": runs, "rate": round(rate, 1), "ci": [round(100 * low, 1), round(100 * high, 1)], "flakiness": flak,
+            "final": round(100 * (passes / runs) ** FINAL_RUNS, 1) if runs else 0.0, "category": cat, "priority": PRIORITY.get(cat),
+            "styles": {s: list(v) for s, v in sorted(results.items())}}
+
+
+def agent_version(agent_id, path=None):
+    """The saved version of this agent, from the state file freya.save_workflow keeps ("created" before its first update).
+    None when the agent is not in it: then a run's statistics are its own."""
+    try: slots = json.loads(pathlib.Path(path or ROOT / ".freya-agents.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError): return None
+    for s in (slots.values() if isinstance(slots, dict) else []):
+        if isinstance(s, dict) and s.get("agent_id") == agent_id: return str(s.get("version", "created"))
+    return None
+
+
+def same_version(history, agent_id, version):
+    """The runs whose results pool with the last one: same agent, same saved version. Without a version, the last run alone."""
+    if version is None: return history[-1:]
+    return [h for h in history if h.get("agent_id") == agent_id and h.get("version") == version]
+
+
+def pool(runs, cases):
+    """Each case's results in `runs`, {case: {style: [passes, runs]}}, counting a run only when it played the same text of the case.
+    The style is the run's --style, else the case's own, else "none"."""
+    sig, own, out = {c["id"]: signature(c) for c in cases}, {c["id"]: c.get("style") for c in cases}, {}
+    for h in runs:
+        for cid, c in h.get("cases", {}).items():
+            if cid not in sig or c.get("sig") != sig[cid]: continue
+            acc = out.setdefault(cid, {}).setdefault(h.get("style") or own[cid] or "none", [0, 0])
+            acc[0] += c.get("passes", int(bool(c.get("pass")))); acc[1] += c.get("runs", 1)
+    return out
+
+
+def actions(per):
+    """The fix order: P1 failing, P2 flaky, P3 mostly passing, P4 a speaking style a case handles worse than its other styles."""
+    out = []
+    def add(p, cid, x, issue): out.append({"priority": p, "case": cid, "family": x.get("family"), "rules": x.get("rules") or [], "issue": issue, "action": FIX[p]})
+    for cid, x in per.items():
+        n = f"{x['passes']}/{x['runs']}"
+        if x["category"] == "Failing": add(1, cid, x, f"fails every run ({n})" if not x["passes"] else f"mostly fails ({n})")
+        elif x["category"] == "Flaky": add(2, cid, x, f"flaky ({n}, flakiness {x['flakiness']:.2f})")
+        elif x["category"] == "Mostly Passing": add(3, cid, x, f"mostly passes ({n}, 3 of 3 only {x['final']:.0f}% of the time)")
+        rates = {s: 100 * p / k for s, (p, k) in x["styles"].items() if k}
+        if len(rates) > 1:
+            weak, best = min(rates, key=rates.get), max(rates, key=rates.get)
+            if weak != "none" and rates[best] - rates[weak] > STYLE_GAP:        # failing the plain way too is not a style weakness
+                add(4, cid, x, f"handles '{weak}' worse: {rates[weak]:.0f}% against {rates[best]:.0f}% as '{best}'")
+    return sorted(out, key=lambda a: (a["priority"], a["case"]))
+
+
+def statistics(results, cases):
+    """Statistics of a case set from pooled results: per case, overall, the fix order and the hidden-brief estimate.
+    The estimate needs results for every case and counts a case only when it passes 3 runs out of 3, as the final does."""
+    per = {c["id"]: {**case_stats(results[c["id"]]), "family": c.get("family"), "rules": c.get("rules") or []} for c in cases if results.get(c["id"])}
+    out, s = {"covered": len(per), "total": len(cases), "cases": per, "actions": actions(per)}, list(per.values())
+    if not s: return out
+    mean, flak = sum(x["rate"] for x in s) / len(s), sum(x["flakiness"] for x in s) / len(s)
+    passes, runs = sum(x["passes"] for x in s), sum(x["runs"] for x in s)
+    (low, high), stability = wilson(passes, runs), 100 * (1 - flak)
+    out.update({"results": runs, "mean_rate": round(mean, 1), "ci": [round(100 * low, 1), round(100 * high, 1)], "flakiness": round(flak, 2),
+                "stability": round(stability, 1), "robustness": round(0.7 * mean + 0.3 * stability, 1),
+                "categories": {k: sum(x["category"] == k for x in s) for k in STAT_CATEGORIES}})
+    counted = [c for c in cases if c.get("suite") != "universal"] or cases     # the final's cases are scored on records; universal ones are not
+    out["missing"] = sum(c["id"] not in per for c in counted)
+    if not out["missing"]:
+        xs = [per[c["id"]] for c in counted]; least = min(x["runs"] for x in xs)
+        out["hidden"] = {"expected": round(HIDDEN_CASES * sum((x["passes"] / x["runs"]) ** FINAL_RUNS for x in xs) / len(xs)),
+                         "one_run": round(HIDDEN_CASES * sum(x["rate"] for x in xs) / len(xs) / 100), "of": HIDDEN_CASES, "least_results": least,
+                         "confidence": "high" if least >= 10 else "medium" if least >= FINAL_RUNS else "low", "universal_left_out": len(cases) - len(counted)}
+    return out
+
+
+def build_run(meta, cases, reps_rows, history, turns_by_id, slot, every=None):
+    """The run record. reps_rows: run_cases.run_once rows, one list per repetition; history: the slot's earlier runs;
+    every: the whole case set when --only played part of it, so the statistics cover the set."""
     last, n_reps = reps_rows[-1], len(reps_rows)
     rows = []
     for k, c in enumerate(cases):
@@ -293,9 +442,9 @@ def build_run(meta, cases, reps_rows, history, turns_by_id, slot):
         r = next((rep[k] for rep in reps_rows if not rep[k]["pass"]), last[k])      # the first failing rep is the one shown; else the last
         failed = [] if ok else r["failed"]
         prev, sig = previous_result(history, c["id"]), signature(c)
-        slow_s = r.get("slowest_turn_s")
+        slow_s, suite = r.get("slowest_turn_s"), c.get("suite") or ("generated" if "fixture" in c else "public")
         rows.append({"id": c["id"], "title": c["title"], "family": c["family"], "level": c["level"], "fixture": c.get("fixture", c["id"]),
-                     "rules": c.get("rules") or [], "public": "fixture" not in c, "pass": ok, "passes": passes, "runs": n_reps,
+                     "rules": c.get("rules") or [], "suite": suite, "public": suite == "public", "pass": ok, "passes": passes, "runs": n_reps,
                      "failed": failed, "categories": classify(failed),
                      "flags": [f for f, on in (("hung_up", r.get("ended") == "customer-ended-call" and not ok), ("slow", (slow_s or 0) > 10)) if on],
                      "calls": r.get("calls") or [], "forbidden": r.get("forbidden") or [], "slowest_turn_s": slow_s, "ended": r.get("ended"),
@@ -304,22 +453,30 @@ def build_run(meta, cases, reps_rows, history, turns_by_id, slot):
                      "changed": bool(prev and prev.get("sig") and prev["sig"] != sig), "sig": sig, "promised": promised(r.get("calls") or [])})
     def was(cid):
         p = previous_result(history, cid); return None if p is None else p["pass"]
+    def saved_since(cid):                            # a flip on the same saved version is flakiness, not a fix or a regression
+        h = next((h for h in reversed(history) if cid in h["cases"]), None)
+        return h is None or meta.get("version") is None or (h.get("agent_id"), h.get("version")) != (meta["agent_id"], meta["version"])
     waits = sorted(r["slowest_turn_s"] for r in rows if r["slowest_turn_s"] is not None)
     med = waits[len(waits) // 2] if waits else 0
     run = {**meta, "slot": slot, "reps": n_reps, "rows": rows,
-           "fixed": [r["id"] for r in rows if r["pass"] and was(r["id"]) is False],
-           "regressed": [r["id"] for r in rows if not r["pass"] and was(r["id"]) is True],
+           "fixed": [r["id"] for r in rows if r["pass"] and was(r["id"]) is False and saved_since(r["id"])],
+           "regressed": [r["id"] for r in rows if not r["pass"] and was(r["id"]) is True and saved_since(r["id"])],
            "still_failing": [r["id"] for r in rows if not r["pass"] and was(r["id"]) is False],
            "promised_passed": round(sum(r["promised"] for r in rows if r["pass"]), 2),
            "median_slowest_s": med, "worst_slowest_s": waits[-1] if waits else 0, "slow": med > 10,
            "hung_up": sum("hung_up" in r["flags"] for r in rows), "all_pass": all(r["pass"] for r in rows),
            "styles_run": sorted({h["style"] for h in history if h.get("style")} | ({meta["style"]} if meta.get("style") else set()) | {c["style"] for c in cases if c.get("style")})}
-    run["cases"] = {r["id"]: {"pass": r["pass"], "sig": r["sig"], "categories": r["categories"]} for r in rows}
+    run["cases"] = {r["id"]: {"pass": r["pass"], "sig": r["sig"], "categories": r["categories"], "passes": r["passes"], "runs": r["runs"]} for r in rows}
+    runs = same_version(history + [history_line(run)], meta["agent_id"], meta.get("version"))
+    run["stats"] = {**statistics(pool(runs, every or cases), every or cases), "runs_pooled": [h["n"] for h in runs]}
+    for r in rows:                                   # mixed results on this version are flaky too, whatever the last three runs show
+        x = run["stats"]["cases"].get(r["id"])
+        if x and 0 < x["passes"] < x["runs"]: r["flaky"] = True
     return run
 
 
 def history_line(run):
-    return {k: run[k] for k in ("n", "at", "agent_id", "seconds", "reps", "style", "only", "public", "all_pass", "cases")}
+    return {**{k: run[k] for k in ("n", "at", "agent_id", "seconds", "reps", "style", "only", "public", "all_pass", "cases")}, "version": run.get("version")}
 
 
 def suggest_next(run, history, minutes_used):
@@ -330,6 +487,14 @@ def suggest_next(run, history, minutes_used):
     hard = [i for i in failed if i not in fl and i not in run["regressed"]]
     if hard: out.append(f"Failing: {', '.join(hard)}. Read their transcripts, fix, re-run `--only {','.join(hard)}`, then a full run for regressions.")
     if fl: out.append(f"Flaky: {', '.join(fl)} passed in some runs and failed in others. Treat as failing; compare the transcripts of both outcomes; after a fix `--reps 2 --only {','.join(fl)}`.")
+    st = run.get("stats") or {}
+    if st.get("actions"):
+        acts = st["actions"]
+        out.append("Fix order on this version (section Statistics): " + ", ".join(f"P{a['priority']} {a['case']}" for a in acts[:10]) + (f" and {len(acts) - 10} more" if len(acts) > 10 else "") + ".")
+    if st.get("hidden"):
+        h, more = st["hidden"], "`--reps 2`" if run.get("version") is None else "`--reps 2`, another full run or a `--style` run before the next save"
+        out.append(f"Hidden-brief estimate on this version: {h['expected']} of {h['of']} counting only 3 passes out of 3 ({h['one_run']} if one pass counted), confidence {h['confidence']}"
+                   + (f": under 3 results per case. More results on this version firm it up: {more}." if h["confidence"] == "low" else "."))
     if run["slow"]: out.append(f"The agent was slow in this run (median slowest turn {run['median_slowest_s']:.0f} s). A call that ended in a hang-up may pass when re-run; re-run those before changing the workflow.")
     changed = [r["id"] for r in rows if r["changed"]]
     if changed: out.append(f"Changed since the previous run: {', '.join(changed)}. If a change weakened a check or an expectation, undo it unless the brief says the old version was wrong.")
@@ -359,18 +524,58 @@ def call_line(c):
     return short + (" " + json.dumps(args, ensure_ascii=False) if args else "") + ("" if (c.get("result") or {}).get("ok", True) else " ✖")
 
 
+def stats_md(st, title, scope):
+    """Statistics as a report section: overall, the fix order, a row per case and, for cases played in more than one style, the styles."""
+    L = [f"## {title}", "", f"{scope} · {st['covered']} of {st['total']} cases have results" + (f", {st['results']} results in all" if st.get("results") else ""), ""]
+    if not st.get("results"): return L
+    h = st.get("hidden")
+    L += [f"- mean pass rate per case {st['mean_rate']:.1f}% · 95% CI {st['ci'][0]:.1f}–{st['ci'][1]:.1f}% for all results taken together",
+          f"- flakiness {st['flakiness']:.2f} on average (0: every run of a case agrees) · stability {st['stability']:.0f}/100 · robustness {st['robustness']:.0f}/100 (0.7 × pass rate + 0.3 × stability)",
+          (f"- hidden-brief estimate: {h['expected']} of {h['of']} when a case counts only with 3 passes out of 3, as in the final ({h['one_run']} if one pass counted) · "
+           f"confidence {h['confidence']}: at least {h['least_results']} result{'' if h['least_results'] == 1 else 's'} per case"
+           + (" · the universal cases are left out: the final scores records" if h.get("universal_left_out") else "")) if h else
+          f"- hidden-brief estimate: needs results for every case; {st['missing']} have none on this version yet",
+          "- " + " · ".join(f"{k} {v}" for k, v in st["categories"].items()), ""]
+    if st["actions"]:
+        L += ["Fix order:", ""]
+        for p in sorted({a["priority"] for a in st["actions"]}):
+            L += [f"- {FIX[p]}"] + [f"  - {a['case']} ({a['family']}) {a['issue']} · rules {', '.join(a['rules']) or '–'}" for a in st["actions"] if a["priority"] == p]
+        L.append("")
+    L += ["| case | family | passes | 95% CI | flakiness | 3 of 3 | category |", "|---|---|---|---|---|---|---|"]
+    for cid, x in sorted(st["cases"].items(), key=lambda kv: (kv[1]["priority"] or 9, kv[1]["rate"], kv[0])):
+        (low, high), p = wilson(x["passes"], x["runs"]), x["passes"] / x["runs"]             # from the counts: no rounding twice
+        L.append(f"| {cid} | {x['family']} | {x['passes']}/{x['runs']} ({100 * p:.0f}%) | {100 * low:.0f}–{100 * high:.0f}% | {x['flakiness']:.2f} | {100 * p ** FINAL_RUNS:.0f}% | "
+                 + x["category"] + (f" P{x['priority']}" if x["priority"] else "") + " |")
+    multi = {cid: x for cid, x in st["cases"].items() if len(x["styles"]) > 1}
+    if multi:
+        styles = sorted({s for x in st["cases"].values() for s in x["styles"]}, key=lambda s: (s != "none", s))
+        tot = {s: [sum(x["styles"].get(s, [0, 0])[i] for x in st["cases"].values()) for i in (0, 1)] for s in styles}
+        L += ["", "### Style robustness", "", "by style: " + " · ".join(f"{s} {100 * p / n:.0f}% ({p}/{n})" for s, (p, n) in tot.items() if n), "",
+              "| case | " + " | ".join(styles) + " | spread |", "|---|" + "---|" * (len(styles) + 1)]
+        for cid, x in sorted(multi.items()):
+            r = {s: 100 * p / n for s, (p, n) in x["styles"].items() if n}; gap = max(r.values()) - min(r.values())
+            L.append(f"| {cid} | " + " | ".join(f"{r[s]:.0f}%" if s in r else "–" for s in styles) + f" | {gap:.0f}" + (" ⚠" if gap > STYLE_GAP else "") + " |")
+    return L + [""]
+
+
 def write_report(slot, run, history):
     """The analysis report of one run, as markdown. `history` is every run of this slot, oldest first, this run last."""
-    rows = run["rows"]; gen = [r for r in rows if not r["public"]]; pub = [r for r in rows if r["public"]]
+    rows = run["rows"]; gen, uni, pub = ([r for r in rows if r["suite"] == s] for s in ("generated", "universal", "public"))
     L = [f"# Benchmark {slot} · run {run['n']}", "",
          f"agent `{run['agent_id']}` · {run['at']} · {run['seconds']:.0f} s · reps {run['reps']} · style {run['style'] or 'none'}" + (" · `--only`" if run["only"] else ""), "",
          "## Score", "",
-         f"- generated {sum(r['pass'] for r in gen)}/{len(gen)}" + (f" · public {sum(r['pass'] for r in pub)}/{len(pub)}" if pub else "") + f" · total {sum(r['pass'] for r in rows)}/{len(rows)}",
+         f"- generated {sum(r['pass'] for r in gen)}/{len(gen)}" + (f" · universal {sum(r['pass'] for r in uni)}/{len(uni)}" if uni else "")
+         + (f" · public {sum(r['pass'] for r in pub)}/{len(pub)}" if pub else "") + f" · total {sum(r['pass'] for r in rows)}/{len(rows)}",
          f"- promised on passed cases: {run['promised_passed']:.2f} (the organisers' first tie-breaker)",
          f"- fixed since the previous run: {', '.join(run['fixed']) or 'none'}",
          f"- regressed: {', '.join(run['regressed']) or 'none'}",
-         f"- still failing: {', '.join(run['still_failing']) or 'none'}", "",
-         "## History", "", "| case | " + " | ".join(f"run {h['n']}" for h in history) + " | |", "|---|" + "---|" * len(history) + "---|"]
+         f"- still failing: {', '.join(run['still_failing']) or 'none'}", ""]
+    if run.get("stats"):
+        pooled = run["stats"].get("runs_pooled") or [run["n"]]
+        scope = (f"agent version {run['version']}, " + ("run " if len(pooled) == 1 else "runs ") + ", ".join(map(str, pooled)) if run.get("version") is not None
+                 else "this run alone: the agent is not in .freya-agents.json, so earlier runs cannot be tied to its version")
+        L += stats_md(run["stats"], "Statistics on this version", scope)
+    L += ["## History", "", "| case | " + " | ".join(f"run {h['n']}" for h in history) + " | |", "|---|" + "---|" * len(history) + "---|"]
     current = {r["id"]: r for r in rows}; ids = list(current)
     for h in history: ids += [cid for cid in h["cases"] if cid not in ids]            # a case that left the file stays visible
     for cid in ids:
@@ -451,8 +656,11 @@ def run(a):
     print_check(errors, warnings, cov)
     if errors: sys.exit(2)
     write_test_set(a.cases, gen, fixtures)
-    cases = [merge_with_fixture(c, fixtures) for c in gen]
+    universal, skipped = load_universal(fixtures, openapi)
+    if skipped: print("universal cases left out, this tool API cannot verify their fixtures' identity fields: " + ", ".join(skipped))
+    cases = [merge_with_fixture(c, fixtures) for c in gen] + universal
     if a.public: cases += [c for c in fixtures.values() if c["brief"] == a.public]
+    every = cases                                                    # the statistics cover the whole set, --only or not
     if a.only: cases = select_only(cases, a.only)
     slot = slot_of(a.cases); out = ROOT / "results" / "bench" / slot; out.mkdir(parents=True, exist_ok=True)
     history = load_history(out / "history.jsonl"); n = len(history) + 1
@@ -461,11 +669,15 @@ def run(a):
     for rep in range(n_reps):
         rows, sim_id, it_id, status, took, med = run_cases.run_once(a.agent_id, cases, ids)
         for r, c in zip(rows, cases):
+            if c.get("suite") == "universal": r["failed"] = universal_failures(r["failed"]); r["pass"] = not r["failed"]
             r["forbidden"] = sorted({t for t in r["tools"] if t in (c.get("forbidden_tools") or [])})
             if r["forbidden"]: r["failed"].append("forbidden tool called: " + ", ".join(r["forbidden"])); r["pass"] = False
             more = applications_failed(c.get("expected") or {}, r.get("calls") or [])
             if more: r["failed"] += more; r["pass"] = False
         reps_rows.append(rows); total_s += took
+        uni = [r for r, c in zip(rows, cases) if c.get("suite") == "universal"]
+        if uni: print(f"-- universal cases count only the conversation, close_call last and identity first: {sum(r['pass'] for r in uni)} / {len(uni)} passed. "
+                      "The outcome and record lines printed above for them do not count.")
         if n_reps > 1: print(f"-- rep {rep + 1} of {n_reps}: {sum(r['pass'] for r in rows)} / {len(rows)} passed, {took:.0f} s\n")
     shown = [next((rep[k] for rep in reps_rows if not rep[k]["pass"]), reps_rows[-1][k]) for k in range(len(cases))]   # the first failing rep, else the last
     calls, extra = {}, {}                                            # transcripts: every case, and every rep of a case whose reps disagree
@@ -477,11 +689,11 @@ def run(a):
         if 0 < sum(rep[k]["pass"] for rep in reps_rows) < n_reps:
             for i, rep in enumerate(reps_rows, 1):
                 if rep[k] is not r and rep[k].get("call_id"): extra[(c["id"], i)] = fetch(rep[k]["call_id"], f"{c['id']} rep {i}") or {}
-    meta = {"n": n, "at": time.strftime("%Y-%m-%d %H:%M:%S"), "agent_id": a.agent_id, "seconds": round(time.time() - t0), "style": a.style, "only": bool(a.only),
-            "public": a.public, "uncovered_rules": cov.get("uncovered_rules"), "minutes_used": minutes_since_builder_start(),
+    meta = {"n": n, "at": time.strftime("%Y-%m-%d %H:%M:%S"), "agent_id": a.agent_id, "version": agent_version(a.agent_id), "seconds": round(time.time() - t0),
+            "style": a.style, "only": bool(a.only), "public": a.public, "uncovered_rules": cov.get("uncovered_rules"), "minutes_used": minutes_since_builder_start(),
             "simulation_id": sim_id, "iteration_id": it_id, "status": status}
     turns = {cid: sum(m.get("role") in ("user", "assistant") for m in call.get("messages") or []) for cid, call in calls.items()}
-    rec = build_run(meta, cases, reps_rows, history, turns, slot)
+    rec = build_run(meta, cases, reps_rows, history, turns, slot, every)
     (out / f"run-{n:02d}.json").write_text(json.dumps({**rec, "all_rows": reps_rows}, indent=1, ensure_ascii=False), encoding="utf-8")   # the raw record first
     history.append(history_line(rec))
     with open(out / "history.jsonl", "a", encoding="utf-8") as f: f.write(json.dumps(history[-1]) + "\n")
@@ -518,13 +730,17 @@ def main():
     a = ap.parse_args()
     if a.host:
         import score; score.HOST = a.host.rstrip("/")
-    if a.fixtures: print_fixtures(load_fixtures()); return
+    if a.fixtures: print_fixtures(load_fixtures()); print_universal(load_fixtures(), load_openapi(a.openapi)); return
     if not a.cases: ap.error("--cases is required")
     if a.check:
         fixtures, gen = load_fixtures(), json.load(open(a.cases, encoding="utf-8"))
-        errors, warnings, cov = check_cases(gen, fixtures, load_openapi(a.openapi), rule_ids_from(a.rules))
+        openapi = load_openapi(a.openapi)
+        errors, warnings, cov = check_cases(gen, fixtures, openapi, rule_ids_from(a.rules))
         print_check(errors, warnings, cov)
         if not errors: print(f"test set: {write_test_set(a.cases, gen, fixtures)}")
+        universal, skipped = load_universal(fixtures, openapi)
+        if universal or skipped:
+            print(f"every run also plays {len(universal)} universal cases (universal-test-set.json; `--fixtures` lists them)" + (f"; this tool API cannot play {', '.join(skipped)}" if skipped else ""))
         sys.exit(1 if errors else 0)
     if not a.agent_id: ap.error("an agent_id is required to run; use --check to validate only")
     try: run(a)

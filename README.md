@@ -45,6 +45,7 @@ python3 tools/benchmark.py <agent_id> --cases tests/brief-a.cases.json --rules b
 | `briefs/brief-b.md` | The extra rules for customers with up to three products. It builds on Brief A. |
 | `tools/openapi.json` | The bank's tool API that the phone agent calls during a call. |
 | `public-test-set.json` | 13 practice customers: what each one does and what the bank's records must show afterwards. |
+| `universal-test-set.json` | Cases `tools/benchmark.py` plays in every run, whatever the brief: what any bank agent owes (prompt injection, third parties, pressure on identity, honesty about what was done). They borrow the practice customers' bank data and are judged on the conversation, not on the brief's records. |
 | `examples/base-agent.json` | An example phone agent: two steps, four tools. The same one that is in your workspace. |
 | `examples/agent_builder.py` | An example builder on the Claude Agent SDK. Claude builds, tests and fixes the agent. |
 | `.claude/skills/build-phone-agent/SKILL.md` | The one skill the example builder uses. |
