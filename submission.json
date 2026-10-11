@@ -11,9 +11,9 @@
     }
   ],
   "repo": "https://github.com/dorukozgen/build-the-builder-hackathon",
-  "commit": "14784ca608e7f4b45cb0cb19960c73ccda86e0c2",
+  "commit": "cc35c33eb03949ff1f3ee25f0583079f2ff4090f",
   "run_command": "python3 builder/build.py {case_folder} {mock_url}",
   "workflow": "submission/final.workflow.json",
-  "trace": "traces/final.log",
+  "trace": "traces/final-session.jsonl",
   "mock_url": "https://freya-statement-debt-mock.dorukozgen0.workers.dev"
 }
