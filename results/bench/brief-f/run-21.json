@@ -1,0 +1,857 @@
+{
+ "n": 21,
+ "at": "2026-10-11 19:38:11",
+ "agent_id": "1956bd9e-4de1-44a5-be2b-a5052d9b4e9c",
+ "version": "4",
+ "seconds": 97,
+ "style": null,
+ "only": true,
+ "public": null,
+ "uncovered_rules": [],
+ "minutes_used": 23.217159466666665,
+ "simulation_id": "cba4b3d0-d818-4e59-81dd-c53cc8a5fcaa",
+ "iteration_id": "197d91f6-ce31-4132-a4bd-970fa8109d0e",
+ "status": "completed",
+ "concurrency": 12,
+ "cut": null,
+ "no_reply": null,
+ "unreached": null,
+ "slow_share": 0.0,
+ "waited_out": 0,
+ "slot": "brief-f",
+ "reps": 1,
+ "rows": [
+  {
+   "id": "GEN-45",
+   "title": "Postcode given in pieces",
+   "family": "Style",
+   "level": "medium",
+   "fixture": "PUB-02",
+   "rules": [
+    "brief-f:12",
+    "brief-f:13",
+    "brief-f:16"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1979-11-02"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "0358"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "create_application",
+     "args": {
+      "type": "address_change",
+      "fields": {
+       "street": "Via Roma 14",
+       "city": "Milano",
+       "postcode": "20121"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-207681",
+      "status": "received"
+     }
+    },
+    {
+     "n": 6,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 7.5,
+   "ended": "assistant-ended-call",
+   "turns": 22,
+   "transcript": "results/bench/brief-f/run-21/GEN-45.md",
+   "call_id": "b6a87282-3c70-4e53-b60d-6a912dd16d9e",
+   "flaky": true,
+   "changed": false,
+   "sig": "06d71deac8",
+   "promised": 0
+  },
+  {
+   "id": "GEN-48",
+   "title": "Talkative address change",
+   "family": "Style",
+   "level": "medium",
+   "fixture": "PUB-01",
+   "rules": [
+    "brief-f:12",
+    "brief-f:16",
+    "brief-f:19"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "outcome ('no_action', 'out_of_scope'), expected ('application_created', None)",
+    "conversation: The agent correctly asked for one field at a time, first requesting the date of birth and then the phone number digits. However, the user provided repetitive chatter instead of answering the second security question. Consequently, the conversation reached a 15-turn limit in the identity verification node and the agent terminated the call. Therefore, the requirement to read back the address 'Elm St",
+    "applications [], expected ['address_change']"
+   ],
+   "categories": [
+    "conversation",
+    "outcome"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1988-03-14"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "out_of_scope",
+      "outcome": "no_action"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 1.4,
+   "ended": "assistant-ended-call",
+   "turns": 34,
+   "transcript": "results/bench/brief-f/run-21/GEN-48.md",
+   "call_id": "90b2f7da-6770-4c78-8560-b1daf8ac5f4b",
+   "flaky": false,
+   "changed": false,
+   "sig": "d57b32ba7e",
+   "promised": 0
+  },
+  {
+   "id": "GEN-47",
+   "title": "Asks why the birthday is needed",
+   "family": "Style",
+   "level": "medium",
+   "fixture": "PUB-09",
+   "rules": [
+    "brief-f:5",
+    "brief-f:8",
+    "brief-f:12"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1981-08-11"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "5560"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "expired"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-431750",
+      "status": "received"
+     }
+    },
+    {
+     "n": 6,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 1.4,
+   "ended": "assistant-ended-call",
+   "turns": 21,
+   "transcript": "results/bench/brief-f/run-21/GEN-47.md",
+   "call_id": "a594f35b-029d-44bd-9d3e-eed4628482f3",
+   "flaky": false,
+   "changed": false,
+   "sig": "c98140f5fc",
+   "promised": 0
+  }
+ ],
+ "fixed": [
+  "GEN-45"
+ ],
+ "regressed": [],
+ "still_failing": [
+  "GEN-48"
+ ],
+ "promised_passed": 0,
+ "median_slowest_s": 1.4,
+ "worst_slowest_s": 7.5,
+ "slow": false,
+ "hung_up": 0,
+ "all_pass": false,
+ "styles_run": [
+  "asks_back",
+  "corrects",
+  "pieces",
+  "talkative"
+ ],
+ "cases": {
+  "GEN-45": {
+   "pass": true,
+   "sig": "06d71deac8",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-48": {
+   "pass": false,
+   "sig": "d57b32ba7e",
+   "categories": [
+    "conversation",
+    "outcome"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-47": {
+   "pass": true,
+   "sig": "c98140f5fc",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  }
+ },
+ "stats": {
+  "covered": 3,
+  "total": 63,
+  "cases": {
+   "GEN-45": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "pieces": [
+      1,
+      1
+     ]
+    },
+    "family": "Style",
+    "rules": [
+     "brief-f:12",
+     "brief-f:13",
+     "brief-f:16"
+    ]
+   },
+   "GEN-47": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "asks_back": [
+      1,
+      1
+     ]
+    },
+    "family": "Style",
+    "rules": [
+     "brief-f:5",
+     "brief-f:8",
+     "brief-f:12"
+    ]
+   },
+   "GEN-48": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "talkative": [
+      0,
+      1
+     ]
+    },
+    "family": "Style",
+    "rules": [
+     "brief-f:12",
+     "brief-f:16",
+     "brief-f:19"
+    ]
+   }
+  },
+  "actions": [
+   {
+    "priority": 1,
+    "case": "GEN-48",
+    "family": "Style",
+    "rules": [
+     "brief-f:12",
+     "brief-f:16",
+     "brief-f:19"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   }
+  ],
+  "results": 3,
+  "mean_rate": 66.7,
+  "ci": [
+   20.8,
+   93.9
+  ],
+  "flakiness": 0.0,
+  "stability": 100.0,
+  "robustness": 76.7,
+  "categories": {
+   "Failing": 1,
+   "Flaky": 0,
+   "Mostly Passing": 0,
+   "Stable": 2
+  },
+  "missing": 47,
+  "runs_pooled": [
+   21
+  ]
+ },
+ "next_concurrency": 12,
+ "concurrency_note": "only 3 of 12 slots were in use: kept",
+ "all_rows": [
+  [
+   {
+    "id": "GEN-45",
+    "level": "medium",
+    "family": "Style",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "b6a87282-3c70-4e53-b60d-6a912dd16d9e",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "create_application",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1979-11-02"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "0358"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "create_application",
+      "args": {
+       "type": "address_change",
+       "fields": {
+        "street": "Via Roma 14",
+        "city": "Milano",
+        "postcode": "20121"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-207681",
+       "status": "received"
+      }
+     },
+     {
+      "n": 6,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_c3de39eb9f7a",
+    "slowest_turn_s": 7.5,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 10,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-48",
+    "level": "medium",
+    "family": "Style",
+    "pass": false,
+    "played": true,
+    "failed": [
+     "outcome ('no_action', 'out_of_scope'), expected ('application_created', None)",
+     "conversation: The agent correctly asked for one field at a time, first requesting the date of birth and then the phone number digits. However, the user provided repetitive chatter instead of answering the second security question. Consequently, the conversation reached a 15-turn limit in the identity verification node and the agent terminated the call. Therefore, the requirement to read back the address 'Elm St",
+     "applications [], expected ['address_change']"
+    ],
+    "call_id": "90b2f7da-6770-4c78-8560-b1daf8ac5f4b",
+    "tools": [
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1988-03-14"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "out_of_scope",
+       "outcome": "no_action"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_73153016428e",
+    "slowest_turn_s": 1.4,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 16,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-47",
+    "level": "medium",
+    "family": "Style",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "a594f35b-029d-44bd-9d3e-eed4628482f3",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "create_application",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1981-08-11"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "5560"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "expired"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-431750",
+       "status": "received"
+      }
+     },
+     {
+      "n": 6,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_79018de5798e",
+    "slowest_turn_s": 1.4,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 9,
+    "slow_replies": 0,
+    "forbidden": []
+   }
+  ]
+ ]
+}

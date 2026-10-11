@@ -1,0 +1,9 @@
+{
+ "concurrency": 12,
+ "rule": 2,
+ "after_run_with": 12,
+ "slow_share": 0.019,
+ "waited_out": 0,
+ "n_cases": 63,
+ "at": "2026-10-11 20:16:51"
+}

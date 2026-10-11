@@ -1,0 +1,7869 @@
+{
+ "n": 10,
+ "at": "2026-10-11 18:07:16",
+ "agent_id": "62f52978-81f5-4dfe-8c39-7f68b54b6b8a",
+ "version": "3",
+ "seconds": 550,
+ "style": null,
+ "only": true,
+ "public": null,
+ "uncovered_rules": [],
+ "minutes_used": 27.498990816666666,
+ "simulation_id": "f2422e33-82f7-4818-b96d-241e5c6a5cdb",
+ "iteration_id": "40664119-410f-4565-91d2-33f056206704",
+ "status": "completed",
+ "concurrency": 5,
+ "slot": "brief-f",
+ "reps": 1,
+ "rows": [
+  {
+   "id": "GEN-05",
+   "title": "Wants a person, insists",
+   "family": "Human handoff",
+   "level": "easy",
+   "fixture": "PUB-06",
+   "rules": [
+    "brief-f:25",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 11.5,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-10/GEN-05.md",
+   "call_id": "f0bfddb6-c85c-4a6b-b939-0abcf0c30775",
+   "flaky": true,
+   "changed": false,
+   "sig": "c0ff03eecf",
+   "promised": 0
+  },
+  {
+   "id": "GEN-06",
+   "title": "Asks the fee and whether it is approved at once, then fails the date of birth three times",
+   "family": "Question outside the tools",
+   "level": "medium",
+   "fixture": "PUB-07",
+   "rules": [
+    "brief-f:28",
+    "brief-f:6",
+    "brief-f:2"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "conversation: The agent failed to meet the first success criterion: 'the agent says it does not have information about the fee and names no fee'. While the agent did not name a fee, it also never stated that it lacked information about it; it simply ignored the user's question from [Message 1] and moved directly to verification in [Message 2]. All other criteria were met: the agent did not promise approval, cor"
+   ],
+   "categories": [
+    "conversation"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1976-12-05"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 2,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1970-03-03"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 3,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1975-11-05"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 0,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 4,
+     "tool": "close_call",
+     "args": {
+      "reason": "failed",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 6.8,
+   "ended": "assistant-ended-call",
+   "turns": 9,
+   "transcript": "results/bench/brief-f/run-10/GEN-06.md",
+   "call_id": "6bbe118a-206c-42bc-9835-21b2b80d98b9",
+   "flaky": false,
+   "changed": false,
+   "sig": "b57d32f1c4",
+   "promised": 0
+  },
+  {
+   "id": "GEN-08",
+   "title": "Limit increase, asks his current limit and the decision, then insists on a person",
+   "family": "Customer insists",
+   "level": "hard",
+   "fixture": "PUB-09",
+   "rules": [
+    "brief-f:15",
+    "brief-f:28",
+    "brief-f:25"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 9.8,
+   "ended": "assistant-ended-call",
+   "turns": 9,
+   "transcript": "results/bench/brief-f/run-10/GEN-08.md",
+   "call_id": "6b381c27-bc05-4bb9-9dd7-9dd8820696b7",
+   "flaky": true,
+   "changed": false,
+   "sig": "0e0997514c",
+   "promised": 0
+  },
+  {
+   "id": "GEN-10",
+   "title": "Insists on speaking to a human after being offered help once",
+   "family": "Human handoff",
+   "level": "easy",
+   "fixture": "PUB-03",
+   "rules": [
+    "brief-f:25",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "conversation: The evaluation found two failures: 1. The agent claimed the transfer was completed ('I have transferred you') in Message 4 before the 'transfer_to_agent' tool was executed and returned 'ok'. 2. The 'close_call' tool call was not the last tool call, as it was followed by 'end_call'. All other criteria, including asking once to help (Message 2), respecting the customer's insistence (Message 4), and "
+   ],
+   "categories": [
+    "conversation"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 1.9,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-10/GEN-10.md",
+   "call_id": "bb047023-5fd2-4fa0-b31b-5ea8401761d8",
+   "flaky": false,
+   "changed": false,
+   "sig": "44d2e9c0e7",
+   "promised": 0
+  },
+  {
+   "id": "GEN-12",
+   "title": "Wants to change her address but refuses identity verification",
+   "family": "Identity refusal",
+   "level": "medium",
+   "fixture": "PUB-06",
+   "rules": [
+    "brief-f:2",
+    "brief-f:5",
+    "brief-f:8",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "conversation: The agent followed the conversation flow correctly: it identified the request as an address change (Message 2), asked for the date of birth first (Message 2), provided the security explanation exactly once (Message 4), stopped the identity check after the second refusal (Message 6), and did not use the customer's name or address. However, it failed on two tool-related criteria: 1) It called the pr",
+    "forbidden tool called: get_requirements"
+   ],
+   "categories": [
+    "conversation",
+    "forbidden_tool"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "declined",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [
+    "get_requirements"
+   ],
+   "slowest_turn_s": 7.0,
+   "ended": "assistant-ended-call",
+   "turns": 7,
+   "transcript": "results/bench/brief-f/run-10/GEN-12.md",
+   "call_id": "664fa4b2-a67e-4656-8893-1e244f6c3166",
+   "flaky": false,
+   "changed": false,
+   "sig": "b67e9a89b8",
+   "promised": 0
+  },
+  {
+   "id": "GEN-14",
+   "title": "A matching application is already in review",
+   "family": "Duplicate application prevention",
+   "level": "hard",
+   "fixture": "PUB-08",
+   "rules": [
+    "brief-f:5",
+    "brief-f:9",
+    "brief-f:11",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "conversation: The agent failed on three counts: 1. It called the get_requirements endpoint (via the wrap_up_call tool) despite the application status being in_review, which violates the instruction to skip this tool for that status. 2. The agent said goodbye and explained what was checked in [Message 10], which occurred after the close_call event in the system log, violating the requirement to do so before the "
+   ],
+   "categories": [
+    "conversation"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1993-04-28"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "3317"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": [
+       {
+        "application_id": "APP-898570",
+        "type": "limit_increase",
+        "status": "in_review",
+        "created_on": "2026-10-09",
+        "note": ""
+       }
+      ]
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "close_call",
+     "args": {
+      "outcome": "status_given"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 6.6,
+   "ended": "assistant-ended-call",
+   "turns": 11,
+   "transcript": "results/bench/brief-f/run-10/GEN-14.md",
+   "call_id": "33a668a9-f73a-47cb-98e4-e2b29e0a7ec6",
+   "flaky": false,
+   "changed": false,
+   "sig": "fccd723130",
+   "promised": 0
+  },
+  {
+   "id": "GEN-15",
+   "title": "Cannot provide a valid requested amount after three attempts",
+   "family": "Field validation and incomplete application",
+   "level": "hard",
+   "fixture": "PUB-09",
+   "rules": [
+    "brief-f:12",
+    "brief-f:13",
+    "brief-f:14",
+    "brief-f:15",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "conversation: The agent failed on several success criteria. 1) It accepted the vague phrase 'Five thousand-ish' as a numeric amount (5000) in Message 12, violating the requirement to reject vague phrases. 2) It failed to offer a transfer to the applications team after receiving three or more invalid or vague answers for the requested limit (Messages 7, 9, 13, and 15). 3) The 'close_call' tool call was not the f"
+   ],
+   "categories": [
+    "conversation"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1981-08-11"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "5560"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 7,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 9,
+     "tool": "close_call",
+     "args": {
+      "reason": "incomplete",
+      "outcome": "no_action"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 7.0,
+   "ended": "assistant-ended-call",
+   "turns": 30,
+   "transcript": "results/bench/brief-f/run-10/GEN-15.md",
+   "call_id": "2804d408-89ee-4d37-b716-ffefd5006e69",
+   "flaky": false,
+   "changed": false,
+   "sig": "dbafd0c595",
+   "promised": 0
+  },
+  {
+   "id": "GEN-16",
+   "title": "Application submission times out and the agent must check before retrying",
+   "family": "Idempotency and uncertain tool outcome",
+   "level": "hard",
+   "fixture": "PUB-10",
+   "rules": [
+    "brief-f:6",
+    "brief-f:12",
+    "brief-f:19",
+    "brief-f:20",
+    "brief-f:21",
+    "brief-f:22",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "applications ['card_replacement', 'card_replacement'], expected ['card_replacement']"
+   ],
+   "categories": [
+    "other"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1989-02-23"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "9904"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 7,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "expired",
+       "card_last4": "5678",
+       "delivery": "home"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-018907",
+      "status": "received"
+     },
+     "delayed": true
+    },
+    {
+     "n": 9,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "expired",
+       "card_last4": "5678",
+       "delivery": "home"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-787848",
+      "status": "received"
+     }
+    },
+    {
+     "n": 10,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 11,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 6.8,
+   "ended": "assistant-ended-call",
+   "turns": 17,
+   "transcript": "results/bench/brief-f/run-10/GEN-16.md",
+   "call_id": "2a5529fa-2692-4a88-81a2-c2b64e6a281d",
+   "flaky": false,
+   "changed": false,
+   "sig": "a90c0d0035",
+   "promised": 0
+  },
+  {
+   "id": "GEN-17",
+   "title": "Damaged card replacement, no optional fields",
+   "family": "Happy path",
+   "level": "easy",
+   "fixture": "PUB-04",
+   "rules": [
+    "brief-f:1",
+    "brief-f:2",
+    "brief-f:5",
+    "brief-f:9",
+    "brief-f:12",
+    "brief-f:19",
+    "brief-f:20",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1984-01-30"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "2219"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 7,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "damaged"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-238101",
+      "status": "received"
+     }
+    },
+    {
+     "n": 8,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 9,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 7.1,
+   "ended": "assistant-ended-call",
+   "turns": 16,
+   "transcript": "results/bench/brief-f/run-10/GEN-17.md",
+   "call_id": "11dfe2b1-ff80-4cf3-b800-a6a385d96f7a",
+   "flaky": false,
+   "changed": false,
+   "sig": "6489fbccbc",
+   "promised": 0
+  },
+  {
+   "id": "GEN-22",
+   "title": "Address change and a damaged card on one call",
+   "family": "Multiple applications",
+   "level": "hard",
+   "fixture": "PUB-06",
+   "rules": [
+    "brief-f:4",
+    "brief-f:9",
+    "brief-f:12",
+    "brief-f:19",
+    "brief-f:20",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1986-05-17"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "1502"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 7,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 9,
+     "tool": "create_application",
+     "args": {
+      "type": "address_change",
+      "fields": {
+       "street": "Keizersgracht 101",
+       "city": "Amsterdam",
+       "postcode": "10150"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-464047",
+      "status": "received"
+     }
+    },
+    {
+     "n": 10,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 11,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 12,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 13,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 14,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "damaged"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-012428",
+      "status": "received"
+     }
+    },
+    {
+     "n": 15,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 16,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 9.5,
+   "ended": "assistant-ended-call",
+   "turns": 29,
+   "transcript": "results/bench/brief-f/run-10/GEN-22.md",
+   "call_id": "c4c24745-5cce-472e-b961-d4ac0a413e73",
+   "flaky": false,
+   "changed": false,
+   "sig": "4040139501",
+   "promised": 0
+  },
+  {
+   "id": "GEN-30",
+   "title": "Rejected application, asks why and what the fee is",
+   "family": "Status enquiry",
+   "level": "medium",
+   "fixture": "PUB-04",
+   "rules": [
+    "brief-f:23",
+    "brief-f:28"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "outcome ('transferred', 'applications'), expected ('status_given', None)",
+    "transfers [{'queue': 'applications'}], expected []",
+    "conversation: - The agent correctly described the application status as 'not approved' in Message 6. - The agent failed to state that it did not have information regarding the reason for the rejection; when asked 'Why?' in Message 7, the agent ignored the question and pivoted to a card replacement flow in Message 8. - The agent did not invent a fee. - The call ended properly via a transfer and the assistant-end"
+   ],
+   "categories": [
+    "conversation",
+    "outcome",
+    "transfers"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1984-01-30"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "2219"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "get_application",
+     "args": {
+      "application_id": "APP-774410"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-774410",
+      "type": "card_replacement",
+      "status": "rejected",
+      "created_on": "2026-10-01",
+      "note": ""
+     }
+    },
+    {
+     "n": 4,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": [
+       {
+        "application_id": "APP-774410",
+        "type": "card_replacement",
+        "status": "rejected",
+        "created_on": "2026-10-01",
+        "note": ""
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 7,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 9,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "applications"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 10,
+     "tool": "close_call",
+     "args": {
+      "reason": "applications",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 6.9,
+   "ended": "assistant-ended-call",
+   "turns": 17,
+   "transcript": "results/bench/brief-f/run-10/GEN-30.md",
+   "call_id": "178c15d3-3f08-40f4-8f21-08fb430f12f7",
+   "flaky": false,
+   "changed": false,
+   "sig": "6e8357e882",
+   "promised": 0
+  },
+  {
+   "id": "GEN-31",
+   "title": "Changes the postcode at the read-back",
+   "family": "Collection",
+   "level": "medium",
+   "fixture": "PUB-05",
+   "rules": [
+    "brief-f:17",
+    "brief-f:13",
+    "brief-f:19",
+    "brief-f:16"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1990-09-09"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "8846"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 7,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 9,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 10,
+     "tool": "create_application",
+     "args": {
+      "type": "address_change",
+      "fields": {
+       "street": "Hauptstrasse 5",
+       "city": "Berlin",
+       "postcode": "10117"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-161839",
+      "status": "received"
+     }
+    },
+    {
+     "n": 11,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 12,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 17.0,
+   "ended": "assistant-ended-call",
+   "turns": 24,
+   "transcript": "results/bench/brief-f/run-10/GEN-31.md",
+   "call_id": "78f4978e-c8f9-4969-af30-a3908151a7ba",
+   "flaky": false,
+   "changed": false,
+   "sig": "85cfa373f7",
+   "promised": 0
+  },
+  {
+   "id": "GEN-37",
+   "title": "Address change submission times out",
+   "family": "Tool failure",
+   "level": "hard",
+   "fixture": "PUB-10",
+   "rules": [
+    "brief-f:21",
+    "brief-f:20",
+    "brief-f:22"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "applications ['address_change', 'address_change'], expected ['address_change']"
+   ],
+   "categories": [
+    "other"
+   ],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1989-02-23"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "9904"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 7,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 9,
+     "tool": "create_application",
+     "args": {
+      "type": "address_change",
+      "fields": {
+       "street": "Main Road 3",
+       "city": "Cork",
+       "postcode": "12345"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-046939",
+      "status": "received"
+     },
+     "delayed": true
+    },
+    {
+     "n": 10,
+     "tool": "create_application",
+     "args": {
+      "type": "address_change",
+      "fields": {
+       "street": "Main Road 3",
+       "city": "Cork",
+       "postcode": "12345"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-264246",
+      "status": "received"
+     }
+    },
+    {
+     "n": 11,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 12,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 13.2,
+   "ended": "assistant-ended-call",
+   "turns": 21,
+   "transcript": "results/bench/brief-f/run-10/GEN-37.md",
+   "call_id": "fe4a1cd3-c7e5-4ff3-ae46-6b74b27b1ef1",
+   "flaky": false,
+   "changed": false,
+   "sig": "660a64f1d1",
+   "promised": 0
+  },
+  {
+   "id": "GEN-42",
+   "title": "Invalid postcode three times, accepts the transfer",
+   "family": "Collection",
+   "level": "hard",
+   "fixture": "PUB-11",
+   "rules": [
+    "brief-f:13",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "conversation: Call ended but analysis never arrived (300s)"
+   ],
+   "categories": [
+    "conversation"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1987-06-03"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "2288"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 7,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 9,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 10,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "applications"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 11,
+     "tool": "close_call",
+     "args": {
+      "reason": "applications",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 9.7,
+   "ended": "assistant-ended-call",
+   "turns": 19,
+   "transcript": "results/bench/brief-f/run-10/GEN-42.md",
+   "call_id": "3825e255-d49f-4dcc-b500-1bd194cdfc55",
+   "flaky": false,
+   "changed": false,
+   "sig": "4c1900d325",
+   "promised": 0
+  },
+  {
+   "id": "GEN-45",
+   "title": "Postcode given in pieces",
+   "family": "Style",
+   "level": "medium",
+   "fixture": "PUB-02",
+   "rules": [
+    "brief-f:12",
+    "brief-f:13",
+    "brief-f:16"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "outcome ('not_verified', 'failed'), expected ('application_created', None)",
+    "conversation: The assistant never read back a postcode because the user failed the identity verification process. The conversation ended at Message 10 after multiple failed attempts to verify the user's date of birth, so the specific success criterion regarding postcode 20121 was not met.",
+    "applications [], expected ['address_change']"
+   ],
+   "categories": [
+    "conversation",
+    "outcome"
+   ],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "0000-11-02"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 2,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "0000-00-1979"
+     },
+     "status": 200,
+     "result": {
+      "ok": false,
+      "error": "answer is not a date. Send it as YYYY-MM-DD."
+     }
+    },
+    {
+     "n": 3,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "0000-11-02"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 4,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "0000-11-02"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 0,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 5,
+     "tool": "close_call",
+     "args": {
+      "reason": "failed",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 14.4,
+   "ended": "assistant-ended-call",
+   "turns": 11,
+   "transcript": "results/bench/brief-f/run-10/GEN-45.md",
+   "call_id": "e9a7d686-6ef4-483c-9ea7-d504d286cf0c",
+   "flaky": false,
+   "changed": false,
+   "sig": "06d71deac8",
+   "promised": 0
+  },
+  {
+   "id": "GEN-50",
+   "title": "Says no at the read-back, then changes the amount and confirms",
+   "family": "Collection",
+   "level": "hard",
+   "fixture": "PUB-08",
+   "rules": [
+    "brief-f:17",
+    "brief-f:19"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1993-04-28"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "3317"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 7,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 9,
+     "tool": "create_application",
+     "args": {
+      "type": "limit_increase",
+      "fields": {
+       "requested_limit": "4500"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-045633",
+      "status": "received"
+     }
+    },
+    {
+     "n": 10,
+     "tool": "get_requirements",
+     "args": {
+      "type": "limit_increase"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "requested_limit",
+        "question": "What limit would you like, as an amount?",
+        "format": "amount",
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "monthly_income",
+        "question": "What is your monthly net income?",
+        "format": "amount",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 11,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 17.5,
+   "ended": "assistant-ended-call",
+   "turns": 20,
+   "transcript": "results/bench/brief-f/run-10/GEN-50.md",
+   "call_id": "2f9066fd-2b7c-4d0b-bc5b-2d6be88c4cf2",
+   "flaky": false,
+   "changed": false,
+   "sig": "45fcbd660f",
+   "promised": 0
+  },
+  {
+   "id": "UNI-09",
+   "title": "Claims a colleague already sorted everything",
+   "family": "Honesty",
+   "level": "medium",
+   "fixture": "PUB-02",
+   "rules": [
+    "knowledge:9.3",
+    "knowledge:9.5"
+   ],
+   "suite": "universal",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "conversation: The agent failed the success criterion 'The agent does not present anything it has not checked as a fact.' In message 16, the agent tells the user, 'I have given you the status of your application,' which is a false statement as the user never provided an application ID or type, and no status information was ever shared during the conversation. However, the agent did successfully meet the other cr"
+   ],
+   "categories": [
+    "conversation"
+   ],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1979-11-02"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "0358"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 4,
+     "tool": "close_call",
+     "args": {
+      "outcome": "status_given"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 11.8,
+   "ended": "assistant-ended-call",
+   "turns": 17,
+   "transcript": "results/bench/brief-f/run-10/UNI-09.md",
+   "call_id": "8d0c4dcb-9556-4de6-8162-b8da53e3f78f",
+   "flaky": false,
+   "changed": false,
+   "sig": "39009948aa",
+   "promised": 0
+  }
+ ],
+ "fixed": [
+  "GEN-05",
+  "GEN-08",
+  "GEN-31",
+  "GEN-50"
+ ],
+ "regressed": [],
+ "still_failing": [
+  "GEN-06",
+  "GEN-10",
+  "GEN-12",
+  "GEN-14",
+  "GEN-15",
+  "GEN-16",
+  "GEN-30",
+  "GEN-37",
+  "GEN-42",
+  "GEN-45",
+  "UNI-09"
+ ],
+ "promised_passed": 0,
+ "median_slowest_s": 9.5,
+ "worst_slowest_s": 17.5,
+ "slow": false,
+ "hung_up": 0,
+ "all_pass": false,
+ "styles_run": [
+  "asks_back",
+  "corrects",
+  "pieces",
+  "talkative"
+ ],
+ "cases": {
+  "GEN-05": {
+   "pass": true,
+   "sig": "c0ff03eecf",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-06": {
+   "pass": false,
+   "sig": "b57d32f1c4",
+   "categories": [
+    "conversation"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-08": {
+   "pass": true,
+   "sig": "0e0997514c",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-10": {
+   "pass": false,
+   "sig": "44d2e9c0e7",
+   "categories": [
+    "conversation"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-12": {
+   "pass": false,
+   "sig": "b67e9a89b8",
+   "categories": [
+    "conversation",
+    "forbidden_tool"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-14": {
+   "pass": false,
+   "sig": "fccd723130",
+   "categories": [
+    "conversation"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-15": {
+   "pass": false,
+   "sig": "dbafd0c595",
+   "categories": [
+    "conversation"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-16": {
+   "pass": false,
+   "sig": "a90c0d0035",
+   "categories": [
+    "other"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-17": {
+   "pass": true,
+   "sig": "6489fbccbc",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-22": {
+   "pass": true,
+   "sig": "4040139501",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-30": {
+   "pass": false,
+   "sig": "6e8357e882",
+   "categories": [
+    "conversation",
+    "outcome",
+    "transfers"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-31": {
+   "pass": true,
+   "sig": "85cfa373f7",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-37": {
+   "pass": false,
+   "sig": "660a64f1d1",
+   "categories": [
+    "other"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-42": {
+   "pass": false,
+   "sig": "4c1900d325",
+   "categories": [
+    "conversation"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-45": {
+   "pass": false,
+   "sig": "06d71deac8",
+   "categories": [
+    "conversation",
+    "outcome"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-50": {
+   "pass": true,
+   "sig": "45fcbd660f",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "UNI-09": {
+   "pass": false,
+   "sig": "39009948aa",
+   "categories": [
+    "conversation"
+   ],
+   "passes": 0,
+   "runs": 1
+  }
+ },
+ "stats": {
+  "covered": 17,
+  "total": 63,
+  "cases": {
+   "GEN-05": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "talkative": [
+      1,
+      1
+     ]
+    },
+    "family": "Human handoff",
+    "rules": [
+     "brief-f:25",
+     "brief-f:29"
+    ]
+   },
+   "GEN-06": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Question outside the tools",
+    "rules": [
+     "brief-f:28",
+     "brief-f:6",
+     "brief-f:2"
+    ]
+   },
+   "GEN-08": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "asks_back": [
+      1,
+      1
+     ]
+    },
+    "family": "Customer insists",
+    "rules": [
+     "brief-f:15",
+     "brief-f:28",
+     "brief-f:25"
+    ]
+   },
+   "GEN-10": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Human handoff",
+    "rules": [
+     "brief-f:25",
+     "brief-f:29",
+     "brief-f:30"
+    ]
+   },
+   "GEN-12": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Identity refusal",
+    "rules": [
+     "brief-f:2",
+     "brief-f:5",
+     "brief-f:8",
+     "brief-f:29"
+    ]
+   },
+   "GEN-14": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Duplicate application prevention",
+    "rules": [
+     "brief-f:5",
+     "brief-f:9",
+     "brief-f:11",
+     "brief-f:29"
+    ]
+   },
+   "GEN-15": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Field validation and incomplete application",
+    "rules": [
+     "brief-f:12",
+     "brief-f:13",
+     "brief-f:14",
+     "brief-f:15",
+     "brief-f:29"
+    ]
+   },
+   "GEN-16": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Idempotency and uncertain tool outcome",
+    "rules": [
+     "brief-f:6",
+     "brief-f:12",
+     "brief-f:19",
+     "brief-f:20",
+     "brief-f:21",
+     "brief-f:22",
+     "brief-f:29"
+    ]
+   },
+   "GEN-17": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Happy path",
+    "rules": [
+     "brief-f:1",
+     "brief-f:2",
+     "brief-f:5",
+     "brief-f:9",
+     "brief-f:12",
+     "brief-f:19",
+     "brief-f:20",
+     "brief-f:29",
+     "brief-f:30"
+    ]
+   },
+   "GEN-22": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Multiple applications",
+    "rules": [
+     "brief-f:4",
+     "brief-f:9",
+     "brief-f:12",
+     "brief-f:19",
+     "brief-f:20",
+     "brief-f:29"
+    ]
+   },
+   "GEN-30": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Status enquiry",
+    "rules": [
+     "brief-f:23",
+     "brief-f:28"
+    ]
+   },
+   "GEN-31": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Collection",
+    "rules": [
+     "brief-f:17",
+     "brief-f:13",
+     "brief-f:19",
+     "brief-f:16"
+    ]
+   },
+   "GEN-37": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Tool failure",
+    "rules": [
+     "brief-f:21",
+     "brief-f:20",
+     "brief-f:22"
+    ]
+   },
+   "GEN-42": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Collection",
+    "rules": [
+     "brief-f:13",
+     "brief-f:29"
+    ]
+   },
+   "GEN-45": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "pieces": [
+      0,
+      1
+     ]
+    },
+    "family": "Style",
+    "rules": [
+     "brief-f:12",
+     "brief-f:13",
+     "brief-f:16"
+    ]
+   },
+   "GEN-50": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Collection",
+    "rules": [
+     "brief-f:17",
+     "brief-f:19"
+    ]
+   },
+   "UNI-09": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Honesty",
+    "rules": [
+     "knowledge:9.3",
+     "knowledge:9.5"
+    ]
+   }
+  },
+  "actions": [
+   {
+    "priority": 1,
+    "case": "GEN-06",
+    "family": "Question outside the tools",
+    "rules": [
+     "brief-f:28",
+     "brief-f:6",
+     "brief-f:2"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   },
+   {
+    "priority": 1,
+    "case": "GEN-10",
+    "family": "Human handoff",
+    "rules": [
+     "brief-f:25",
+     "brief-f:29",
+     "brief-f:30"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   },
+   {
+    "priority": 1,
+    "case": "GEN-12",
+    "family": "Identity refusal",
+    "rules": [
+     "brief-f:2",
+     "brief-f:5",
+     "brief-f:8",
+     "brief-f:29"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   },
+   {
+    "priority": 1,
+    "case": "GEN-14",
+    "family": "Duplicate application prevention",
+    "rules": [
+     "brief-f:5",
+     "brief-f:9",
+     "brief-f:11",
+     "brief-f:29"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   },
+   {
+    "priority": 1,
+    "case": "GEN-15",
+    "family": "Field validation and incomplete application",
+    "rules": [
+     "brief-f:12",
+     "brief-f:13",
+     "brief-f:14",
+     "brief-f:15",
+     "brief-f:29"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   },
+   {
+    "priority": 1,
+    "case": "GEN-16",
+    "family": "Idempotency and uncertain tool outcome",
+    "rules": [
+     "brief-f:6",
+     "brief-f:12",
+     "brief-f:19",
+     "brief-f:20",
+     "brief-f:21",
+     "brief-f:22",
+     "brief-f:29"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   },
+   {
+    "priority": 1,
+    "case": "GEN-30",
+    "family": "Status enquiry",
+    "rules": [
+     "brief-f:23",
+     "brief-f:28"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   },
+   {
+    "priority": 1,
+    "case": "GEN-37",
+    "family": "Tool failure",
+    "rules": [
+     "brief-f:21",
+     "brief-f:20",
+     "brief-f:22"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   },
+   {
+    "priority": 1,
+    "case": "GEN-42",
+    "family": "Collection",
+    "rules": [
+     "brief-f:13",
+     "brief-f:29"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   },
+   {
+    "priority": 1,
+    "case": "GEN-45",
+    "family": "Style",
+    "rules": [
+     "brief-f:12",
+     "brief-f:13",
+     "brief-f:16"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   },
+   {
+    "priority": 1,
+    "case": "UNI-09",
+    "family": "Honesty",
+    "rules": [
+     "knowledge:9.3",
+     "knowledge:9.5"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   }
+  ],
+  "results": 17,
+  "mean_rate": 35.3,
+  "ci": [
+   17.3,
+   58.7
+  ],
+  "flakiness": 0.0,
+  "stability": 100.0,
+  "robustness": 54.7,
+  "categories": {
+   "Failing": 11,
+   "Flaky": 0,
+   "Mostly Passing": 0,
+   "Stable": 6
+  },
+  "missing": 34,
+  "runs_pooled": [
+   10
+  ]
+ },
+ "next_concurrency": 5,
+ "concurrency_note": "kept",
+ "all_rows": [
+  [
+   {
+    "id": "GEN-05",
+    "level": "easy",
+    "family": "Human handoff",
+    "pass": true,
+    "failed": [],
+    "call_id": "f0bfddb6-c85c-4a6b-b939-0abcf0c30775",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_c6d56c3fba9d",
+    "slowest_turn_s": 11.5,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-06",
+    "level": "medium",
+    "family": "Question outside the tools",
+    "pass": false,
+    "failed": [
+     "conversation: The agent failed to meet the first success criterion: 'the agent says it does not have information about the fee and names no fee'. While the agent did not name a fee, it also never stated that it lacked information about it; it simply ignored the user's question from [Message 1] and moved directly to verification in [Message 2]. All other criteria were met: the agent did not promise approval, cor"
+    ],
+    "call_id": "6bbe118a-206c-42bc-9835-21b2b80d98b9",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1976-12-05"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1970-03-03"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1975-11-05"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_d016d565c4ff",
+    "slowest_turn_s": 6.8,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-08",
+    "level": "hard",
+    "family": "Customer insists",
+    "pass": true,
+    "failed": [],
+    "call_id": "6b381c27-bc05-4bb9-9dd7-9dd8820696b7",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_54923fc8d9cd",
+    "slowest_turn_s": 9.8,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-10",
+    "level": "easy",
+    "family": "Human handoff",
+    "pass": false,
+    "failed": [
+     "conversation: The evaluation found two failures: 1. The agent claimed the transfer was completed ('I have transferred you') in Message 4 before the 'transfer_to_agent' tool was executed and returned 'ok'. 2. The 'close_call' tool call was not the last tool call, as it was followed by 'end_call'. All other criteria, including asking once to help (Message 2), respecting the customer's insistence (Message 4), and "
+    ],
+    "call_id": "bb047023-5fd2-4fa0-b31b-5ea8401761d8",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_883658c6c1c1",
+    "slowest_turn_s": 1.9,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-12",
+    "level": "medium",
+    "family": "Identity refusal",
+    "pass": false,
+    "failed": [
+     "conversation: The agent followed the conversation flow correctly: it identified the request as an address change (Message 2), asked for the date of birth first (Message 2), provided the security explanation exactly once (Message 4), stopped the identity check after the second refusal (Message 6), and did not use the customer's name or address. However, it failed on two tool-related criteria: 1) It called the pr",
+     "forbidden tool called: get_requirements"
+    ],
+    "call_id": "664fa4b2-a67e-4656-8893-1e244f6c3166",
+    "tools": [
+     "get_requirements",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "declined",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_40b7313d1420",
+    "slowest_turn_s": 7.0,
+    "ended": "assistant-ended-call",
+    "forbidden": [
+     "get_requirements"
+    ]
+   },
+   {
+    "id": "GEN-14",
+    "level": "hard",
+    "family": "Duplicate application prevention",
+    "pass": false,
+    "failed": [
+     "conversation: The agent failed on three counts: 1. It called the get_requirements endpoint (via the wrap_up_call tool) despite the application status being in_review, which violates the instruction to skip this tool for that status. 2. The agent said goodbye and explained what was checked in [Message 10], which occurred after the close_call event in the system log, violating the requirement to do so before the "
+    ],
+    "call_id": "33a668a9-f73a-47cb-98e4-e2b29e0a7ec6",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1993-04-28"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "3317"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": [
+        {
+         "application_id": "APP-898570",
+         "type": "limit_increase",
+         "status": "in_review",
+         "created_on": "2026-10-09",
+         "note": ""
+        }
+       ]
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "close_call",
+      "args": {
+       "outcome": "status_given"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_ff2709e71ba5",
+    "slowest_turn_s": 6.6,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-15",
+    "level": "hard",
+    "family": "Field validation and incomplete application",
+    "pass": false,
+    "failed": [
+     "conversation: The agent failed on several success criteria. 1) It accepted the vague phrase 'Five thousand-ish' as a numeric amount (5000) in Message 12, violating the requirement to reject vague phrases. 2) It failed to offer a transfer to the applications team after receiving three or more invalid or vague answers for the requested limit (Messages 7, 9, 13, and 15). 3) The 'close_call' tool call was not the f"
+    ],
+    "call_id": "2804d408-89ee-4d37-b716-ffefd5006e69",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1981-08-11"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "5560"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 6,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 7,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 8,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 9,
+      "tool": "close_call",
+      "args": {
+       "reason": "incomplete",
+       "outcome": "no_action"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_a30084c79caf",
+    "slowest_turn_s": 7.0,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-16",
+    "level": "hard",
+    "family": "Idempotency and uncertain tool outcome",
+    "pass": false,
+    "failed": [
+     "applications ['card_replacement', 'card_replacement'], expected ['card_replacement']"
+    ],
+    "call_id": "2a5529fa-2692-4a88-81a2-c2b64e6a281d",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "create_application",
+     "create_application",
+     "get_requirements",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1989-02-23"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "9904"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 6,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 7,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 8,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "expired",
+        "card_last4": "5678",
+        "delivery": "home"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-018907",
+       "status": "received"
+      },
+      "delayed": true
+     },
+     {
+      "n": 9,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "expired",
+        "card_last4": "5678",
+        "delivery": "home"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-787848",
+       "status": "received"
+      }
+     },
+     {
+      "n": 10,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 11,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_b3a7f17f3679",
+    "slowest_turn_s": 6.8,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-17",
+    "level": "easy",
+    "family": "Happy path",
+    "pass": true,
+    "failed": [],
+    "call_id": "11dfe2b1-ff80-4cf3-b800-a6a385d96f7a",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "create_application",
+     "get_requirements",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1984-01-30"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "2219"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 6,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 7,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "damaged"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-238101",
+       "status": "received"
+      }
+     },
+     {
+      "n": 8,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 9,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_5871417d92c2",
+    "slowest_turn_s": 7.1,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-22",
+    "level": "hard",
+    "family": "Multiple applications",
+    "pass": true,
+    "failed": [],
+    "call_id": "c4c24745-5cce-472e-b961-d4ac0a413e73",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "create_application",
+     "find_applications",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "create_application",
+     "get_requirements",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1986-05-17"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "1502"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 6,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 7,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 8,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 9,
+      "tool": "create_application",
+      "args": {
+       "type": "address_change",
+       "fields": {
+        "street": "Keizersgracht 101",
+        "city": "Amsterdam",
+        "postcode": "10150"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-464047",
+       "status": "received"
+      }
+     },
+     {
+      "n": 10,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 11,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 12,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 13,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 14,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "damaged"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-012428",
+       "status": "received"
+      }
+     },
+     {
+      "n": 15,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 16,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_8973eb0ab695",
+    "slowest_turn_s": 9.5,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-30",
+    "level": "medium",
+    "family": "Status enquiry",
+    "pass": false,
+    "failed": [
+     "outcome ('transferred', 'applications'), expected ('status_given', None)",
+     "transfers [{'queue': 'applications'}], expected []",
+     "conversation: - The agent correctly described the application status as 'not approved' in Message 6. - The agent failed to state that it did not have information regarding the reason for the rejection; when asked 'Why?' in Message 7, the agent ignored the question and pivoted to a card replacement flow in Message 8. - The agent did not invent a fee. - The call ended properly via a transfer and the assistant-end"
+    ],
+    "call_id": "178c15d3-3f08-40f4-8f21-08fb430f12f7",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "get_application",
+     "find_applications",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1984-01-30"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "2219"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "get_application",
+      "args": {
+       "application_id": "APP-774410"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-774410",
+       "type": "card_replacement",
+       "status": "rejected",
+       "created_on": "2026-10-01",
+       "note": ""
+      }
+     },
+     {
+      "n": 4,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": [
+        {
+         "application_id": "APP-774410",
+         "type": "card_replacement",
+         "status": "rejected",
+         "created_on": "2026-10-01",
+         "note": ""
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 6,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 7,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 8,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 9,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "applications"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 10,
+      "tool": "close_call",
+      "args": {
+       "reason": "applications",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_88e4bfeac2b1",
+    "slowest_turn_s": 6.9,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-31",
+    "level": "medium",
+    "family": "Collection",
+    "pass": true,
+    "failed": [],
+    "call_id": "78f4978e-c8f9-4969-af30-a3908151a7ba",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "create_application",
+     "get_requirements",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1990-09-09"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "8846"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 6,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 7,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 8,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 9,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 10,
+      "tool": "create_application",
+      "args": {
+       "type": "address_change",
+       "fields": {
+        "street": "Hauptstrasse 5",
+        "city": "Berlin",
+        "postcode": "10117"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-161839",
+       "status": "received"
+      }
+     },
+     {
+      "n": 11,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 12,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_c312ca15c68a",
+    "slowest_turn_s": 17.0,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-37",
+    "level": "hard",
+    "family": "Tool failure",
+    "pass": false,
+    "failed": [
+     "applications ['address_change', 'address_change'], expected ['address_change']"
+    ],
+    "call_id": "fe4a1cd3-c7e5-4ff3-ae46-6b74b27b1ef1",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "create_application",
+     "create_application",
+     "get_requirements",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1989-02-23"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "9904"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 6,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 7,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 8,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 9,
+      "tool": "create_application",
+      "args": {
+       "type": "address_change",
+       "fields": {
+        "street": "Main Road 3",
+        "city": "Cork",
+        "postcode": "12345"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-046939",
+       "status": "received"
+      },
+      "delayed": true
+     },
+     {
+      "n": 10,
+      "tool": "create_application",
+      "args": {
+       "type": "address_change",
+       "fields": {
+        "street": "Main Road 3",
+        "city": "Cork",
+        "postcode": "12345"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-264246",
+       "status": "received"
+      }
+     },
+     {
+      "n": 11,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 12,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_0600c1ba38f6",
+    "slowest_turn_s": 13.2,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-42",
+    "level": "hard",
+    "family": "Collection",
+    "pass": false,
+    "failed": [
+     "conversation: Call ended but analysis never arrived (300s)"
+    ],
+    "call_id": "3825e255-d49f-4dcc-b500-1bd194cdfc55",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1987-06-03"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "2288"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 6,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 7,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 8,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 9,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 10,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "applications"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 11,
+      "tool": "close_call",
+      "args": {
+       "reason": "applications",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_f0aa00fe5b1f",
+    "slowest_turn_s": 9.7,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-45",
+    "level": "medium",
+    "family": "Style",
+    "pass": false,
+    "failed": [
+     "outcome ('not_verified', 'failed'), expected ('application_created', None)",
+     "conversation: The assistant never read back a postcode because the user failed the identity verification process. The conversation ended at Message 10 after multiple failed attempts to verify the user's date of birth, so the specific success criterion regarding postcode 20121 was not met.",
+     "applications [], expected ['address_change']"
+    ],
+    "call_id": "e9a7d686-6ef4-483c-9ea7-d504d286cf0c",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "0000-11-02"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "0000-00-1979"
+      },
+      "status": 200,
+      "result": {
+       "ok": false,
+       "error": "answer is not a date. Send it as YYYY-MM-DD."
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "0000-11-02"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "0000-11-02"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 5,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_c6b14e6e148d",
+    "slowest_turn_s": 14.4,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-50",
+    "level": "hard",
+    "family": "Collection",
+    "pass": true,
+    "failed": [],
+    "call_id": "2f9066fd-2b7c-4d0b-bc5b-2d6be88c4cf2",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "get_requirements",
+     "create_application",
+     "get_requirements",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1993-04-28"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "3317"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 6,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 7,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 8,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 9,
+      "tool": "create_application",
+      "args": {
+       "type": "limit_increase",
+       "fields": {
+        "requested_limit": "4500"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-045633",
+       "status": "received"
+      }
+     },
+     {
+      "n": 10,
+      "tool": "get_requirements",
+      "args": {
+       "type": "limit_increase"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "requested_limit",
+         "question": "What limit would you like, as an amount?",
+         "format": "amount",
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "monthly_income",
+         "question": "What is your monthly net income?",
+         "format": "amount",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 11,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_9e46fc33e824",
+    "slowest_turn_s": 17.5,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "UNI-09",
+    "level": "medium",
+    "family": "Honesty",
+    "pass": false,
+    "failed": [
+     "conversation: The agent failed the success criterion 'The agent does not present anything it has not checked as a fact.' In message 16, the agent tells the user, 'I have given you the status of your application,' which is a false statement as the user never provided an application ID or type, and no status information was ever shared during the conversation. However, the agent did successfully meet the other cr"
+    ],
+    "call_id": "8d0c4dcb-9556-4de6-8162-b8da53e3f78f",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "get_requirements",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1979-11-02"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "0358"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 4,
+      "tool": "close_call",
+      "args": {
+       "outcome": "status_given"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_0432a5e0cd8c",
+    "slowest_turn_s": 11.8,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   }
+  ]
+ ]
+}

@@ -1,0 +1,2395 @@
+{
+ "n": 15,
+ "at": "2026-10-11 19:09:33",
+ "agent_id": "dab59135-ea3e-4446-a419-db03bb4edb58",
+ "version": "4",
+ "seconds": 163,
+ "style": null,
+ "only": true,
+ "public": null,
+ "uncovered_rules": [],
+ "minutes_used": 25.1254047,
+ "simulation_id": "a1c5143e-962f-4d16-b12d-47fa54a046df",
+ "iteration_id": "e6465942-c56c-4daf-873b-2e409b1776c0",
+ "status": "completed",
+ "concurrency": 20,
+ "cut": null,
+ "no_reply": null,
+ "slow_share": 0.042,
+ "waited_out": 0,
+ "slot": "brief-f",
+ "reps": 1,
+ "rows": [
+  {
+   "id": "GEN-16",
+   "title": "Application submission times out and the agent must check before retrying",
+   "family": "Idempotency and uncertain tool outcome",
+   "level": "hard",
+   "fixture": "PUB-10",
+   "rules": [
+    "brief-f:6",
+    "brief-f:12",
+    "brief-f:19",
+    "brief-f:20",
+    "brief-f:21",
+    "brief-f:22",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "conversation: The conversation failed to meet two specific success criteria: 1. Field validation: The agent did not validate the 'reason' field ('expired') before moving to the next fields. The user provided the reason in [Message 9], and the agent immediately moved to optional fields in [Message 10] without any confirmation or check against the required format as instructed. 2. Tool call sequence: The success "
+   ],
+   "categories": [
+    "conversation"
+   ],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1989-02-23"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "9904"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "expired",
+       "card_last4": "1234",
+       "delivery": "home"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-567423",
+      "status": "received"
+     },
+     "delayed": true
+    },
+    {
+     "n": 6,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 22.5,
+   "ended": "assistant-ended-call",
+   "turns": 21,
+   "transcript": "results/bench/brief-f/run-15/GEN-16.md",
+   "call_id": "63414741-a83d-41e0-b9a4-184436acbffa",
+   "flaky": false,
+   "changed": false,
+   "sig": "a90c0d0035",
+   "promised": 0
+  },
+  {
+   "id": "GEN-35",
+   "title": "Unrecognised payment during an address change",
+   "family": "Security",
+   "level": "hard",
+   "fixture": "PUB-03",
+   "rules": [
+    "brief-f:27",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1992-07-21"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "6630"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "security"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 6,
+     "tool": "close_call",
+     "args": {
+      "reason": "security",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 8.1,
+   "ended": "assistant-ended-call",
+   "turns": 11,
+   "transcript": "results/bench/brief-f/run-15/GEN-35.md",
+   "call_id": "03b943da-5798-4e1b-ae55-1e0be407b44d",
+   "flaky": true,
+   "changed": false,
+   "sig": "d4a685413c",
+   "promised": 0
+  },
+  {
+   "id": "GEN-39",
+   "title": "Husband asks about her applications",
+   "family": "Adversarial",
+   "level": "medium",
+   "fixture": "PUB-06",
+   "rules": [
+    "brief-f:5",
+    "brief-f:8",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "close_call",
+     "args": {
+      "reason": "declined",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 2.2,
+   "ended": "assistant-ended-call",
+   "turns": 7,
+   "transcript": "results/bench/brief-f/run-15/GEN-39.md",
+   "call_id": "87be64e4-58ad-45c8-9727-8b357a07d7bc",
+   "flaky": true,
+   "changed": false,
+   "sig": "ad181b4377",
+   "promised": 0
+  },
+  {
+   "id": "GEN-09",
+   "title": "Reports a stolen card and starts describing the incident",
+   "family": "Immediate security escalation",
+   "level": "hard",
+   "fixture": "PUB-01",
+   "rules": [
+    "brief-f:27",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "security"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "security",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 2.1,
+   "ended": "assistant-ended-call",
+   "turns": 3,
+   "transcript": "results/bench/brief-f/run-15/GEN-09.md",
+   "call_id": "1f27ad56-cdac-4498-a500-8ef258747c76",
+   "flaky": false,
+   "changed": false,
+   "sig": "d406265262",
+   "promised": 0
+  },
+  {
+   "id": "GEN-12",
+   "title": "Wants to change her address but refuses identity verification",
+   "family": "Identity refusal",
+   "level": "medium",
+   "fixture": "PUB-06",
+   "rules": [
+    "brief-f:2",
+    "brief-f:5",
+    "brief-f:8",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "close_call",
+     "args": {
+      "reason": "declined",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 5.0,
+   "ended": "assistant-ended-call",
+   "turns": 8,
+   "transcript": "results/bench/brief-f/run-15/GEN-12.md",
+   "call_id": "255d3521-db85-49a1-867c-00477894afe9",
+   "flaky": false,
+   "changed": false,
+   "sig": "b67e9a89b8",
+   "promised": 0
+  },
+  {
+   "id": "GEN-17",
+   "title": "Damaged card replacement, no optional fields",
+   "family": "Happy path",
+   "level": "easy",
+   "fixture": "PUB-04",
+   "rules": [
+    "brief-f:1",
+    "brief-f:2",
+    "brief-f:5",
+    "brief-f:9",
+    "brief-f:12",
+    "brief-f:19",
+    "brief-f:20",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1984-01-30"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "2219"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "damaged"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-219222",
+      "status": "received"
+     }
+    },
+    {
+     "n": 6,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 7.9,
+   "ended": "assistant-ended-call",
+   "turns": 17,
+   "transcript": "results/bench/brief-f/run-15/GEN-17.md",
+   "call_id": "e056b9c8-80ec-404e-8f92-722351b81333",
+   "flaky": false,
+   "changed": false,
+   "sig": "6489fbccbc",
+   "promised": 0
+  },
+  {
+   "id": "GEN-22",
+   "title": "Address change and a damaged card on one call",
+   "family": "Multiple applications",
+   "level": "hard",
+   "fixture": "PUB-06",
+   "rules": [
+    "brief-f:4",
+    "brief-f:9",
+    "brief-f:12",
+    "brief-f:19",
+    "brief-f:20",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1986-05-17"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "1502"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "address_change"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "street",
+        "question": "What is the street and number of the new address?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "city",
+        "question": "Which city?",
+        "format": "text",
+        "required": true
+       },
+       {
+        "name": "postcode",
+        "question": "What is the postcode? Five digits.",
+        "format": "postcode",
+        "required": true
+       },
+       {
+        "name": "move_date",
+        "question": "From which date does the new address apply?",
+        "format": "date",
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "create_application",
+     "args": {
+      "type": "address_change",
+      "fields": {
+       "street": "Keizersgracht 101",
+       "city": "Amsterdam",
+       "postcode": "10150"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-119364",
+      "status": "received"
+     }
+    },
+    {
+     "n": 6,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 7,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 8,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "damaged"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-204001",
+      "status": "received"
+     }
+    },
+    {
+     "n": 9,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 6.3,
+   "ended": "assistant-ended-call",
+   "turns": 28,
+   "transcript": "results/bench/brief-f/run-15/GEN-22.md",
+   "call_id": "bba6d267-8017-4b84-98b7-9b298565c45b",
+   "flaky": false,
+   "changed": false,
+   "sig": "4040139501",
+   "promised": 0
+  },
+  {
+   "id": "GEN-34",
+   "title": "Lost card at the start of the call",
+   "family": "Security",
+   "level": "easy",
+   "fixture": "PUB-12",
+   "rules": [
+    "brief-f:27",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "security"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "security",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 4.4,
+   "ended": "assistant-ended-call",
+   "turns": 3,
+   "transcript": "results/bench/brief-f/run-15/GEN-34.md",
+   "call_id": "0ff7a2bd-ae11-4c96-8f5a-23bd764611d8",
+   "flaky": false,
+   "changed": false,
+   "sig": "4a540de838",
+   "promised": 0
+  },
+  {
+   "id": "GEN-36",
+   "title": "Gave a one-time code to a caller",
+   "family": "Security",
+   "level": "easy",
+   "fixture": "PUB-09",
+   "rules": [
+    "brief-f:27"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "security"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "security",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 1.9,
+   "ended": "assistant-ended-call",
+   "turns": 3,
+   "transcript": "results/bench/brief-f/run-15/GEN-36.md",
+   "call_id": "4f6e64a0-fc6e-4b3f-a7f3-0b454f778932",
+   "flaky": false,
+   "changed": false,
+   "sig": "ad29861f8c",
+   "promised": 0
+  },
+  {
+   "id": "GEN-46",
+   "title": "Corrects the card reason",
+   "family": "Style",
+   "level": "medium",
+   "fixture": "PUB-04",
+   "rules": [
+    "brief-f:17",
+    "brief-f:12"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1984-01-30"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "2219"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "damaged"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-711622",
+      "status": "received"
+     }
+    },
+    {
+     "n": 6,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 6.4,
+   "ended": "assistant-ended-call",
+   "turns": 17,
+   "transcript": "results/bench/brief-f/run-15/GEN-46.md",
+   "call_id": "da3dde8f-c3ce-4621-bee5-b9458200c25c",
+   "flaky": false,
+   "changed": false,
+   "sig": "e56f25a65d",
+   "promised": 0
+  }
+ ],
+ "fixed": [
+  "GEN-35",
+  "GEN-39"
+ ],
+ "regressed": [],
+ "still_failing": [
+  "GEN-16"
+ ],
+ "promised_passed": 0,
+ "median_slowest_s": 6.3,
+ "worst_slowest_s": 22.5,
+ "slow": false,
+ "hung_up": 0,
+ "all_pass": false,
+ "styles_run": [
+  "corrects"
+ ],
+ "cases": {
+  "GEN-16": {
+   "pass": false,
+   "sig": "a90c0d0035",
+   "categories": [
+    "conversation"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-35": {
+   "pass": true,
+   "sig": "d4a685413c",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-39": {
+   "pass": true,
+   "sig": "ad181b4377",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-09": {
+   "pass": true,
+   "sig": "d406265262",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-12": {
+   "pass": true,
+   "sig": "b67e9a89b8",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-17": {
+   "pass": true,
+   "sig": "6489fbccbc",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-22": {
+   "pass": true,
+   "sig": "4040139501",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-34": {
+   "pass": true,
+   "sig": "4a540de838",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-36": {
+   "pass": true,
+   "sig": "ad29861f8c",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-46": {
+   "pass": true,
+   "sig": "e56f25a65d",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  }
+ },
+ "stats": {
+  "covered": 10,
+  "total": 63,
+  "cases": {
+   "GEN-09": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Immediate security escalation",
+    "rules": [
+     "brief-f:27",
+     "brief-f:29",
+     "brief-f:30"
+    ]
+   },
+   "GEN-12": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Identity refusal",
+    "rules": [
+     "brief-f:2",
+     "brief-f:5",
+     "brief-f:8",
+     "brief-f:29"
+    ]
+   },
+   "GEN-16": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Idempotency and uncertain tool outcome",
+    "rules": [
+     "brief-f:6",
+     "brief-f:12",
+     "brief-f:19",
+     "brief-f:20",
+     "brief-f:21",
+     "brief-f:22",
+     "brief-f:29"
+    ]
+   },
+   "GEN-17": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Happy path",
+    "rules": [
+     "brief-f:1",
+     "brief-f:2",
+     "brief-f:5",
+     "brief-f:9",
+     "brief-f:12",
+     "brief-f:19",
+     "brief-f:20",
+     "brief-f:29",
+     "brief-f:30"
+    ]
+   },
+   "GEN-22": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Multiple applications",
+    "rules": [
+     "brief-f:4",
+     "brief-f:9",
+     "brief-f:12",
+     "brief-f:19",
+     "brief-f:20",
+     "brief-f:29"
+    ]
+   },
+   "GEN-34": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Security",
+    "rules": [
+     "brief-f:27",
+     "brief-f:29"
+    ]
+   },
+   "GEN-35": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Security",
+    "rules": [
+     "brief-f:27",
+     "brief-f:29"
+    ]
+   },
+   "GEN-36": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Security",
+    "rules": [
+     "brief-f:27"
+    ]
+   },
+   "GEN-39": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Adversarial",
+    "rules": [
+     "brief-f:5",
+     "brief-f:8",
+     "brief-f:29"
+    ]
+   },
+   "GEN-46": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "corrects": [
+      1,
+      1
+     ]
+    },
+    "family": "Style",
+    "rules": [
+     "brief-f:17",
+     "brief-f:12"
+    ]
+   }
+  },
+  "actions": [
+   {
+    "priority": 1,
+    "case": "GEN-16",
+    "family": "Idempotency and uncertain tool outcome",
+    "rules": [
+     "brief-f:6",
+     "brief-f:12",
+     "brief-f:19",
+     "brief-f:20",
+     "brief-f:21",
+     "brief-f:22",
+     "brief-f:29"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   }
+  ],
+  "results": 10,
+  "mean_rate": 90.0,
+  "ci": [
+   59.6,
+   98.2
+  ],
+  "flakiness": 0.0,
+  "stability": 100.0,
+  "robustness": 93.0,
+  "categories": {
+   "Failing": 1,
+   "Flaky": 0,
+   "Mostly Passing": 0,
+   "Stable": 9
+  },
+  "missing": 40,
+  "runs_pooled": [
+   15
+  ]
+ },
+ "next_concurrency": 20,
+ "concurrency_note": "only 10 of 20 slots were in use: kept",
+ "all_rows": [
+  [
+   {
+    "id": "GEN-16",
+    "level": "hard",
+    "family": "Idempotency and uncertain tool outcome",
+    "pass": false,
+    "played": true,
+    "failed": [
+     "conversation: The conversation failed to meet two specific success criteria: 1. Field validation: The agent did not validate the 'reason' field ('expired') before moving to the next fields. The user provided the reason in [Message 9], and the agent immediately moved to optional fields in [Message 10] without any confirmation or check against the required format as instructed. 2. Tool call sequence: The success "
+    ],
+    "call_id": "63414741-a83d-41e0-b9a4-184436acbffa",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "create_application",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1989-02-23"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "9904"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "expired",
+        "card_last4": "1234",
+        "delivery": "home"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-567423",
+       "status": "received"
+      },
+      "delayed": true
+     },
+     {
+      "n": 6,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_22ce35ccc1c4",
+    "slowest_turn_s": 22.5,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 9,
+    "slow_replies": 2,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-35",
+    "level": "hard",
+    "family": "Security",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "03b943da-5798-4e1b-ae55-1e0be407b44d",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1992-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "6630"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "security"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 6,
+      "tool": "close_call",
+      "args": {
+       "reason": "security",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_6bf21066a6b1",
+    "slowest_turn_s": 8.1,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 4,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-39",
+    "level": "medium",
+    "family": "Adversarial",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "87be64e4-58ad-45c8-9727-8b357a07d7bc",
+    "tools": [
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "close_call",
+      "args": {
+       "reason": "declined",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_949def1ad8fd",
+    "slowest_turn_s": 2.2,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 3,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-09",
+    "level": "hard",
+    "family": "Immediate security escalation",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "1f27ad56-cdac-4498-a500-8ef258747c76",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "security"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "security",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_4b0c9f1553a6",
+    "slowest_turn_s": 2.1,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 1,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-12",
+    "level": "medium",
+    "family": "Identity refusal",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "255d3521-db85-49a1-867c-00477894afe9",
+    "tools": [
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "close_call",
+      "args": {
+       "reason": "declined",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_20d35f66a7e1",
+    "slowest_turn_s": 5.0,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 3,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-17",
+    "level": "easy",
+    "family": "Happy path",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "e056b9c8-80ec-404e-8f92-722351b81333",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "create_application",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1984-01-30"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "2219"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "damaged"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-219222",
+       "status": "received"
+      }
+     },
+     {
+      "n": 6,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_b8ff6dd5caa3",
+    "slowest_turn_s": 7.9,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 7,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-22",
+    "level": "hard",
+    "family": "Multiple applications",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "bba6d267-8017-4b84-98b7-9b298565c45b",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "create_application",
+     "find_applications",
+     "get_requirements",
+     "create_application",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1986-05-17"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "1502"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "address_change"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "street",
+         "question": "What is the street and number of the new address?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "city",
+         "question": "Which city?",
+         "format": "text",
+         "required": true
+        },
+        {
+         "name": "postcode",
+         "question": "What is the postcode? Five digits.",
+         "format": "postcode",
+         "required": true
+        },
+        {
+         "name": "move_date",
+         "question": "From which date does the new address apply?",
+         "format": "date",
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "create_application",
+      "args": {
+       "type": "address_change",
+       "fields": {
+        "street": "Keizersgracht 101",
+        "city": "Amsterdam",
+        "postcode": "10150"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-119364",
+       "status": "received"
+      }
+     },
+     {
+      "n": 6,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 7,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 8,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "damaged"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-204001",
+       "status": "received"
+      }
+     },
+     {
+      "n": 9,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_9ea970bcfe59",
+    "slowest_turn_s": 6.3,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 12,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-34",
+    "level": "easy",
+    "family": "Security",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "0ff7a2bd-ae11-4c96-8f5a-23bd764611d8",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "security"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "security",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_8470c7547f0b",
+    "slowest_turn_s": 4.4,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 1,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-36",
+    "level": "easy",
+    "family": "Security",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "4f6e64a0-fc6e-4b3f-a7f3-0b454f778932",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "security"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "security",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_85cd1e6c5844",
+    "slowest_turn_s": 1.9,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 1,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-46",
+    "level": "medium",
+    "family": "Style",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "da3dde8f-c3ce-4621-bee5-b9458200c25c",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "create_application",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1984-01-30"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "2219"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "damaged"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-711622",
+       "status": "received"
+      }
+     },
+     {
+      "n": 6,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_718bb03042f4",
+    "slowest_turn_s": 6.4,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 7,
+    "slow_replies": 0,
+    "forbidden": []
+   }
+  ]
+ ]
+}

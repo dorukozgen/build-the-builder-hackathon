@@ -1,1 +1,404 @@
-16:01:07 brief-f mock listening on http://127.0.0.1:8765  (fixtures: PUB-01, PUB-02, PUB-03, PUB-04, PUB-05, PUB-06, PUB-07, PUB-08, PUB-09, PUB-10, PUB-11, PUB-12, PUB-13)
+20:09:34 brief-f mock listening on http://127.0.0.1:8765  (fixtures: PUB-01, PUB-02, PUB-03, PUB-04, PUB-05, PUB-06, PUB-07, PUB-08, PUB-09, PUB-10, PUB-11, PUB-12, PUB-13)
+20:09:56 session f_0ff308df0806 case PUB-03 apps 0 faults -
+20:09:56 session f_9ff3c4fee9b7 case PUB-03 apps 0 faults -
+20:09:56 session f_1ae073a73e45 case PUB-04 apps 0 faults -
+20:09:56 session f_ca36a91a82ab case PUB-02 apps 0 faults -
+20:09:56 session f_2053371246cb case PUB-01 apps 1 faults -
+20:10:05 f_2053371246cb verify_identity {"field": "date_of_birth", "answer": "1988-03-14"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:10:05 f_9ff3c4fee9b7 verify_identity {"field": "date_of_birth", "answer": "1990-07-21"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+20:10:07 f_0ff308df0806 transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:10:07 f_1ae073a73e45 verify_identity {"field": "date_of_birth", "answer": "1984-01-30"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:10:07 f_0ff308df0806 close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:10:09 f_2053371246cb verify_identity {"field": "phone_last4", "answer": "4471"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:10:09 f_9ff3c4fee9b7 verify_identity {"field": "date_of_birth", "answer": "1991-07-21"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 1, "all_verified": false}
+20:10:13 f_9ff3c4fee9b7 verify_identity {"field": "date_of_birth", "answer": "1992-07-21"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 1, "all_verified": false}
+20:10:14 f_2053371246cb get_application {"application_id": "APP-482913"} -> 200 {"ok": true, "application_id": "APP-482913", "type": "limit_increase", "status": "in_review", "created_on": "2026-10-12", "note": ""}
+20:10:15 f_ca36a91a82ab close_call {"reason": "unsupported", "outcome": "no_action"} -> 200 {"ok": true}
+20:10:15 f_9ff3c4fee9b7 verify_identity {"field": "phone_last4", "answer": "6603"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 0, "all_verified": false}
+20:10:16 f_9ff3c4fee9b7 close_call {"reason": "failed", "outcome": "not_verified"} -> 200 {"ok": true}
+20:10:16 f_1ae073a73e45 verify_identity {"field": "phone_last4", "answer": "2219"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:10:17 f_1ae073a73e45 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:10:21 f_1ae073a73e45 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:10:23 f_1ae073a73e45 get_requirements {"type": "card_replacement"} -> 200 {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+20:10:25 f_2053371246cb close_call {"outcome": "status_given"} -> 200 {"ok": true}
+20:10:37 f_1ae073a73e45 create_application {"type": "card_replacement", "fields": {"reason": "damaged"}} -> 200 {"ok": true, "application_id": "APP-873532", "status": "received"}
+20:10:47 f_1ae073a73e45 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:11:40 session f_4bbc3e563a1a case PUB-03 apps 0 faults -
+20:11:40 session f_ae1f633eddd7 case PUB-01 apps 0 faults -
+20:11:40 session f_418d71921570 case PUB-03 apps 0 faults -
+20:11:40 session f_6b7e98dd620c case PUB-02 apps 0 faults -
+20:11:40 session f_ec5de3615524 case PUB-05 apps 0 faults -
+20:11:40 session f_424c2075d9bb case PUB-06 apps 0 faults -
+20:11:40 session f_b29a3a656a3e case PUB-07 apps 0 faults -
+20:11:40 session f_7717cb877012 case PUB-08 apps 0 faults -
+20:11:40 session f_86981a21d9f0 case PUB-09 apps 0 faults -
+20:11:40 session f_a3459ddaf91b case PUB-01 apps 0 faults -
+20:11:40 session f_c210fb2f13ae case PUB-05 apps 0 faults -
+20:11:40 session f_158371cb394f case PUB-06 apps 0 faults -
+20:11:40 session f_67cfcf9c73f7 case PUB-07 apps 0 faults -
+20:11:40 session f_66a7f4847dfe case PUB-08 apps 1 faults -
+20:11:40 session f_32f7d5138967 case PUB-09 apps 0 faults -
+20:11:40 session f_a769b7bda8c8 case PUB-10 apps 0 faults {'create_application': {'delay_first': 1}}
+20:11:40 session f_bc8d668f5201 case PUB-04 apps 0 faults -
+20:11:40 session f_603a4e13eabe case PUB-11 apps 0 faults -
+20:11:40 session f_aafdab2cc1bc case PUB-12 apps 0 faults -
+20:11:40 session f_c30e9d4f079e case PUB-13 apps 0 faults -
+20:11:40 session f_a73c70fa4d68 case PUB-02 apps 0 faults -
+20:11:40 session f_4f911fb35eef case PUB-06 apps 0 faults -
+20:11:40 session f_f1c415624f18 case PUB-07 apps 1 faults -
+20:11:40 session f_5483ecb42d00 case PUB-08 apps 1 faults -
+20:11:40 session f_042d35d25e84 case PUB-03 apps 1 faults -
+20:11:40 session f_af4c16a1fbfb case PUB-09 apps 1 faults -
+20:11:40 session f_da93e21c6a25 case PUB-13 apps 1 faults -
+20:11:40 session f_f597ba633625 case PUB-01 apps 1 faults -
+20:11:40 session f_6d1e15186d93 case PUB-02 apps 1 faults -
+20:11:40 session f_2ae53c56053a case PUB-04 apps 1 faults -
+20:11:40 session f_6191e7edf193 case PUB-05 apps 0 faults -
+20:11:40 session f_caceb8f51181 case PUB-11 apps 0 faults -
+20:11:40 session f_ad3a16a079ac case PUB-08 apps 0 faults -
+20:11:40 session f_dffbdcb18f28 case PUB-12 apps 0 faults -
+20:11:40 session f_b083c7831d43 case PUB-03 apps 0 faults -
+20:11:40 session f_dde4384e9019 case PUB-09 apps 0 faults -
+20:11:40 session f_3aa0424ed8c4 case PUB-10 apps 0 faults {'create_application': {'delay_first': 1}}
+20:11:40 session f_f3028b2c8b6f case PUB-01 apps 0 faults -
+20:11:40 session f_5c0689e00a0f case PUB-06 apps 0 faults -
+20:11:40 session f_6f589c699ee3 case PUB-07 apps 1 faults -
+20:11:40 session f_3aeca7e3db71 case PUB-13 apps 0 faults -
+20:11:40 session f_6db6dc109fad case PUB-11 apps 0 faults -
+20:11:40 session f_7940227249b7 case PUB-05 apps 0 faults -
+20:11:40 session f_e4cc7560dd64 case PUB-12 apps 0 faults -
+20:11:40 session f_5b05b90af9ca case PUB-02 apps 0 faults -
+20:11:40 session f_f0f4f8003d4c case PUB-04 apps 0 faults -
+20:11:40 session f_7a7c6b102335 case PUB-09 apps 0 faults -
+20:11:40 session f_acda754b8b5e case PUB-01 apps 0 faults -
+20:11:40 session f_57a24ae00baa case PUB-03 apps 0 faults -
+20:11:40 session f_a0fe3f4ef4d7 case PUB-08 apps 0 faults -
+20:11:40 session f_fa10f8291c37 case PUB-01 apps 0 faults -
+20:11:40 session f_f6f0471ea6e4 case PUB-05 apps 0 faults -
+20:11:40 session f_94e85de637db case PUB-08 apps 0 faults -
+20:11:40 session f_d59297351b65 case PUB-04 apps 0 faults -
+20:11:40 session f_7af933d329ba case PUB-03 apps 0 faults -
+20:11:40 session f_7cd823482973 case PUB-06 apps 0 faults -
+20:11:40 session f_779ef8f836a5 case PUB-07 apps 0 faults -
+20:11:40 session f_29e67285d139 case PUB-09 apps 0 faults -
+20:11:40 session f_29004fc26706 case PUB-02 apps 0 faults -
+20:11:40 session f_39c3ba62d46b case PUB-03 apps 0 faults -
+20:11:40 session f_6df11034fa5f case PUB-05 apps 0 faults -
+20:11:40 session f_5174eca670b5 case PUB-06 apps 0 faults -
+20:11:40 session f_1a13e42478a8 case PUB-04 apps 0 faults -
+20:11:47 f_f6f0471ea6e4 close_call {"reason": "declined", "outcome": "not_verified"} -> 200 {"ok": true}
+20:11:49 f_94e85de637db transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:11:49 f_af4c16a1fbfb verify_identity {"field": "date_of_birth", "answer": "1981-08-11"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:11:49 f_94e85de637db close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:11:49 f_042d35d25e84 verify_identity {"field": "date_of_birth", "answer": "1992-07-21"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:11:50 f_6191e7edf193 verify_identity {"field": "date_of_birth", "answer": "1990-09-09"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:11:50 f_ad3a16a079ac verify_identity {"field": "date_of_birth", "answer": "1993-04-28"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:11:51 f_5483ecb42d00 verify_identity {"field": "date_of_birth", "answer": "1993-04-28"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:11:51 f_f0f4f8003d4c verify_identity {"field": "date_of_birth", "answer": "1984-01-30"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:11:51 f_5174eca670b5 close_call {"reason": "out_of_scope", "outcome": "no_action"} -> 200 {"ok": true}
+20:11:52 f_caceb8f51181 verify_identity {"field": "date_of_birth", "answer": "1987-06-03"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:11:52 f_042d35d25e84 verify_identity {"field": "phone_last4", "answer": "6630"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:11:53 f_042d35d25e84 find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": [{"application_id": "APP-640021", "type": "limit_increase", "status": "received", "created_on": "2026-10-13", "note": ""}]}
+20:11:54 f_6191e7edf193 verify_identity {"field": "phone_last4", "answer": "8846"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:11:54 f_af4c16a1fbfb verify_identity {"field": "phone_last4", "answer": "5560"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:11:54 f_1a13e42478a8 transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:11:55 f_2ae53c56053a verify_identity {"field": "date_of_birth", "answer": "1984-01-30"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:11:55 f_6191e7edf193 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:11:55 f_af4c16a1fbfb find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": [{"application_id": "APP-118870", "type": "card_replacement", "status": "approved", "created_on": "2026-09-01", "note": ""}]}
+20:11:55 f_1a13e42478a8 close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:11:56 f_f0f4f8003d4c verify_identity {"field": "phone_last4", "answer": "2219"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:11:56 f_5483ecb42d00 verify_identity {"field": "phone_last4", "answer": "3317"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:11:56 f_ad3a16a079ac verify_identity {"field": "phone_last4", "answer": "3317"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:11:56 f_5483ecb42d00 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": [{"application_id": "APP-203344", "type": "address_change", "status": "more_info_needed", "created_on": "2026-10-10", "note": "Proo
+20:11:56 f_f0f4f8003d4c find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:11:56 f_ad3a16a079ac find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:11:57 f_af4c16a1fbfb find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": [{"application_id": "APP-118870", "type": "card_replacement", "status": "approved", "created_on": "2026-09-01", "note": ""}]}
+20:11:58 f_af4c16a1fbfb get_requirements {"type": "card_replacement"} -> 200 {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+20:11:58 f_ad3a16a079ac find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:11:59 f_ad3a16a079ac get_requirements {"type": "card_replacement"} -> 200 {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+20:12:00 f_042d35d25e84 close_call {"outcome": "status_given"} -> 200 {"ok": true}
+20:12:01 f_f0f4f8003d4c find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:12:01 f_caceb8f51181 verify_identity {"field": "phone_last4", "answer": "2288"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:12:02 f_f0f4f8003d4c get_requirements {"type": "card_replacement"} -> 200 {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+20:12:02 f_caceb8f51181 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:12:03 f_dffbdcb18f28 transfer_to_agent {"queue": "security"} -> 200 {"ok": true}
+20:12:03 f_dffbdcb18f28 close_call {"reason": "security", "outcome": "transferred"} -> 200 {"ok": true}
+20:12:03 f_2ae53c56053a verify_identity {"field": "phone_last4", "answer": "2219"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:12:04 f_5483ecb42d00 transfer_to_agent {"queue": "applications"} -> 200 {"ok": true}
+20:12:04 f_caceb8f51181 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:12:05 f_5483ecb42d00 close_call {"reason": "applications", "outcome": "transferred"} -> 200 {"ok": true}
+20:12:05 f_6191e7edf193 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:12:05 f_caceb8f51181 get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:12:05 f_2ae53c56053a get_application {"application_id": "APP-774410"} -> 200 {"ok": true, "application_id": "APP-774410", "type": "card_replacement", "status": "rejected", "created_on": "2026-10-01", "note": ""}
+20:12:06 f_af4c16a1fbfb create_application {"type": "card_replacement", "fields": {"reason": "damaged"}} -> 200 {"ok": true, "application_id": "APP-663358", "status": "received"}
+20:12:06 f_6191e7edf193 get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:12:14 f_dde4384e9019 transfer_to_agent {"queue": "security"} -> 200 {"ok": true}
+20:12:14 f_dde4384e9019 close_call {"reason": "security", "outcome": "transferred"} -> 200 {"ok": true}
+20:12:16 f_2ae53c56053a close_call {"outcome": "status_given"} -> 200 {"ok": true}
+20:12:17 f_6db6dc109fad verify_identity {"field": "date_of_birth", "answer": "1987-06-03"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:12:18 f_7940227249b7 verify_identity {"field": "date_of_birth", "answer": "1990-09-09"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:12:18 f_b083c7831d43 verify_identity {"field": "date_of_birth", "answer": "1992-07-21"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:12:18 f_ad3a16a079ac create_application {"type": "card_replacement", "fields": {"reason": "expired", "card_last4": "5512"}} -> 200 {"ok": true, "application_id": "APP-618792", "status": "received"}
+20:12:19 f_f0f4f8003d4c create_application {"type": "card_replacement", "fields": {"reason": "damaged"}} -> 200 {"ok": true, "application_id": "APP-590795", "status": "received"}
+20:12:21 f_af4c16a1fbfb close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:12:21 f_6db6dc109fad verify_identity {"field": "phone_last4", "answer": "2288"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:12:22 f_e4cc7560dd64 verify_identity {"field": "date_of_birth", "answer": "1983-10-19"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:12:22 f_6db6dc109fad find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:12:22 f_7940227249b7 verify_identity {"field": "phone_last4", "answer": "8846"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:12:22 f_7940227249b7 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:12:23 f_b083c7831d43 verify_identity {"field": "phone_last4", "answer": "6630"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:12:23 f_ad3a16a079ac close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:12:23 f_b083c7831d43 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:12:24 f_5b05b90af9ca verify_identity {"field": "date_of_birth", "answer": "1979-11-02"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:12:24 f_7940227249b7 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:12:25 f_f0f4f8003d4c close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:12:25 f_6db6dc109fad find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:12:25 f_b083c7831d43 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:12:25 f_7940227249b7 get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:12:26 f_e4cc7560dd64 verify_identity {"field": "phone_last4", "answer": "4410"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:12:26 f_6db6dc109fad get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:12:26 f_e4cc7560dd64 find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:12:26 f_caceb8f51181 create_application {"type": "address_change", "fields": {"street": "Avenida Central 8", "city": "Faro", "postcode": "80001"}} -> 200 {"ok": true, "application_id": "APP-688763", "status": "received"}
+20:12:27 f_6191e7edf193 create_application {"type": "address_change", "fields": {"street": "Hauptstrasse 5", "city": "Berlin", "postcode": "10117"}} -> 200 {"ok": true, "application_id": "APP-337643", "status": "received"}
+20:12:28 f_e4cc7560dd64 find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:12:29 f_e4cc7560dd64 get_requirements {"type": "limit_increase"} -> 200 {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+20:12:31 f_b083c7831d43 get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:12:31 f_caceb8f51181 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:12:32 f_5b05b90af9ca verify_identity {"field": "phone_last4", "answer": "0358"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:12:32 f_7a7c6b102335 verify_identity {"field": "date_of_birth", "answer": "1981-08-11"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:12:32 f_5b05b90af9ca find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:12:33 f_b083c7831d43 transfer_to_agent {"queue": "security"} -> 200 {"ok": true}
+20:12:33 f_b083c7831d43 close_call {"reason": "security", "outcome": "transferred"} -> 200 {"ok": true}
+20:12:34 f_5b05b90af9ca find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:12:34 f_6191e7edf193 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:12:34 f_5b05b90af9ca get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:12:35 f_4bbc3e563a1a transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:12:35 f_4bbc3e563a1a close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:12:37 f_f597ba633625 verify_identity {"field": "date_of_birth", "answer": "1988-03-14"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:12:41 f_f597ba633625 verify_identity {"field": "phone_last4", "answer": "4471"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:12:42 f_e4cc7560dd64 create_application {"type": "limit_increase", "fields": {"requested_limit": "7500"}} -> 200 {"ok": true, "application_id": "APP-717793", "status": "received"}
+20:12:42 f_7a7c6b102335 verify_identity {"field": "phone_last4", "answer": "5560"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:12:42 f_7a7c6b102335 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:12:42 f_7940227249b7 create_application {"type": "address_change", "fields": {"street": "Lindenweg 9", "city": "Munich", "postcode": "80331"}} -> 200 {"ok": true, "application_id": "APP-539547", "status": "received"}
+20:12:43 f_7a7c6b102335 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:12:44 f_f597ba633625 get_application {"application_id": "APP-482913"} -> 200 {"ok": true, "application_id": "APP-482913", "type": "limit_increase", "status": "in_review", "created_on": "2026-10-12", "note": ""}
+20:12:44 f_bc8d668f5201 verify_identity {"field": "date_of_birth", "answer": "1984-01-30"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:12:44 f_7a7c6b102335 get_requirements {"type": "card_replacement"} -> 200 {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+20:12:46 f_e4cc7560dd64 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:12:46 f_6db6dc109fad transfer_to_agent {"queue": "applications"} -> 200 {"ok": true}
+20:12:47 f_6db6dc109fad close_call {"reason": "applications", "outcome": "transferred"} -> 200 {"ok": true}
+20:12:47 f_7940227249b7 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:12:47 f_418d71921570 verify_identity {"field": "date_of_birth", "answer": "1990-07-21"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+20:12:48 f_bc8d668f5201 verify_identity {"field": "phone_last4", "answer": "2219"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:12:48 f_bc8d668f5201 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:12:50 f_f597ba633625 close_call {"outcome": "status_given"} -> 200 {"ok": true}
+20:12:50 f_418d71921570 verify_identity {"field": "date_of_birth", "answer": "1991-07-21"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 1, "all_verified": false}
+20:12:50 f_bc8d668f5201 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:12:51 f_bc8d668f5201 get_requirements {"type": "card_replacement"} -> 200 {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+20:12:51 f_a73c70fa4d68 close_call {"reason": "unsupported", "outcome": "no_action"} -> 200 {"ok": true}
+20:12:52 f_7a7c6b102335 create_application {"type": "card_replacement", "fields": {"reason": "expired"}} -> 200 {"ok": true, "application_id": "APP-853022", "status": "received"}
+20:12:53 f_da93e21c6a25 verify_identity {"field": "date_of_birth", "answer": "1991-01-08"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:12:53 f_418d71921570 verify_identity {"field": "date_of_birth", "answer": "1992-07-21"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 1, "all_verified": false}
+20:12:55 f_418d71921570 verify_identity {"field": "phone_last4", "answer": "6603"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 0, "all_verified": false}
+20:12:56 f_418d71921570 close_call {"reason": "failed", "outcome": "not_verified"} -> 200 {"ok": true}
+20:13:02 f_da93e21c6a25 verify_identity {"field": "phone_last4", "answer": "6604"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:13:02 f_5b05b90af9ca create_application {"type": "address_change", "fields": {"street": "Via Roma 14", "city": "Milano", "postcode": "20121"}} -> 200 {"ok": true, "application_id": "APP-519750", "status": "received"}
+20:13:03 f_7a7c6b102335 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:13:03 f_da93e21c6a25 find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": [{"application_id": "APP-300912", "type": "limit_increase", "status": "rejected", "created_on": "2026-08-20", "note": "Income could
+20:13:03 f_6b7e98dd620c verify_identity {"field": "date_of_birth", "answer": "1979-02-11"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 3, "all_verified": false, "hint": "day_month_swapped"}
+20:13:04 f_bc8d668f5201 create_application {"type": "card_replacement", "fields": {"reason": "damaged"}} -> 200 {"ok": true, "application_id": "APP-767403", "status": "received"}
+20:13:05 f_da93e21c6a25 find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": [{"application_id": "APP-300912", "type": "limit_increase", "status": "rejected", "created_on": "2026-08-20", "note": "Income could
+20:13:06 f_ec5de3615524 transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:13:06 f_da93e21c6a25 get_requirements {"type": "limit_increase"} -> 200 {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+20:13:06 f_ec5de3615524 close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:13:07 f_5b05b90af9ca close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:13:07 f_6df11034fa5f transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:13:07 f_ae1f633eddd7 close_call {"reason": "declined", "outcome": "not_verified"} -> 200 {"ok": true}
+20:13:07 f_6df11034fa5f close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:13:08 f_6b7e98dd620c verify_identity {"field": "date_of_birth", "answer": "1979-11-02"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:13:09 f_bc8d668f5201 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:13:16 f_424c2075d9bb transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:13:16 f_424c2075d9bb close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:13:17 f_6b7e98dd620c verify_identity {"field": "phone_last4", "answer": "0385"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+20:13:18 f_da93e21c6a25 create_application {"type": "limit_increase", "fields": {"requested_limit": "3000"}} -> 200 {"ok": true, "application_id": "APP-630853", "status": "received"}
+20:13:20 f_6b7e98dd620c verify_identity {"field": "phone_last4", "answer": "0385"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 1, "all_verified": false}
+20:13:21 f_a3459ddaf91b transfer_to_agent {"queue": "security"} -> 200 {"ok": true}
+20:13:22 f_a3459ddaf91b close_call {"reason": "security", "outcome": "transferred"} -> 200 {"ok": true}
+20:13:22 f_da93e21c6a25 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:13:23 f_b29a3a656a3e verify_identity {"field": "date_of_birth", "answer": "1976-12-05"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+20:13:24 f_6b7e98dd620c verify_identity {"field": "phone_last4", "answer": "3580"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 0, "all_verified": false}
+20:13:24 f_6b7e98dd620c close_call {"reason": "failed", "outcome": "not_verified"} -> 200 {"ok": true}
+20:13:24 f_6d1e15186d93 verify_identity {"field": "date_of_birth", "answer": "1979-11-02"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:13:26 f_7717cb877012 verify_identity {"field": "date_of_birth", "answer": "1993-04-28"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:13:30 f_86981a21d9f0 transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:13:30 f_86981a21d9f0 close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:13:33 f_c210fb2f13ae transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:13:33 f_b29a3a656a3e verify_identity {"field": "date_of_birth", "answer": "1970-03-03"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 1, "all_verified": false}
+20:13:33 f_c210fb2f13ae close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:13:34 f_158371cb394f close_call {"reason": "declined", "outcome": "not_verified"} -> 200 {"ok": true}
+20:13:35 f_6d1e15186d93 verify_identity {"field": "phone_last4", "answer": "0358"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:13:35 f_67cfcf9c73f7 verify_identity {"field": "date_of_birth", "answer": "1980-06-10"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+20:13:38 f_67cfcf9c73f7 verify_identity {"field": "date_of_birth", "answer": "1975-12-05"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 2, "all_verified": false}
+20:13:39 f_6d1e15186d93 get_application {"application_id": "APP-111111"} -> 200 {"ok": false, "error": "unknown application_id"}
+20:13:40 f_66a7f4847dfe verify_identity {"field": "date_of_birth", "answer": "1993-04-28"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:13:40 f_7717cb877012 close_call {"reason": "declined", "outcome": "not_verified"} -> 200 {"ok": true}
+20:13:42 f_32f7d5138967 verify_identity {"field": "date_of_birth", "answer": "1981-08-11"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:13:42 f_6d1e15186d93 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": [{"application_id": "APP-305577", "type": "address_change", "status": "received", "created_on": "2026-10-11", "note": ""}]}
+20:13:44 f_67cfcf9c73f7 verify_identity {"field": "phone_last4", "answer": "4412"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 1, "all_verified": false}
+20:13:44 f_66a7f4847dfe verify_identity {"field": "phone_last4", "answer": "3317"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:13:45 f_66a7f4847dfe find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": [{"application_id": "APP-811638", "type": "limit_increase", "status": "in_review", "created_on": "2026-10-09", "note": ""}]}
+20:13:45 f_a769b7bda8c8 verify_identity {"field": "date_of_birth", "answer": "1989-02-23"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:13:45 f_b29a3a656a3e verify_identity {"field": "date_of_birth", "answer": "1975-11-05"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 0, "all_verified": false}
+20:13:45 f_603a4e13eabe verify_identity {"field": "date_of_birth", "answer": "1987-06-03"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:13:45 f_b29a3a656a3e close_call {"reason": "failed", "outcome": "not_verified"} -> 200 {"ok": true}
+20:13:46 f_6d1e15186d93 close_call {"outcome": "status_given"} -> 200 {"ok": true}
+20:13:46 f_32f7d5138967 verify_identity {"field": "phone_last4", "answer": "5560"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:13:46 f_32f7d5138967 find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:13:48 f_a769b7bda8c8 verify_identity {"field": "phone_last4", "answer": "9904"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:13:48 f_67cfcf9c73f7 verify_identity {"field": "phone_last4", "answer": "8860"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 0, "all_verified": false}
+20:13:48 f_32f7d5138967 find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:13:48 f_a769b7bda8c8 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:13:49 f_603a4e13eabe verify_identity {"field": "phone_last4", "answer": "2288"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:13:49 f_67cfcf9c73f7 close_call {"reason": "failed", "outcome": "not_verified"} -> 200 {"ok": true}
+20:13:49 f_32f7d5138967 get_requirements {"type": "limit_increase"} -> 200 {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+20:13:49 f_603a4e13eabe find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:13:50 f_a769b7bda8c8 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:13:50 f_603a4e13eabe find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:13:51 f_a769b7bda8c8 get_requirements {"type": "card_replacement"} -> 200 {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+20:13:52 f_66a7f4847dfe close_call {"outcome": "status_given"} -> 200 {"ok": true}
+20:13:52 f_603a4e13eabe get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:13:56 f_aafdab2cc1bc verify_identity {"field": "date_of_birth", "answer": "1983-10-19"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:13:58 f_c30e9d4f079e transfer_to_agent {"queue": "applications"} -> 200 {"ok": true}
+20:13:59 f_c30e9d4f079e close_call {"reason": "applications", "outcome": "transferred"} -> 200 {"ok": true}
+20:13:59 f_4f911fb35eef verify_identity {"field": "date_of_birth", "answer": "1986-05-17"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:14:00 f_aafdab2cc1bc verify_identity {"field": "phone_last4", "answer": "4410"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:14:00 f_aafdab2cc1bc find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:14:01 f_f1c415624f18 verify_identity {"field": "date_of_birth", "answer": "1975-12-05"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:14:02 f_a769b7bda8c8 create_application {"type": "card_replacement", "fields": {"reason": "expired", "delivery": "home"}} -> 504 {"ok": false, "error": "timeout"} (timed out, went through)
+20:14:02 f_aafdab2cc1bc find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:14:02 f_32f7d5138967 close_call {"reason": "incomplete", "outcome": "no_action"} -> 200 {"ok": true}
+20:14:03 f_a769b7bda8c8 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": [{"application_id": "APP-395763", "type": "card_replacement", "status": "received", "created_on": "2026-10-14", "note": ""}]}
+20:14:03 f_4f911fb35eef verify_identity {"field": "phone_last4", "answer": "1502"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:14:03 f_aafdab2cc1bc get_requirements {"type": "limit_increase"} -> 200 {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+20:14:03 f_4f911fb35eef find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:14:05 f_4f911fb35eef find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:14:06 f_4f911fb35eef get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:14:06 f_f1c415624f18 verify_identity {"field": "phone_last4", "answer": "7093"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:14:06 f_603a4e13eabe create_application {"type": "address_change", "fields": {"street": "Rua das Flores 27", "city": "Porto", "postcode": "40150"}} -> 200 {"ok": true, "application_id": "APP-262168", "status": "received"}
+20:14:06 f_f1c415624f18 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": [{"application_id": "APP-551208", "type": "card_replacement", "status": "more_info_needed", "created_on": "2026-10-08", "note": "A 
+20:14:10 f_a769b7bda8c8 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:14:11 f_aafdab2cc1bc create_application {"type": "limit_increase", "fields": {"requested_limit": "5000", "monthly_income": "3200"}} -> 200 {"ok": true, "application_id": "APP-993505", "status": "received"}
+20:14:12 f_603a4e13eabe close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:14:13 f_3aa0424ed8c4 verify_identity {"field": "date_of_birth", "answer": "1989-02-23"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:14:13 f_f1c415624f18 close_call {"outcome": "status_given"} -> 200 {"ok": true}
+20:14:16 f_aafdab2cc1bc close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:14:17 f_3aa0424ed8c4 verify_identity {"field": "phone_last4", "answer": "9904"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:14:17 f_4f911fb35eef create_application {"type": "address_change", "fields": {"street": "Keizersgracht 101", "city": "Amsterdam", "postcode": "10150"}} -> 200 {"ok": true, "application_id": "APP-031793", "status": "received"}
+20:14:18 f_3aa0424ed8c4 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:14:18 f_5c0689e00a0f close_call {"reason": "declined", "outcome": "not_verified"} -> 200 {"ok": true}
+20:14:19 f_4f911fb35eef find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:14:19 f_f3028b2c8b6f verify_identity {"field": "date_of_birth", "answer": "1988-03-14"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:14:19 f_3aa0424ed8c4 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:14:19 f_4f911fb35eef get_requirements {"type": "card_replacement"} -> 200 {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+20:14:20 f_3aa0424ed8c4 get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:14:26 f_3aeca7e3db71 verify_identity {"field": "date_of_birth", "answer": "1991-08-01"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 3, "all_verified": false, "hint": "day_month_swapped"}
+20:14:26 f_6f589c699ee3 verify_identity {"field": "date_of_birth", "answer": "1975-12-05"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:14:29 f_3aeca7e3db71 verify_identity {"field": "date_of_birth", "answer": "1991-01-08"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:14:29 f_4f911fb35eef create_application {"type": "card_replacement", "fields": {"reason": "damaged"}} -> 200 {"ok": true, "application_id": "APP-075598", "status": "received"}
+20:14:30 f_6f589c699ee3 verify_identity {"field": "phone_last4", "answer": "7093"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:14:30 f_f3028b2c8b6f verify_identity {"field": "phone_last4", "answer": "4471"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:14:30 f_f3028b2c8b6f find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:14:31 f_6f589c699ee3 get_application {"application_id": "APP-990017"} -> 200 {"ok": true, "application_id": "APP-990017", "type": "address_change", "status": "approved", "created_on": "2026-10-02", "note": ""}
+20:14:31 f_acda754b8b5e verify_identity {"field": "date_of_birth", "answer": "1988-03-14"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:14:32 f_f3028b2c8b6f find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:14:32 f_57a24ae00baa close_call {"reason": "out_of_scope", "outcome": "no_action"} -> 200 {"ok": true}
+20:14:32 f_a0fe3f4ef4d7 verify_identity {"field": "date_of_birth", "answer": "1993-04-28"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:14:33 f_4f911fb35eef close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:14:33 f_3aeca7e3db71 verify_identity {"field": "phone_last4", "answer": "6604"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:14:33 f_f3028b2c8b6f get_requirements {"type": "limit_increase"} -> 200 {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+20:14:33 f_3aa0424ed8c4 create_application {"type": "address_change", "fields": {"street": "Main Road 3", "city": "Cork", "postcode": "12345"}} -> 504 {"ok": false, "error": "timeout"} (timed out, went through)
+20:14:33 f_3aeca7e3db71 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:14:35 f_3aeca7e3db71 find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:14:35 f_d59297351b65 transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:14:35 f_3aeca7e3db71 get_requirements {"type": "card_replacement"} -> 200 {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+20:14:35 f_6f589c699ee3 close_call {"outcome": "status_given"} -> 200 {"ok": true}
+20:14:36 f_d59297351b65 close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:14:36 f_acda754b8b5e verify_identity {"field": "phone_last4", "answer": "4471"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:14:36 f_a0fe3f4ef4d7 verify_identity {"field": "phone_last4", "answer": "3317"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:14:36 f_acda754b8b5e find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:14:36 f_a0fe3f4ef4d7 find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:14:37 f_3aa0424ed8c4 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": [{"application_id": "APP-462477", "type": "address_change", "status": "received", "created_on": "2026-10-14", "note": ""}]}
+20:14:38 f_acda754b8b5e find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:14:38 f_a0fe3f4ef4d7 find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:14:38 f_acda754b8b5e get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:14:39 f_a0fe3f4ef4d7 get_requirements {"type": "limit_increase"} -> 200 {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+20:14:41 f_3aa0424ed8c4 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:14:42 f_f3028b2c8b6f create_application {"type": "limit_increase", "fields": {"requested_limit": "20000"}} -> 200 {"ok": true, "application_id": "APP-877666", "status": "received"}
+20:14:42 f_3aeca7e3db71 create_application {"type": "card_replacement", "fields": {"reason": "expired"}} -> 200 {"ok": true, "application_id": "APP-059054", "status": "received"}
+20:14:43 f_fa10f8291c37 close_call {"reason": "out_of_scope", "outcome": "no_action"} -> 200 {"ok": true}
+20:14:46 f_3aeca7e3db71 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:14:48 f_a0fe3f4ef4d7 create_application {"type": "limit_increase", "fields": {"requested_limit": "4500"}} -> 200 {"ok": true, "application_id": "APP-903082", "status": "received"}
+20:14:49 f_f3028b2c8b6f close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:14:52 f_a0fe3f4ef4d7 close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:14:52 f_7cd823482973 transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:14:52 f_7cd823482973 close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:14:53 f_7af933d329ba close_call {"reason": "out_of_scope", "outcome": "no_action"} -> 200 {"ok": true}
+20:14:54 f_acda754b8b5e create_application {"type": "address_change", "fields": {"street": "Elm Street 40", "city": "Boston", "postcode": "02118"}} -> 200 {"ok": true, "application_id": "APP-758118", "status": "received"}
+20:14:57 f_29e67285d139 close_call {"reason": "out_of_scope", "outcome": "no_action"} -> 200 {"ok": true}
+20:14:58 f_39c3ba62d46b transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:14:58 f_39c3ba62d46b close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:14:59 f_acda754b8b5e close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:15:09 f_779ef8f836a5 transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:15:10 f_779ef8f836a5 close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:15:18 f_29004fc26706 transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:15:18 f_29004fc26706 close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:17:39 session f_98ebb4a549d1 case PUB-07 apps 0 faults -
+20:17:39 session f_e45ce41ff392 case PUB-03 apps 0 faults -
+20:17:39 session f_2bd99772ff7e case PUB-11 apps 0 faults -
+20:17:39 session f_bd3db86654cf case PUB-06 apps 0 faults -
+20:17:39 session f_831a12fec06a case PUB-01 apps 0 faults -
+20:17:39 session f_27fff7ee15f6 case PUB-09 apps 0 faults -
+20:17:39 session f_5cc9a7860fbd case PUB-04 apps 0 faults -
+20:17:39 session f_1169009638a1 case PUB-11 apps 0 faults -
+20:17:39 session f_299c7431208d case PUB-02 apps 0 faults -
+20:17:45 f_831a12fec06a transfer_to_agent {"queue": "security"} -> 200 {"ok": true}
+20:17:45 f_831a12fec06a close_call {"reason": "security", "outcome": "transferred"} -> 200 {"ok": true}
+20:17:46 f_1169009638a1 verify_identity {"field": "date_of_birth", "answer": "1987-06-03"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:17:47 f_2bd99772ff7e verify_identity {"field": "date_of_birth", "answer": "1987-06-03"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:17:47 f_e45ce41ff392 transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:17:47 f_5cc9a7860fbd verify_identity {"field": "date_of_birth", "answer": "1984-01-30"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:17:47 f_e45ce41ff392 close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:17:48 f_bd3db86654cf transfer_to_agent {"queue": "general"} -> 200 {"ok": true}
+20:17:48 f_98ebb4a549d1 verify_identity {"field": "date_of_birth", "answer": "1976-12-05"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+20:17:48 f_bd3db86654cf close_call {"reason": "human", "outcome": "transferred"} -> 200 {"ok": true}
+20:17:50 f_5cc9a7860fbd verify_identity {"field": "phone_last4", "answer": "2219"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:17:50 f_2bd99772ff7e verify_identity {"field": "phone_last4", "answer": "2288"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:17:50 f_1169009638a1 verify_identity {"field": "phone_last4", "answer": "2288"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:17:51 f_5cc9a7860fbd find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:17:51 f_2bd99772ff7e find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:17:51 f_1169009638a1 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:17:55 f_5cc9a7860fbd find_applications {"type": "card_replacement"} -> 200 {"ok": true, "applications": []}
+20:17:56 f_1169009638a1 find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:17:56 f_98ebb4a549d1 verify_identity {"field": "date_of_birth", "answer": "1970-03-03"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 1, "all_verified": false}
+20:17:56 f_5cc9a7860fbd get_requirements {"type": "card_replacement"} -> 200 {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+20:17:56 f_2bd99772ff7e find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:17:57 f_1169009638a1 get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:17:57 f_2bd99772ff7e get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:17:58 f_27fff7ee15f6 verify_identity {"field": "date_of_birth", "answer": "1981-08-11"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:17:59 f_98ebb4a549d1 verify_identity {"field": "date_of_birth", "answer": "1975-11-05"} -> 200 {"ok": true, "verified": false, "wrong_answers_left": 0, "all_verified": false}
+20:17:59 f_98ebb4a549d1 close_call {"reason": "failed", "outcome": "not_verified"} -> 200 {"ok": true}
+20:18:01 f_27fff7ee15f6 verify_identity {"field": "phone_last4", "answer": "5560"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:18:02 f_27fff7ee15f6 find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:18:03 f_299c7431208d verify_identity {"field": "date_of_birth", "answer": "1979-11-02"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+20:18:04 f_5cc9a7860fbd create_application {"type": "card_replacement", "fields": {"reason": "damaged"}} -> 200 {"ok": true, "application_id": "APP-944994", "status": "received"}
+20:18:08 f_27fff7ee15f6 find_applications {"type": "limit_increase"} -> 200 {"ok": true, "applications": []}
+20:18:09 f_27fff7ee15f6 get_requirements {"type": "limit_increase"} -> 200 {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+20:18:09 f_299c7431208d verify_identity {"field": "phone_last4", "answer": "0358"} -> 200 {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+20:18:10 f_299c7431208d find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:18:11 f_5cc9a7860fbd close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:18:11 f_2bd99772ff7e create_application {"type": "address_change", "fields": {"street": "Avenida Central 8", "city": "Faro", "postcode": "80001"}} -> 200 {"ok": true, "application_id": "APP-478872", "status": "received"}
+20:18:12 f_299c7431208d find_applications {"type": "address_change"} -> 200 {"ok": true, "applications": []}
+20:18:12 f_299c7431208d get_requirements {"type": "address_change"} -> 200 {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+20:18:16 f_2bd99772ff7e close_call {"outcome": "application_created"} -> 200 {"ok": true}
+20:18:18 f_1169009638a1 transfer_to_agent {"queue": "applications"} -> 200 {"ok": true}
+20:18:19 f_1169009638a1 close_call {"reason": "applications", "outcome": "transferred"} -> 200 {"ok": true}

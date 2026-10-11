@@ -16,6 +16,8 @@ def http(path, body=None):
 
 def score_ledger(case, led):
     exp, bad = case["expected"], []
+    if led.get("source") == "transcript" and exp.get("outcome") is None:
+        return {"pass": True, "failed": []}                          # no records to compare: the judge scores the conversation
     got_outcome = (led.get("outcome"), led.get("reason"))
     if got_outcome != (exp["outcome"], exp.get("reason")): bad.append(f"outcome {got_outcome}, expected {(exp['outcome'], exp.get('reason'))}")
     key = lambda p: (p["product_id"], round(float(p["amount"]), 2), p["date"])

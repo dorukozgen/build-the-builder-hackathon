@@ -1,0 +1,849 @@
+{
+ "n": 11,
+ "at": "2026-10-11 18:17:12",
+ "agent_id": "cdfee81f-9cad-47fa-b5a2-297c730c58f1",
+ "version": "created",
+ "seconds": 227,
+ "style": null,
+ "only": true,
+ "public": null,
+ "uncovered_rules": [],
+ "minutes_used": 9.522189566666666,
+ "simulation_id": "06f536a5-8caf-4ffb-b04c-ae9ff907c0c0",
+ "iteration_id": "216f922d-a1be-4c2a-a646-383fe773a885",
+ "status": "completed",
+ "concurrency": 5,
+ "slot": "brief-f",
+ "reps": 1,
+ "rows": [
+  {
+   "id": "GEN-17",
+   "title": "Damaged card replacement, no optional fields",
+   "family": "Happy path",
+   "level": "easy",
+   "fixture": "PUB-04",
+   "rules": [
+    "brief-f:1",
+    "brief-f:2",
+    "brief-f:5",
+    "brief-f:9",
+    "brief-f:12",
+    "brief-f:19",
+    "brief-f:20",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "outcome (None, None), expected ('application_created', None)",
+    "the call was not closed with close_call",
+    "conversation: The agent successfully used the prescribed opening, identified the request as a card replacement before starting security verification, and addressed the customer as Ms Hoffmann only after verification. The agent also correctly read the application ID and status details digit by digit. However, the agent failed the closing criteria: there was no one-sentence summary of the actions and expectations"
+   ],
+   "categories": [
+    "conversation",
+    "not_closed",
+    "outcome"
+   ],
+   "flags": [
+    "hung_up",
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1984-01-30"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "2219"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "damaged"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-359911",
+      "status": "received"
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 17.4,
+   "ended": "customer-ended-call",
+   "turns": 16,
+   "transcript": "results/bench/brief-f/run-11/GEN-17.md",
+   "call_id": "e2954100-a0cb-4e49-aa64-1e52708cab77",
+   "flaky": false,
+   "changed": false,
+   "sig": "6489fbccbc",
+   "promised": 0
+  },
+  {
+   "id": "GEN-21",
+   "title": "Wants a personal loan application, declines the transfer",
+   "family": "Unsupported",
+   "level": "easy",
+   "fixture": "PUB-02",
+   "rules": [
+    "brief-f:3",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "close_call",
+     "args": {
+      "reason": "unsupported",
+      "outcome": "no_action"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 12.6,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-11/GEN-21.md",
+   "call_id": "af9d3c65-a46d-4f3e-8054-6bef909a6663",
+   "flaky": false,
+   "changed": false,
+   "sig": "50d5ee4297",
+   "promised": 0
+  },
+  {
+   "id": "GEN-28",
+   "title": "Status enquiry on an application in review",
+   "family": "Status enquiry",
+   "level": "easy",
+   "fixture": "PUB-01",
+   "rules": [
+    "brief-f:5",
+    "brief-f:23",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "outcome ('no_action', 'out_of_scope'), expected ('status_given', None)",
+    "conversation: The conversation failed to meet two of the success criteria: 1) The agent did not state that the application is 'being reviewed' (it was unable to find the application at all). 2) When the user asked 'When will I hear?', the agent responded with 'I do not have that information' instead of the required timeframe of 'within five business days'. Identity verification was correctly performed before ca"
+   ],
+   "categories": [
+    "conversation",
+    "outcome"
+   ],
+   "flags": [
+    "slow"
+   ],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1988-03-14"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "4471"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "get_application",
+     "args": {
+      "application_id": "APP482913"
+     },
+     "status": 200,
+     "result": {
+      "ok": false,
+      "error": "unknown application_id"
+     }
+    },
+    {
+     "n": 4,
+     "tool": "close_call",
+     "args": {
+      "reason": "out_of_scope",
+      "outcome": "no_action"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 22.1,
+   "ended": "assistant-ended-call",
+   "turns": 16,
+   "transcript": "results/bench/brief-f/run-11/GEN-28.md",
+   "call_id": "dfbe2edc-9f99-4ba3-a695-0478c4bc5750",
+   "flaky": true,
+   "changed": false,
+   "sig": "0ed1b62476",
+   "promised": 0
+  },
+  {
+   "id": "GEN-34",
+   "title": "Lost card at the start of the call",
+   "family": "Security",
+   "level": "easy",
+   "fixture": "PUB-12",
+   "rules": [
+    "brief-f:27",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "security"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "security",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 5.6,
+   "ended": "assistant-ended-call",
+   "turns": 3,
+   "transcript": "results/bench/brief-f/run-11/GEN-34.md",
+   "call_id": "a9f93231-cab2-4146-9522-d7adc24a6949",
+   "flaky": false,
+   "changed": false,
+   "sig": "4a540de838",
+   "promised": 0
+  }
+ ],
+ "fixed": [],
+ "regressed": [
+  "GEN-17",
+  "GEN-28"
+ ],
+ "still_failing": [],
+ "promised_passed": 0,
+ "median_slowest_s": 17.4,
+ "worst_slowest_s": 22.1,
+ "slow": true,
+ "hung_up": 1,
+ "all_pass": false,
+ "styles_run": [
+  "corrects"
+ ],
+ "cases": {
+  "GEN-17": {
+   "pass": false,
+   "sig": "6489fbccbc",
+   "categories": [
+    "conversation",
+    "not_closed",
+    "outcome"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-21": {
+   "pass": true,
+   "sig": "50d5ee4297",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-28": {
+   "pass": false,
+   "sig": "0ed1b62476",
+   "categories": [
+    "conversation",
+    "outcome"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-34": {
+   "pass": true,
+   "sig": "4a540de838",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  }
+ },
+ "stats": {
+  "covered": 4,
+  "total": 63,
+  "cases": {
+   "GEN-17": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Happy path",
+    "rules": [
+     "brief-f:1",
+     "brief-f:2",
+     "brief-f:5",
+     "brief-f:9",
+     "brief-f:12",
+     "brief-f:19",
+     "brief-f:20",
+     "brief-f:29",
+     "brief-f:30"
+    ]
+   },
+   "GEN-21": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Unsupported",
+    "rules": [
+     "brief-f:3",
+     "brief-f:29",
+     "brief-f:30"
+    ]
+   },
+   "GEN-28": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Status enquiry",
+    "rules": [
+     "brief-f:5",
+     "brief-f:23",
+     "brief-f:29"
+    ]
+   },
+   "GEN-34": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Security",
+    "rules": [
+     "brief-f:27",
+     "brief-f:29"
+    ]
+   }
+  },
+  "actions": [
+   {
+    "priority": 1,
+    "case": "GEN-17",
+    "family": "Happy path",
+    "rules": [
+     "brief-f:1",
+     "brief-f:2",
+     "brief-f:5",
+     "brief-f:9",
+     "brief-f:12",
+     "brief-f:19",
+     "brief-f:20",
+     "brief-f:29",
+     "brief-f:30"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   },
+   {
+    "priority": 1,
+    "case": "GEN-28",
+    "family": "Status enquiry",
+    "rules": [
+     "brief-f:5",
+     "brief-f:23",
+     "brief-f:29"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   }
+  ],
+  "results": 4,
+  "mean_rate": 50.0,
+  "ci": [
+   15.0,
+   85.0
+  ],
+  "flakiness": 0.0,
+  "stability": 100.0,
+  "robustness": 65.0,
+  "categories": {
+   "Failing": 2,
+   "Flaky": 0,
+   "Mostly Passing": 0,
+   "Stable": 2
+  },
+  "missing": 46,
+  "runs_pooled": [
+   11
+  ]
+ },
+ "next_concurrency": 5,
+ "concurrency_note": "the agent was slow (median slowest turn 17 s, 1 hang-up): halved",
+ "all_rows": [
+  [
+   {
+    "id": "GEN-17",
+    "level": "easy",
+    "family": "Happy path",
+    "pass": false,
+    "failed": [
+     "outcome (None, None), expected ('application_created', None)",
+     "the call was not closed with close_call",
+     "conversation: The agent successfully used the prescribed opening, identified the request as a card replacement before starting security verification, and addressed the customer as Ms Hoffmann only after verification. The agent also correctly read the application ID and status details digit by digit. However, the agent failed the closing criteria: there was no one-sentence summary of the actions and expectations"
+    ],
+    "call_id": "e2954100-a0cb-4e49-aa64-1e52708cab77",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "create_application"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1984-01-30"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "2219"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "damaged"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-359911",
+       "status": "received"
+      }
+     }
+    ],
+    "customer_id": "f_97db5a157c80",
+    "slowest_turn_s": 17.4,
+    "ended": "customer-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-21",
+    "level": "easy",
+    "family": "Unsupported",
+    "pass": true,
+    "failed": [],
+    "call_id": "af9d3c65-a46d-4f3e-8054-6bef909a6663",
+    "tools": [
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "close_call",
+      "args": {
+       "reason": "unsupported",
+       "outcome": "no_action"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_d3910d5ca38e",
+    "slowest_turn_s": 12.6,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-28",
+    "level": "easy",
+    "family": "Status enquiry",
+    "pass": false,
+    "failed": [
+     "outcome ('no_action', 'out_of_scope'), expected ('status_given', None)",
+     "conversation: The conversation failed to meet two of the success criteria: 1) The agent did not state that the application is 'being reviewed' (it was unable to find the application at all). 2) When the user asked 'When will I hear?', the agent responded with 'I do not have that information' instead of the required timeframe of 'within five business days'. Identity verification was correctly performed before ca"
+    ],
+    "call_id": "dfbe2edc-9f99-4ba3-a695-0478c4bc5750",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "get_application",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1988-03-14"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "4471"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "get_application",
+      "args": {
+       "application_id": "APP482913"
+      },
+      "status": 200,
+      "result": {
+       "ok": false,
+       "error": "unknown application_id"
+      }
+     },
+     {
+      "n": 4,
+      "tool": "close_call",
+      "args": {
+       "reason": "out_of_scope",
+       "outcome": "no_action"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_a9438e7ca567",
+    "slowest_turn_s": 22.1,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   },
+   {
+    "id": "GEN-34",
+    "level": "easy",
+    "family": "Security",
+    "pass": true,
+    "failed": [],
+    "call_id": "a9f93231-cab2-4146-9522-d7adc24a6949",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "security"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "security",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_fd4492ddbfbe",
+    "slowest_turn_s": 5.6,
+    "ended": "assistant-ended-call",
+    "forbidden": []
+   }
+  ]
+ ]
+}

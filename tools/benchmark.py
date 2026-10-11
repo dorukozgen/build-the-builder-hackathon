@@ -15,7 +15,7 @@ leaves them out of a full run in a fix round between two full runs that play the
 Every report scores the agent statistically over all results of the same saved version of the agent (section "Statistics on this
 version"): pass rates with Wilson intervals, flakiness, categories, a fix order and a hidden-brief estimate. See docs/statistical-benchmark-guide.md.
 """
-import argparse, collections, datetime, hashlib, json, math, pathlib, re, shutil, sys, time, urllib.error
+import argparse, collections, datetime, hashlib, json, math, pathlib, re, shutil, sys, time, urllib.error, urllib.request
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "tools"))
 if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")   # the console and the builder read UTF-8
@@ -23,7 +23,7 @@ import freya
 import run_cases
 from run_cases import STYLES
 
-BANK_FIELDS = ("variables", "identity", "products", "faults")        # come from the fixture, never from a generated case
+BANK_FIELDS = ("variables", "identity", "products", "faults", "persona", "language")   # come from the fixture, never from a generated case
 REQUIRED = ("id", "fixture", "title", "family", "level", "rules", "script", "expected", "checks")
 OPTIONAL = ("brief", "style", "third_party", "forbidden_tools", "backend")        # backend: state a self-hosted mock sets up for the case (existing records, faults)
 LEVELS = ("easy", "medium", "hard")
@@ -34,9 +34,22 @@ BUDGET_MIN = 30                                                      # a builder
 FINAL_RUNS, HIDDEN_CASES = 3, 60                                     # the final plays each unseen customer 3 times and counts it only when all 3 pass
 
 
-def load_fixtures(path=ROOT / "public-test-set.json"):
+PUBLIC_SET = ROOT / "public-test-set.json"                           # the practice customers of the kit's briefs
+
+
+def load_fixtures(path=PUBLIC_SET):
     """The practice customers by id. Their bank data is the only bank data the mock can play."""
     return {c["id"]: c for c in json.load(open(path, encoding="utf-8"))}
+
+
+def fixtures_path(cases_path=None):
+    """A brief that brings its own test customers has them in tests/<slot>.fixtures.json; the others use the practice customers."""
+    own = ROOT / "tests" / f"{slot_of(cases_path)}.fixtures.json" if cases_path else None
+    return own if own and own.exists() else PUBLIC_SET
+
+
+def own_fixtures(cases_path=None):
+    return fixtures_path(cases_path) != PUBLIC_SET
 
 
 def load_openapi(path=ROOT / "tools" / "openapi.json"):
@@ -87,8 +100,9 @@ def is_date(s):
     except (TypeError, ValueError): return False
 
 
-def check_cases(cases, fixtures, openapi, rule_ids=None):
-    """Validate a cases file without running it. Returns (errors, warnings, coverage). Any error stops a run."""
+def check_cases(cases, fixtures, openapi, rule_ids=None, own=False):
+    """Validate a cases file without running it. Returns (errors, warnings, coverage). Any error stops a run. With `own` fixtures (the
+    brief's own test customers) `expected` may leave out the records: the judge scores the conversation and the tool calls."""
     errors, warnings = [], []
     en, tools, exempt = enums(openapi), tool_names(openapi), reason_exempt_outcomes(openapi)
     if not isinstance(cases, list): return ["the cases file must be a JSON list"], [], {}
@@ -118,8 +132,9 @@ def check_cases(cases, fixtures, openapi, rule_ids=None):
         exp = c.get("expected")
         if not isinstance(exp, dict): err("expected must be an object"); continue
         for k in EXPECTED_KEYS:
-            if k not in exp: err(f"expected.{k} missing")
+            if k not in exp and not own: err(f"expected.{k} missing")
         allowed = en.get("close_call", {}).get("outcome")
+        if own and exp.get("outcome") is None: allowed = exempt = None          # no record expected: nothing to check against the tool API
         if allowed and exp.get("outcome") not in allowed: err(f"expected.outcome {exp.get('outcome')!r} is not in the tool API: {allowed}")
         if exempt and exp.get("outcome") not in exempt and not exp.get("reason"):
             warnings.append(f"{cid}: expected.reason is empty for outcome {exp.get('outcome')!r}; the tool API wants a reason for every outcome but {sorted(exempt)}")
@@ -160,6 +175,9 @@ def check_cases(cases, fixtures, openapi, rule_ids=None):
 def print_fixtures(fixtures):
     for c in fixtures.values():
         v = c["variables"]
+        if c.get("persona") is not None:                                  # a brief's own test customer
+            print(f"{c['id']}  variables {json.dumps(v, ensure_ascii=False)}" + (f"  language {c['language']}" if c.get("language") else ""))
+            print("  persona: " + c["persona"][:300]); continue
         print(f"{c['id']}  brief {c['brief']}  {v['title']} {v['first_name']} {v['last_name']}  now {v['now']}  public case: \"{c['title']}\"")
         print("  identity: " + ", ".join(f"{k}={x}" for k, x in c["identity"].items()))
         for pid, p in zip(product_ids(c), c["products"]):
@@ -217,6 +235,7 @@ def load_universal(fixtures, openapi, path=None):
     if not path.exists(): return [], []
     fields, cases, skipped = enums(openapi).get("verify_identity", {}).get("field"), [], []
     for c in json.load(open(path, encoding="utf-8")):
+        if c["fixture"] not in fixtures: skipped.append(c["id"]); continue          # a brief's own customers: the practice ones are not there
         if fields and not c.get("third_party") and set(fixtures[c["fixture"]]["identity"]) - set(fields): skipped.append(c["id"]); continue
         cases.append({**merge_with_fixture(c, fixtures), "expected": dict(NO_EXPECTATION), "suite": "universal"})
     return cases, skipped
@@ -254,8 +273,9 @@ def write_test_set(cases_path, gen, fixtures):
 
 
 def applications_created(calls):
-    """Types of the applications that successful create_application calls recorded, in call order."""
-    return [str((c.get("args") or {}).get("type")) for c in calls if c.get("tool") == "create_application" and (c.get("result") or {}).get("ok")]
+    """Types of the applications that create_application calls recorded, in call order: the successful ones, and the ones the mock
+    marks `delayed`, which went through although the agent got a timeout."""
+    return [str((c.get("args") or {}).get("type")) for c in calls if c.get("tool") == "create_application" and ((c.get("result") or {}).get("ok") or c.get("delayed"))]
 
 
 def applications_failed(expected, calls):
@@ -484,6 +504,18 @@ def suggest_next(run, history, minutes_used):
     """What the numbers say about the next run. The builder decides; this lays out the options. `history` ends with `run`."""
     rows, out = run["rows"], []
     failed = [r["id"] for r in rows if not r["pass"]]; fl = [r["id"] for r in rows if r["flaky"]]
+    if run.get("no_reply"):
+        nr = run["no_reply"]["cases"]
+        out.append(f"Not scored (the agent's model did not answer): {len(nr)} cases. They tested nothing; do not change the workflow because of them. "
+                   + (run["no_reply"].get("diagnosis") or "") + f" Then `--only {','.join(nr[:20])}`" + (" and the others it names." if len(nr) > 20 else "."))
+    if run.get("unreached"):
+        ur = run["unreached"]
+        out.append(f"Not scored (a tool call could not reach the bank's host): {len(ur)} cases. They tested the tunnel, not the agent; do not change the workflow because of them. "
+                   f"Run them again with `--only {','.join(ur[:20])}`" + (" and the others it names." if len(ur) > 20 else "."))
+    if run.get("cut"):
+        np_ = run["cut"]["not_played"]
+        out.append(f"Not played (the run reached its {run['cut']['limit_min']:.0f}-minute time limit): {len(np_)} cases. The failures below come from the cases that finished, "
+                   f"which the run started first because they failed before. Fix those, then play the rest with `--only {','.join(np_[:20])}`" + (" and the others it names." if len(np_) > 20 else "."))
     if run["regressed"]: out.append(f"Regressions first: {', '.join(run['regressed'])} passed before and fail now. Fix, then `--only {','.join(run['regressed'])}`.")
     hard = [i for i in failed if i not in fl and i not in run["regressed"]]
     if hard: out.append(f"Failing: {', '.join(hard)}. Read their transcripts, fix, re-run `--only {','.join(hard)}`, then a full run for regressions.")
@@ -574,7 +606,18 @@ def write_report(slot, run, history):
          f"- promised on passed cases: {run['promised_passed']:.2f} (the organisers' first tie-breaker)",
          f"- fixed since the previous run: {', '.join(run['fixed']) or 'none'}",
          f"- regressed: {', '.join(run['regressed']) or 'none'}",
-         f"- still failing: {', '.join(run['still_failing']) or 'none'}", ""]
+         f"- still failing: {', '.join(run['still_failing']) or 'none'}"]
+    if run.get("cut"):
+        np_ = run["cut"]["not_played"]
+        L.append(f"- **cut at the {run['cut']['limit_min']:.0f}-minute time limit**: {len(np_)} cases were not played and are not scored: {', '.join(np_)}. "
+                 f"Run them with `--only {','.join(np_)}`.")
+    if run.get("no_reply"):
+        nr = run["no_reply"]["cases"]
+        L.append(f"- **not scored, the agent's model did not answer**: {len(nr)} cases: {', '.join(nr)}. {run['no_reply'].get('diagnosis') or ''}")
+    if run.get("unreached"):
+        L.append(f"- **not scored, a tool call could not reach the bank's host**: {len(run['unreached'])} cases: {', '.join(run['unreached'])}. "
+                 f"Run them again with `--only {','.join(run['unreached'])}`.")
+    L.append("")
     if run.get("stats"):
         pooled = run["stats"].get("runs_pooled") or [run["n"]]
         scope = (f"agent version {run['version']}, " + ("run " if len(pooled) == 1 else "runs ") + ", ".join(map(str, pooled)) if run.get("version") is not None
@@ -586,7 +629,10 @@ def write_report(slot, run, history):
     for cid in ids:
         marks = [("✓" if h["cases"][cid]["pass"] else "✗") if cid in h["cases"] else "–" for h in history]
         r = current.get(cid)
-        notes = ", ".join(x for x in (("flaky" if r["flaky"] else ""), ("changed" if r["changed"] else "")) if x) if r else ("not in this run" if run["only"] else "removed")
+        notes = (", ".join(x for x in (("flaky" if r["flaky"] else ""), ("changed" if r["changed"] else "")) if x) if r else
+                 "not played (time limit)" if cid in ((run.get("cut") or {}).get("not_played") or []) else
+                 "not scored (no reply)" if cid in ((run.get("no_reply") or {}).get("cases") or []) else
+                 "not scored (host unreachable)" if cid in (run.get("unreached") or []) else "not in this run" if run["only"] else "removed")
         L.append(f"| {cid} | " + " | ".join(marks) + f" | {notes} |")
     L.append("")
     if run.get("uncovered_rules") is not None:
@@ -611,6 +657,7 @@ def write_report(slot, run, history):
         if r["pass"]: L.append(f"- {r['id']} {r['title']} · {r['turns'] if r['turns'] is not None else '?'} turns · " + (" > ".join(c["tool"] for c in r["calls"]) or "no tools") + f" · slowest {r['slowest_turn_s']} s · `{r['transcript']}`")
     L += ["", "## Timing", "",
           f"median slowest agent turn {run['median_slowest_s']:.0f} s · worst {run['worst_slowest_s']:.0f} s · failed calls where the customer hung up: {run['hung_up']}"
+          + (f" · replies over {SLOW_S:.0f} s: {100 * run['slow_share']:.0f}% · customers who hung up waiting: {run.get('waited_out', 0)}" if run.get("slow_share") is not None else "")
           + (" · **the agent was slow in this run; a re-run may score higher**" if run["slow"] else ""),
           (f"calls at a time: {run['concurrency']} in this run; next run {run['next_concurrency']} ({run['concurrency_note']})" if run.get("concurrency") else ""), "",
           "## What this run suggests", ""] + [f"- {s}" for s in suggest_next(run, history, run.get("minutes_used"))] + [""]
@@ -640,8 +687,13 @@ def rule_ids_from(files):
     return ids
 
 
-FAST_S, SLOW_S = 6.0, 10.0                                           # median slowest turn: under FAST_S the model has room; over SLOW_S customers hang up
-TUNNEL_MAX = 20                                                      # a free tunnel to a self-hosted mock rate-limits requests; keep its waves small
+SLOW_S = run_cases.SLOW_TURN_S                                       # a reply slower than this is a slow one
+RAISE_SHARE, HALVE_SHARE = 0.12, 0.25                                # slow replies in a run that used every slot: 5-8% when the model was well, 16-17% busy, 50% failing
+CONCURRENCY_RULE = 2                                                 # a value settled by an older rule is not reused
+TUNNEL_MAX = 12                                                      # a free tunnel refused every connection for a minute once ~115-125 had arrived
+                                                                     # within one: 20 calls plus the benchmark's 63 sessions did it, and so did 16 calls
+                                                                     # alone, whose first minute (every call verifying identity at once) sent 114; at 12
+                                                                     # the busiest minute carried 70
 
 
 def concurrency_file(slot): return ROOT / "results" / "bench" / slot / "concurrency.json"
@@ -650,24 +702,155 @@ def concurrency_file(slot): return ROOT / "results" / "bench" / slot / "concurre
 def pick_concurrency(slot, host=None):
     """Calls at a time for this slot's next simulation: the value the last run settled on, else run_cases.CONCURRENCY. A self-hosted
     mock behind a tunnel caps it at TUNNEL_MAX."""
-    try: n = int(json.loads(concurrency_file(slot).read_text(encoding="utf-8")).get("concurrency") or 0)
+    try:
+        d = json.loads(concurrency_file(slot).read_text(encoding="utf-8"))
+        n = int(d.get("concurrency") or 0) if d.get("rule") == CONCURRENCY_RULE else 0
     except (OSError, ValueError, AttributeError): n = 0
     n = n or run_cases.CONCURRENCY
     return max(run_cases.CONCURRENCY_MIN, min(n, TUNNEL_MAX if host else run_cases.CONCURRENCY_MAX))
 
 
-def adapt_concurrency(slot, used, median_slowest_s, hung_up, n_cases, host=None):
-    """After a run, settle the next run's concurrency from how the agent kept up: a fast median and no hang-up lets 1.5x more calls play
-    at once, a slow median or a hang-up halves them. Writes the decision for the next run and returns (next, reason)."""
+def adapt_concurrency(slot, used, slow_share, waited_out, n_cases, host=None, unreached=0):
+    """After a run that used every slot, settle the next run's concurrency from how the agent kept up: at most RAISE_SHARE of its
+    replies over SLOW_S and no customer who hung up waiting lets 1.5x more calls play at once; over HALVE_SHARE, or two customers who
+    hung up waiting, halves them. A run with fewer customers than slots keeps the value: it says nothing about the load. Calls that
+    could not reach the bank's host (`unreached`) halve it in any run: a tunnel refuses connections when too many arrive. Writes the
+    decision for the next run and returns (next, reason)."""
     cap = TUNNEL_MAX if host else run_cases.CONCURRENCY_MAX
-    if hung_up or median_slowest_s > SLOW_S:
-        nxt, why = max(run_cases.CONCURRENCY_MIN, used // 2), f"the agent was slow (median slowest turn {median_slowest_s:.0f} s, {hung_up} hang-up{'s' if hung_up != 1 else ''}): halved"
-    elif median_slowest_s < FAST_S and n_cases > used:
-        nxt, why = min(cap, int(used * 1.5)), f"the agent kept up (median slowest turn {median_slowest_s:.0f} s): raised"
-    else: nxt, why = used, "kept"
+    seen = f"{100 * slow_share:.0f}% of replies over {SLOW_S:.0f} s, {waited_out} customer{'s' if waited_out != 1 else ''} hung up waiting"
+    if unreached: nxt, why = used // 2, f"{unreached} call{'s' if unreached != 1 else ''} could not reach the bank's host: halved"
+    elif n_cases < used: nxt, why = used, f"only {n_cases} of {used} slots were in use: kept"
+    elif slow_share > HALVE_SHARE or waited_out >= 2: nxt, why = used // 2, f"the agent was slow ({seen}): halved"
+    elif slow_share <= RAISE_SHARE and not waited_out: nxt, why = int(used * 1.5), f"the agent kept up ({seen}): raised"
+    else: nxt, why = used, f"{seen}: kept"
     nxt = max(run_cases.CONCURRENCY_MIN, min(nxt, cap))
-    concurrency_file(slot).write_text(json.dumps({"concurrency": nxt, "after_run_with": used, "median_slowest_s": median_slowest_s, "hung_up": hung_up, "at": time.strftime("%Y-%m-%d %H:%M:%S")}, indent=1), encoding="utf-8")
+    concurrency_file(slot).write_text(json.dumps({"concurrency": nxt, "rule": CONCURRENCY_RULE, "after_run_with": used, "slow_share": round(slow_share, 3),
+                                                  "waited_out": waited_out, "n_cases": n_cases, "at": time.strftime("%Y-%m-%d %H:%M:%S")}, indent=1), encoding="utf-8")
     return nxt, why
+
+
+def slow_replies(reps_rows):
+    """(share of the agent's replies over SLOW_S, customers who hung up after waiting SLOW_S or more for a reply) over every rep."""
+    rows = [r for rep in reps_rows for r in rep]
+    n = sum(r.get("replies") or 0 for r in rows)
+    waited_out = sum(r.get("ended") == "customer-ended-call" and (r.get("waited_at_end") or 0) >= SLOW_S for r in rows)
+    return (sum(r.get("slow_replies") or 0 for r in rows) / n if n else 0.0), waited_out
+
+
+RUN_LIMIT_MAX, RUN_LIMIT_MIN, RUN_LIMIT_MARGIN = 11, 3, 5            # minutes: with the grace for calls in flight and the scoring, below the builder's 15-minute command limit; leave 5 of the build for a fix
+
+
+def run_time_limit(max_minutes, minutes_used):
+    """Minutes this run may wait for its simulation: --max-minutes when given; inside a build, what the 30 minutes leave after a margin
+    for one fix (at most 11, so that the calls in flight, scoring and transcripts still fit the 15-minute command limit, and at least 3); outside a build, none."""
+    if max_minutes: return max_minutes
+    if minutes_used is None: return None
+    return max(RUN_LIMIT_MIN, min(RUN_LIMIT_MAX, BUDGET_MIN - minutes_used - RUN_LIMIT_MARGIN))
+
+
+def play_order(cases, history):
+    """The order the cases are handed to the simulation: cases that failed the last time they ran first, then cases never run, then
+    cases that passed, the universal cases last. Freya decides the order the calls start in and did not follow this one (run 13 of
+    brief-f started the universal cases first), so a run cut at its time limit can leave out any case."""
+    last = {}
+    for h in history:
+        for cid, c in (h.get("cases") or {}).items(): last[cid] = c.get("pass")
+    def rank(c):
+        if c.get("suite") == "universal": return 3
+        p = last.get(c["id"]); return 0 if p is False else 1 if p is None else 2
+    return sorted(cases, key=rank)
+
+
+# When calls go unanswered, a chat turn tells the model from the workflow: a one-node workflow that only answers in one sentence and
+# the agent's own workflow get the same question side by side. No reply from either: the model is down. A reply from the one-node
+# workflow only: the agent's first reply is broken. The chat route runs the published version on the event's model (freya.update_workflow).
+PROBE_FILE = ROOT / "results" / "probe-workflow.json"
+PROBE_VARS = {"customer_id": "c_probe", "first_name": "Sam", "last_name": "Probe", "title": "Mr", "now": "2026-10-14T11:00"}
+PROBE_WORKFLOW = {"initial_node": "talk", "system_prompt": "You are a test line. Answer every message in one short sentence.",
+                  "nodes": {"talk": {"name": "talk", "node_type": "conversation", "task_message": "Answer the caller in one short sentence.",
+                                     "on_enter": {"type": "tts", "text": "Hello."}, "tools": [], "transitions": []}}}
+
+
+def probe_workflow():
+    """The one-node workflow's id. Created once per workspace and kept in results/probe-workflow.json: a workspace holds a limited
+    number of workflows."""
+    ws = freya.workspace_id()
+    try: known = json.loads(PROBE_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError): known = {}
+    if ws not in known:
+        w = freya.create_workflow("model probe", PROBE_WORKFLOW)
+        freya.update_workflow(w["workflow_id"], PROBE_WORKFLOW)          # sets the event's model and publishes: a chat turn needs both
+        known[ws] = w; PROBE_FILE.parent.mkdir(parents=True, exist_ok=True); PROBE_FILE.write_text(json.dumps(known, indent=1), encoding="utf-8")
+    return known[ws]["workflow_id"]
+
+
+def chat_turn(workflow_id):
+    """A chat call on a published workflow: a greeting, then a question only the model can answer. Returns (state, seconds, text):
+    "answered" with the reply, "no reply" when the gateway gave up waiting for the model (502, 503, 504 or a timeout), "error" otherwise
+    (a bare 500 means the workflow cannot start a call at all)."""
+    def failed(e, t):
+        gave_up = isinstance(e, (TimeoutError, urllib.error.URLError)) or re.search(r"-> 50[234]\b", str(e))
+        return ("no reply" if gave_up else "error"), time.time() - t, " ".join(str(e).split())[:160]
+    t = time.time()
+    try: cid = freya.api("POST", "/api/v2/chat/message", {"workflowId": workflow_id, "message": "Hello?", "customerVariables": PROBE_VARS}).get("callId")
+    except Exception as e: return failed(e, t)
+    t = time.time()
+    try:
+        r = freya.api("POST", "/api/v2/chat/message", {"workflowId": workflow_id, "callId": cid, "message": "Can you hear me? Answer in one sentence.", "customerVariables": PROBE_VARS})
+        out = ("answered", time.time() - t, " ".join(str(r.get("response") or "").split())[:100])
+    except Exception as e: out = failed(e, t)
+    try: freya.api("POST", "/api/v2/chat/end", {"callId": cid})
+    except Exception: pass
+    return out
+
+
+def workflow_of(agent_id, path=None):
+    """The workflow id of an agent saved through freya.save_workflow, else None."""
+    try: slots = json.loads(pathlib.Path(path or ROOT / ".freya-agents.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError): return None
+    return next((s.get("workflow_id") for s in (slots.values() if isinstance(slots, dict) else []) if isinstance(s, dict) and s.get("agent_id") == agent_id), None)
+
+
+def diagnose(agent_id):
+    """Is the agent's model answering? Returns (state, text): state "down" (the model answers nobody), "workflow" (the model answers
+    the one-node workflow but not the agent's) or "up"; text says what to do."""
+    import concurrent.futures
+    own_wf = workflow_of(agent_id)
+    try: ref_wf, ref_err = probe_workflow(), None
+    except Exception as e: ref_wf, ref_err = None, " ".join(str(e).split())[:160]
+    with concurrent.futures.ThreadPoolExecutor(2) as ex:
+        ref = ex.submit(chat_turn, ref_wf) if ref_wf else None
+        own = ex.submit(chat_turn, own_wf) if own_wf else None
+        ref = ref.result() if ref else ("error", 0.0, ref_err or "no test workflow")
+        own = own.result() if own else ("error", 0.0, "the agent is not in .freya-agents.json")
+    again = f"`python tools/benchmark.py {agent_id} --probe`"
+    if ref[0] == "answered" and own[0] == "no reply":
+        return "workflow", (f"The model answers (a one-node test workflow replied in {ref[1]:.0f} s) but your workflow gave no reply to a chat turn in {own[1]:.0f} s: "
+                            "its first reply is broken. Look at what your last save changed, fix it, save, and run again.")
+    if "answered" in (ref[0], own[0]):
+        took = ", ".join(f"{who} {x[1]:.0f} s" for who, x in (("one-node test workflow", ref), ("your workflow", own)) if x[0] == "answered")
+        return "up", (f"The model answers ({took}). Calls that went unanswered in a simulation met a model that was down or overloaded then: run the same command again.")
+    if "no reply" in (ref[0], own[0]):
+        return "down", (f"The phone agent's model is not answering: a chat turn got no reply in {max(ref[1], own[1]):.0f} s"
+                        + (" from a one-node test workflow either" if ref[0] == "no reply" else "") + ". Nothing in your workflow causes this and the unanswered calls "
+                        f"tested nothing: change nothing because of them. Probe again in two minutes with {again}; when it answers, run the same benchmark command again.")
+    return "unknown", (f"The chat probe could not tell (test workflow: {ref[2]}; your workflow: {own[2]}). "
+                       f"Wait two minutes and run {again}, or run the same benchmark command again.")
+
+
+def practice_host(host):
+    """Where the benchmark itself opens sessions and reads ledgers. For a tunnel opened on this machine (ngrok's local API on port
+    4040 lists it), its local address: it answers the same, and the tunnel then carries only Freya's tool calls. Else `host`."""
+    host = host.rstrip("/")
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:4040/api/tunnels", timeout=2) as r: tunnels = json.load(r).get("tunnels") or []
+    except (OSError, ValueError, AttributeError): return host
+    for t in tunnels:
+        if str(t.get("public_url") or "").rstrip("/") == host:
+            addr = str((t.get("config") or {}).get("addr") or "")
+            if addr.isdigit(): return f"http://127.0.0.1:{addr}"
+            if addr: return (addr if addr.startswith("http") else "http://" + addr).rstrip("/").replace("://localhost", "://127.0.0.1")   # localhost tries IPv6 first: 2 s a request
+    return host
 
 
 def minutes_since_builder_start():
@@ -685,16 +868,18 @@ def minutes_since_builder_start():
 
 def run(a):
     t0 = time.time()
-    fixtures, openapi = load_fixtures(), load_openapi(a.openapi)
+    fixtures, openapi, own = load_fixtures(fixtures_path(a.cases)), load_openapi(a.openapi), own_fixtures(a.cases)
     gen = json.load(open(a.cases, encoding="utf-8"))
     rule_ids = rule_ids_from(a.rules)
-    errors, warnings, cov = check_cases(gen, fixtures, openapi, rule_ids)
+    errors, warnings, cov = check_cases(gen, fixtures, openapi, rule_ids, own)
     print_check(errors, warnings, cov)
     if errors: sys.exit(2)
     write_test_set(a.cases, gen, fixtures)
     universal, skipped = load_universal(fixtures, openapi)
     if skipped: print("universal cases left out, this tool API cannot verify their fixtures' identity fields: " + ", ".join(skipped))
     cases = [merge_with_fixture(c, fixtures) for c in gen] + universal
+    if own:                                                          # records the case leaves out are not expected: the judge scores
+        for c in cases: c["expected"] = {**NO_EXPECTATION, **(c.get("expected") or {})}
     if a.public: cases += [c for c in fixtures.values() if c["brief"] == a.public]
     every = cases                                                    # the statistics cover the whole set, --only or --skip-universal or not
     if a.skip_universal: cases = [c for c in cases if c.get("suite") != "universal"]
@@ -704,12 +889,17 @@ def run(a):
     busy = run_cases.running_simulations()
     if busy: print("the workspace is busy: " + ", ".join(f"simulation {s.get('name')!r} ({s.get('status')}) since {s.get('createdAt')}" for s in busy[:3])
                    + ". This run queues behind it; a simulation of this size takes 3 to 11 minutes.", flush=True)
+    cases = play_order(cases, history)
     ids = run_cases.ensure_personas(cases, a.style)
     concurrency = pick_concurrency(slot, getattr(a, "host", None))
-    print(f"{len(cases)} customers, {concurrency} calls at a time: about {-(-len(cases) // concurrency)} wave{'s' if len(cases) > concurrency else ''} of a minute or so each", flush=True)
+    limit = run_time_limit(getattr(a, "max_minutes", None), minutes_since_builder_start())
+    deadline = t0 + limit * 60 if limit else None
+    print(f"{len(cases)} customers, {concurrency} calls at a time: about {-(-len(cases) // concurrency)} wave{'s' if len(cases) > concurrency else ''} of a minute or so each"
+          + (f"; time limit {limit:.0f} min, then the calls that finished are scored and the rest reported as not played" if limit else ""), flush=True)
     reps_rows, total_s, n_reps = [], 0.0, max(1, a.reps)
     for rep in range(n_reps):
-        rows, sim_id, it_id, status, took, med = run_cases.run_once(a.agent_id, cases, ids, a.style, concurrency)
+        if deadline and rep and time.time() > deadline - 60: print(f"-- no time left for rep {rep + 1} of {n_reps}"); break
+        rows, sim_id, it_id, status, took, med = run_cases.run_once(a.agent_id, cases, ids, a.style, concurrency, deadline)
         for r, c in zip(rows, cases):
             if c.get("suite") == "universal": r["failed"] = universal_failures(r["failed"]); r["pass"] = not r["failed"]
             r["forbidden"] = sorted({t for t in r["tools"] if t in (c.get("forbidden_tools") or [])})
@@ -720,6 +910,38 @@ def run(a):
         uni = [r for r, c in zip(rows, cases) if c.get("suite") == "universal"]
         if uni: print(f"-- universal cases, judged on the conversation, close_call last and identity first: {sum(r['pass'] for r in uni)} / {len(uni)} passed.")
         if n_reps > 1: print(f"-- rep {rep + 1} of {n_reps}: {sum(r['pass'] for r in rows)} / {len(rows)} passed, {took:.0f} s\n")
+        if status == "silent" and rep + 1 < n_reps: print("-- the agent's model stopped answering: no further reps"); break
+    n_reps = len(reps_rows)                                          # fewer than asked when the time limit or a silent model ended the reps
+    played = [all(rep[k].get("played", True) for rep in reps_rows) for k in range(len(cases))]
+    why_not = {}
+    for k, c in enumerate(cases):
+        for rep in reps_rows:
+            if not rep[k].get("played", True): why_not.setdefault(c["id"], rep[k].get("why_not") or "time limit")
+    not_played = [c["id"] for c, p in zip(cases, played) if not p]
+    unanswered = [i for i in not_played if why_not[i] == "no reply"]           # the model did not answer: these calls tested nothing
+    unreached = [i for i in not_played if why_not[i] == "host"]                 # the bank's host could not be reached: they tested the outage
+    timed_out = [i for i in not_played if why_not[i] not in ("no reply", "host")]
+    diagnosis = None
+    if unanswered:
+        print(f"-- the agent's model did not answer {len(unanswered)} call{'s' if len(unanswered) != 1 else ''}: asking it a chat question to tell the model "
+              "from the workflow (up to a minute)", flush=True)
+        diagnosis = diagnose(a.agent_id)[1]
+        print("-- " + diagnosis, flush=True)
+    if not_played:                                                   # score what was played, name the rest
+        keep = [k for k, p in enumerate(played) if p]
+        cases, reps_rows = [cases[k] for k in keep], [[rep[k] for k in keep] for rep in reps_rows]
+        if timed_out: print(f"-- the run reached its {limit or 0:.0f}-minute time limit: {len(timed_out)} cases were not played: "
+                            + ", ".join(timed_out) + f". Run them with `--only {','.join(timed_out)}`.", flush=True)
+        if unanswered: print(f"-- not scored, the agent's model did not answer: {', '.join(unanswered)}. When it answers, run them with `--only {','.join(unanswered)}`.", flush=True)
+        if unreached: print(f"-- not scored, a tool call could not reach the bank's host: {', '.join(unreached)}. A free tunnel refuses connections for the rest of a minute "
+                            f"once about 120 arrived; the next run plays fewer calls at a time. Run them again with `--only {','.join(unreached)}`.", flush=True)
+        print(f"-- {len(cases)} cases were played and are scored.", flush=True)
+        if not cases:
+            if unreached and not timed_out and not unanswered: sys.exit("Nothing to score: no call could reach the bank's host. Check that the mock and its tunnel run "
+                                                                        "and that the workflow's tool URLs point at the tunnel, then run again.")
+            if unanswered and not timed_out: sys.exit("Nothing to score: the agent's model answered none of the calls. " + diagnosis)
+            sys.exit(f"No case finished within {limit or 0:.0f} minutes, so there is nothing to score: the model is slow or the workspace was busy. "
+                     "Run fewer cases with --only, or wait and run again." + (" " + diagnosis if diagnosis else ""))
     shown = [next((rep[k] for rep in reps_rows if not rep[k]["pass"]), reps_rows[-1][k]) for k in range(len(cases))]   # the first failing rep, else the last
     calls, extra = {}, {}                                            # transcripts: every case, and every rep of a case whose reps disagree
     def fetch(call_id, label):
@@ -732,10 +954,15 @@ def run(a):
                 if rep[k] is not r and rep[k].get("call_id"): extra[(c["id"], i)] = fetch(rep[k]["call_id"], f"{c['id']} rep {i}") or {}
     meta = {"n": n, "at": time.strftime("%Y-%m-%d %H:%M:%S"), "agent_id": a.agent_id, "version": agent_version(a.agent_id), "seconds": round(time.time() - t0),
             "style": a.style, "only": bool(a.only), "public": a.public, "uncovered_rules": cov.get("uncovered_rules"), "minutes_used": minutes_since_builder_start(),
-            "simulation_id": sim_id, "iteration_id": it_id, "status": status, "concurrency": concurrency}
+            "simulation_id": sim_id, "iteration_id": it_id, "status": status, "concurrency": concurrency,
+            "cut": {"limit_min": limit, "not_played": timed_out} if timed_out else None,
+            "no_reply": {"cases": unanswered, "diagnosis": diagnosis} if unanswered else None, "unreached": unreached or None}
+    meta["slow_share"], meta["waited_out"] = slow_replies(reps_rows); meta["slow_share"] = round(meta["slow_share"], 3)
     turns = {cid: sum(m.get("role") in ("user", "assistant") for m in call.get("messages") or []) for cid, call in calls.items()}
     rec = build_run(meta, cases, reps_rows, history, turns, slot, every)
-    rec["next_concurrency"], rec["concurrency_note"] = adapt_concurrency(slot, concurrency, rec["median_slowest_s"], rec["hung_up"], len(cases), getattr(a, "host", None))
+    if unanswered: rec["next_concurrency"], rec["concurrency_note"] = concurrency, f"kept: the model did not answer {len(unanswered)} calls, so this run says nothing about the load"
+    else: rec["next_concurrency"], rec["concurrency_note"] = adapt_concurrency(slot, concurrency, rec["slow_share"], rec["waited_out"], len(cases), getattr(a, "host", None),
+                                                                           unreached=len(unreached))
     (out / f"run-{n:02d}.json").write_text(json.dumps({**rec, "all_rows": reps_rows}, indent=1, ensure_ascii=False), encoding="utf-8")   # the raw record first
     history.append(history_line(rec))
     with open(out / "history.jsonl", "a", encoding="utf-8") as f: f.write(json.dumps(history[-1]) + "\n")
@@ -767,18 +994,26 @@ def main():
     ap.add_argument("--cases", help="tests/<slot>.cases.json"); ap.add_argument("--rules", action="append", default=[], help="a numbered brief or facts file; repeatable")
     ap.add_argument("--public", choices=briefs, help="also run the public customers of this brief"); ap.add_argument("--only", help="case ids, comma separated")
     ap.add_argument("--reps", type=int, default=1); ap.add_argument("--style", choices=sorted(STYLES))
+    ap.add_argument("--max-minutes", type=float, help="stop waiting for the simulation after this many minutes and score the calls that finished; "
+                    "inside a build the limit comes from the 30-minute clock (at most 11)")
     ap.add_argument("--skip-universal", action="store_true", help="leave the universal cases out of this run (a fix round between two full runs); the first and the last full run play them")
     ap.add_argument("--openapi", default=str(ROOT / "tools" / "openapi.json"), help="the tool API file to validate against; default tools/openapi.json")
     ap.add_argument("--host", help="base URL of the bank mock that plays the cases (its /v1/practice endpoints), e.g. a tunnel to tools/mock_bank_f.py; default: the organisers' mock")
+    ap.add_argument("--probe", action="store_true", help="is the agent's model answering? One chat question to the agent's workflow and to a one-node "
+                    "test workflow, side by side (up to a minute); exit 0 when the model answers")
     a = ap.parse_args()
     if a.host:
-        import score; score.HOST = a.host.rstrip("/")
-    if a.fixtures: print_fixtures(load_fixtures()); print_universal(load_fixtures(), load_openapi(a.openapi)); return
+        import score; score.HOST = practice_host(a.host)
+        if score.HOST != a.host.rstrip("/"): print(f"sessions and ledgers go to {score.HOST}, the tunnel's local end: the tunnel carries only Freya's tool calls")
+    if a.fixtures: fx = load_fixtures(fixtures_path(a.cases)); print_fixtures(fx); print_universal(fx, load_openapi(a.openapi)); return
+    if a.probe:
+        if not a.agent_id: ap.error("--probe needs the agent_id")
+        state, text = diagnose(a.agent_id); print(text); sys.exit(0 if state == "up" else 3)
     if not a.cases: ap.error("--cases is required")
     if a.check:
-        fixtures, gen = load_fixtures(), json.load(open(a.cases, encoding="utf-8"))
+        fixtures, gen = load_fixtures(fixtures_path(a.cases)), json.load(open(a.cases, encoding="utf-8"))
         openapi = load_openapi(a.openapi)
-        errors, warnings, cov = check_cases(gen, fixtures, openapi, rule_ids_from(a.rules))
+        errors, warnings, cov = check_cases(gen, fixtures, openapi, rule_ids_from(a.rules), own_fixtures(a.cases))
         print_check(errors, warnings, cov)
         if not errors: print(f"test set: {write_test_set(a.cases, gen, fixtures)}")
         universal, skipped = load_universal(fixtures, openapi)

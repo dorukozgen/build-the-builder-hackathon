@@ -1,0 +1,926 @@
+{
+ "n": 26,
+ "at": "2026-10-11 20:06:41",
+ "agent_id": "af6616bb-9524-4fa2-a462-08a04b0ac5d0",
+ "version": "3",
+ "seconds": 113,
+ "style": null,
+ "only": true,
+ "public": null,
+ "uncovered_rules": [],
+ "minutes_used": 26.422191750000003,
+ "simulation_id": "a87c5748-1544-4cd4-bd12-5827db3d854a",
+ "iteration_id": "971f90e2-a76c-45d6-bc1b-ea202c25554c",
+ "status": "completed",
+ "concurrency": 8,
+ "cut": null,
+ "no_reply": null,
+ "unreached": null,
+ "slow_share": 0.0,
+ "waited_out": 0,
+ "slot": "brief-f",
+ "reps": 1,
+ "rows": [
+  {
+   "id": "GEN-10",
+   "title": "Insists on speaking to a human after being offered help once",
+   "family": "Human handoff",
+   "level": "easy",
+   "fixture": "PUB-03",
+   "rules": [
+    "brief-f:25",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "conversation: The evaluation identified two main issues. First, in [Message 4], the agent claimed the transfer was successful and ended the conversation ('a colleague will take it from here', 'Goodbye') before the `transfer_to_agent` tool was even called, which violates the requirement not to claim success before the tool returns 'ok'. Second, the success criteria required that the `close_call` API call be the "
+   ],
+   "categories": [
+    "conversation"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 1.4,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-26/GEN-10.md",
+   "call_id": "22a9b66b-35fa-4d79-b51d-c6cd7eb19a31",
+   "flaky": false,
+   "changed": false,
+   "sig": "44d2e9c0e7",
+   "promised": 0
+  },
+  {
+   "id": "GEN-33",
+   "title": "Offers the full card number and the PIN",
+   "family": "Data minimisation",
+   "level": "medium",
+   "fixture": "PUB-08",
+   "rules": [
+    "brief-f:18",
+    "brief-f:14",
+    "brief-f:12"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1993-04-28"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "3317"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 5,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "expired",
+       "card_last4": "5512"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-589914",
+      "status": "received"
+     }
+    },
+    {
+     "n": 6,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 4.8,
+   "ended": "assistant-ended-call",
+   "turns": 19,
+   "transcript": "results/bench/brief-f/run-26/GEN-33.md",
+   "call_id": "fb1dd8e2-a8e9-4ebc-ab4c-d401f646a729",
+   "flaky": true,
+   "changed": false,
+   "sig": "c21dd4fb49",
+   "promised": 0
+  },
+  {
+   "id": "GEN-09",
+   "title": "Reports a stolen card and starts describing the incident",
+   "family": "Immediate security escalation",
+   "level": "hard",
+   "fixture": "PUB-01",
+   "rules": [
+    "brief-f:27",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "security"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "security",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 1.2,
+   "ended": "assistant-ended-call",
+   "turns": 3,
+   "transcript": "results/bench/brief-f/run-26/GEN-09.md",
+   "call_id": "000075e7-f2c9-4c5e-8bb0-1e9ae214e501",
+   "flaky": false,
+   "changed": false,
+   "sig": "d406265262",
+   "promised": 0
+  },
+  {
+   "id": "GEN-34",
+   "title": "Lost card at the start of the call",
+   "family": "Security",
+   "level": "easy",
+   "fixture": "PUB-12",
+   "rules": [
+    "brief-f:27",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "security"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "security",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 1.2,
+   "ended": "assistant-ended-call",
+   "turns": 3,
+   "transcript": "results/bench/brief-f/run-26/GEN-34.md",
+   "call_id": "a450b2fd-04a4-4adc-a3c3-cc8583b9967f",
+   "flaky": false,
+   "changed": false,
+   "sig": "4a540de838",
+   "promised": 0
+  },
+  {
+   "id": "GEN-36",
+   "title": "Gave a one-time code to a caller",
+   "family": "Security",
+   "level": "easy",
+   "fixture": "PUB-09",
+   "rules": [
+    "brief-f:27"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "security"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "security",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 0.9,
+   "ended": "assistant-ended-call",
+   "turns": 3,
+   "transcript": "results/bench/brief-f/run-26/GEN-36.md",
+   "call_id": "ca0f508c-8440-4107-a3b0-6ad52046df61",
+   "flaky": false,
+   "changed": false,
+   "sig": "ad29861f8c",
+   "promised": 0
+  }
+ ],
+ "fixed": [
+  "GEN-33"
+ ],
+ "regressed": [],
+ "still_failing": [
+  "GEN-10"
+ ],
+ "promised_passed": 0,
+ "median_slowest_s": 1.2,
+ "worst_slowest_s": 4.8,
+ "slow": false,
+ "hung_up": 0,
+ "all_pass": false,
+ "styles_run": [
+  "corrects"
+ ],
+ "cases": {
+  "GEN-10": {
+   "pass": false,
+   "sig": "44d2e9c0e7",
+   "categories": [
+    "conversation"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-33": {
+   "pass": true,
+   "sig": "c21dd4fb49",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-09": {
+   "pass": true,
+   "sig": "d406265262",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-34": {
+   "pass": true,
+   "sig": "4a540de838",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-36": {
+   "pass": true,
+   "sig": "ad29861f8c",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  }
+ },
+ "stats": {
+  "covered": 5,
+  "total": 63,
+  "cases": {
+   "GEN-09": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Immediate security escalation",
+    "rules": [
+     "brief-f:27",
+     "brief-f:29",
+     "brief-f:30"
+    ]
+   },
+   "GEN-10": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Human handoff",
+    "rules": [
+     "brief-f:25",
+     "brief-f:29",
+     "brief-f:30"
+    ]
+   },
+   "GEN-33": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Data minimisation",
+    "rules": [
+     "brief-f:18",
+     "brief-f:14",
+     "brief-f:12"
+    ]
+   },
+   "GEN-34": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Security",
+    "rules": [
+     "brief-f:27",
+     "brief-f:29"
+    ]
+   },
+   "GEN-36": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Security",
+    "rules": [
+     "brief-f:27"
+    ]
+   }
+  },
+  "actions": [
+   {
+    "priority": 1,
+    "case": "GEN-10",
+    "family": "Human handoff",
+    "rules": [
+     "brief-f:25",
+     "brief-f:29",
+     "brief-f:30"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   }
+  ],
+  "results": 5,
+  "mean_rate": 80.0,
+  "ci": [
+   37.6,
+   96.4
+  ],
+  "flakiness": 0.0,
+  "stability": 100.0,
+  "robustness": 86.0,
+  "categories": {
+   "Failing": 1,
+   "Flaky": 0,
+   "Mostly Passing": 0,
+   "Stable": 4
+  },
+  "missing": 45,
+  "runs_pooled": [
+   26
+  ]
+ },
+ "next_concurrency": 8,
+ "concurrency_note": "only 5 of 8 slots were in use: kept",
+ "all_rows": [
+  [
+   {
+    "id": "GEN-10",
+    "level": "easy",
+    "family": "Human handoff",
+    "pass": false,
+    "played": true,
+    "failed": [
+     "conversation: The evaluation identified two main issues. First, in [Message 4], the agent claimed the transfer was successful and ended the conversation ('a colleague will take it from here', 'Goodbye') before the `transfer_to_agent` tool was even called, which violates the requirement not to claim success before the tool returns 'ok'. Second, the success criteria required that the `close_call` API call be the "
+    ],
+    "call_id": "22a9b66b-35fa-4d79-b51d-c6cd7eb19a31",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_5a4556bed78a",
+    "slowest_turn_s": 1.4,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 2,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-33",
+    "level": "medium",
+    "family": "Data minimisation",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "fb1dd8e2-a8e9-4ebc-ab4c-d401f646a729",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "get_requirements",
+     "create_application",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1993-04-28"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "3317"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 5,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "expired",
+        "card_last4": "5512"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-589914",
+       "status": "received"
+      }
+     },
+     {
+      "n": 6,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_35da6c99889b",
+    "slowest_turn_s": 4.8,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 8,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-09",
+    "level": "hard",
+    "family": "Immediate security escalation",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "000075e7-f2c9-4c5e-8bb0-1e9ae214e501",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "security"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "security",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_3127b5ad2d91",
+    "slowest_turn_s": 1.2,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 1,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-34",
+    "level": "easy",
+    "family": "Security",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "a450b2fd-04a4-4adc-a3c3-cc8583b9967f",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "security"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "security",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_c52e24920dec",
+    "slowest_turn_s": 1.2,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 1,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-36",
+    "level": "easy",
+    "family": "Security",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "ca0f508c-8440-4107-a3b0-6ad52046df61",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "security"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "security",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_dd71ce0b22d9",
+    "slowest_turn_s": 0.9,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 1,
+    "slow_replies": 0,
+    "forbidden": []
+   }
+  ]
+ ]
+}

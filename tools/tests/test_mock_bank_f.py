@@ -105,14 +105,14 @@ def test_backend_state_transfer_and_timeout_fault(base, monkeypatch):
     led = call(base, "/v1/practice/ledger/" + cid)[1]
     assert led["transfers"] == [{"queue": "applications"}] and led["outcome"] == "transferred" and led["reason"] == "applications"
     monkeypatch.setattr(M, "TIMEOUT_DELAY", 0.2)
-    cid = session(base, "PUB-10")["customer_id"]; verify(base, cid, "1989-02-23", "9904")       # PUB-10: the first create_application is slow but goes through
-    r = call(base, "/v1/create_application", {"customer_id": cid, "type": "card_replacement", "fields": {"reason": "expired"}})[1]
-    assert r["ok"] and r["application_id"].startswith("APP-")
+    cid = session(base, "PUB-10")["customer_id"]; verify(base, cid, "1989-02-23", "9904")       # PUB-10: the first create_application times out but goes through
+    st, r = call(base, "/v1/create_application", {"customer_id": cid, "type": "card_replacement", "fields": {"reason": "expired"}})
+    assert st == 504 and r == {"ok": False, "error": "timeout"}                                     # the agent learns nothing about the outcome
     found = call(base, "/v1/find_applications", {"customer_id": cid, "type": "card_replacement"})[1]["applications"]
-    assert len(found) == 1 and found[0]["created_on"] == "2026-10-14"
+    assert len(found) == 1 and found[0]["created_on"] == "2026-10-14"                               # checking shows it went through
     led = call(base, "/v1/practice/ledger/" + cid)[1]
     create = [c for c in led["calls"] if c["tool"] == "create_application"]
-    assert len(create) == 1 and create[0]["delayed"] is True
-    r2 = call(base, "/v1/create_application", {"customer_id": cid, "type": "card_replacement", "fields": {"reason": "expired"}})[1]
-    assert r2["ok"] and r2["application_id"] != r["application_id"]                                 # the mock does not stop a duplicate; the agent must
+    assert len(create) == 1 and create[0]["delayed"] is True and create[0]["status"] == 504
+    st, r2 = call(base, "/v1/create_application", {"customer_id": cid, "type": "card_replacement", "fields": {"reason": "expired"}})
+    assert st == 200 and r2["ok"] and r2["application_id"] != found[0]["application_id"]            # the mock does not stop a duplicate; the agent must
     assert len(call(base, "/v1/practice/ledger/" + cid)[1]["applications"]) == 2

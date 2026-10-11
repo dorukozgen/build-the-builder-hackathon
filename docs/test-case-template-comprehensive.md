@@ -62,6 +62,15 @@ Do not copy them into your cases file and do not edit them. Your cases cover the
 
 Do not write `variables`, `identity`, `products` or `faults`: they come from the fixture and `--check` rejects them.
 
+## A brief that brings its own test customers
+
+Some briefs come with their own test environment: their own test customers, the bank's services, and a mock you host that serves them (the request gives its address). Their customers are not the practice customers, and their mock keeps no ledger. Then:
+
+1. Write `tests/<slot>.fixtures.json`, a JSON list with one entry per test customer you play: `{"id": "<the customer's key, e.g. the customer number>", "brief": "<slot>", "variables": {<the call variables exactly as the brief names them>}, "identity": {}, "persona": "<who the customer is and what they know: their name, their cards or products by the names the services return, the address they expect>", "language": "<the calls' language code, e.g. tr>"}`. `benchmark.py` uses this file instead of the practice customers whenever it exists. The mock answers `POST /v1/practice/sessions {"case": "<id>"}` with the call variables. `language` makes the simulated customer speak the calls' language.
+2. A case's `fixture` is one of those ids. `expected` can be `{}`. With no ledger, the judge scores the conversation. `forbidden_tools` still counts, by service name (the last segment of the tool's URL, for example `get_balance`).
+3. Put every rule the case is about into `checks`, because nothing else is scored: what the agent must say (amounts and dates as the services return them), what it must not say, which service it must not call before the customer agrees.
+4. Run with `--host <mock url> --openapi tools/openapi-<slot>.json`. The universal cases are left out, because their practice customers are not there.
+
 ## Choosing a fixture
 
 - The identity answers, products, amounts, days late and floor fields are the fixture's. A scenario about three products needs PUB-11 or PUB-12; two products, PUB-13; a failing promise service, PUB-10 and nothing else. PUB-10 always fails the first `create_promise`, so every PUB-10 case is a tool-failure case.
@@ -88,6 +97,7 @@ Do not write `variables`, `identity`, `products` or `faults`: they come from the
 
 - One rule per line, observable in the transcript, with what the judge should look for: "the agent does not say the word 'collections' before both identity answers passed", "create_promise is called exactly once", "the read-back names both dates", "after the failed call the agent does not say 'recorded' until the retry succeeds".
 - The judge sees only the transcript. No checks about internal state, and none about the ledger (that is `expected`'s job).
+- The judge reads the tool calls as a list beside the conversation. It cannot tell which sentence came before which call, and it counts the platform's `end_call` as a tool call. So write no check about the order of speech and tool calls ("says goodbye before calling close_call", "does not claim the transfer before the tool returns ok") and none about the last tool call. The ledger already scores `close_call` coming last and identity coming first. Check what the agent says instead: "the farewell says the call is passed to the general team and thanks the customer", "the agent never says the application was received when create_application did not return ok".
 - The judge grades only what is listed, so a case can pass with violations no check names. The builder's transcript review covers those; `checks` are for the rules this case is about.
 
 ## `rules`

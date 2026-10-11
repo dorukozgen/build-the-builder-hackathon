@@ -1,43 +1,58 @@
-# Retrospective: Brief F build (practice run, 2026-10-11)
+# Retrospective: Brief F build (practice run, 2026-10-11, 19:40)
+
+Agent: workflow `b245f135-c3f7-4a3a-bcf6-06f7b5ac903b`, agent `af6616bb-9524-4fa2-a462-08a04b0ac5d0`, version 3.
+Digest: `reports/20261011-194016.digest.md` (26m33s, 5 test runs, 4 saves, 1 tool error).
 
 ## Scores, in order
 
-| Run | What | Result |
-|---|---|---|
-| run-06 | smoke test, `--only GEN-17,GEN-34,GEN-14`, version 2 | 1 / 3 |
-| run-07 | full run, version 3 | 38 / 63 (generated 34 / 50, universal 9 / 13 on the conversation) |
+| Run | Version | What | Result |
+|---|---|---|---|
+| run-22 | 1 | `--only` smoke, one case per exit | 4 / 4 |
+| run-23 | 1 | full, 16 calls at a time | 61 / 63 (universal 13 / 13) |
+| run-24 | 2 | `--only` the 2 failures and 4 neighbours | 6 / 6 |
+| run-25 | 2 | full | 38 / 40 scored, 23 not played (tunnel), universal 13 / 13 |
+| run-26 | 3 | `--only` the security cases and GEN-10 | 4 / 5 |
 
-Last hidden-brief estimate (version 3): **35 of 60**, confidence **low** (one result per case).
+Hidden-brief estimate: on v1, 58 of 60, confidence low. None on v3, which has no full run.
 
-Agent: workflow `f673d421-3637-4599-84bc-53ebcce3a450`, agent `30fd33bc-25d5-48c1-8960-95c961aff499`.
+## What cost time or turns
 
-## What cost time or turns (step numbers from the digest)
-
-- **Step 71: the full run took 16m24s** for 63 cases (50 generated + 13 universal), more than half the budget. It started at minute 10 and ended at minute 27, which left no time for a fix round. This was the main loss.
-- **Step 38: a shell `sed` patch of a code string silently did not match.** The save went out unchanged and a second save was needed (step 43). The lessons file already warns against shell patches; I broke that rule.
-- **Steps 48 to 68: the smoke test showed the model calls `close_call` without the closing sentence.** I redesigned closing as a fixed spoken line built in code, followed by an engine-run `close_call`. That was right, but the transfer path kept a bare goodbye with no sentence naming the team. Four cases failed on that gap, and the smoke test had not included a transfer that needed explaining.
-- **The rule-13 failure counter was a guess.** It was enforced in code, but only on answers the model chose to send to the tool. The test showed the model does not send "I don't have it" (GEN-42).
-- **Reusing the existing `tests/brief-f.cases.json`.** It was written from this brief in an earlier practice run and passed `--check` on the first try with `--openapi`. That saved writing 50 cases. My first `--check` left out `--openapi` and gave false errors, which cost one extra command.
-- **Leftover mocks and tunnels** (one mock, three ngrok processes) had to be killed by hand at the start. The lessons file predicted this, so it cost under a minute.
+- **Steps 50–51: a failed Edit was chained into a full run.** The prompt fix for the duplicate find_applications call failed with "string not found". The same step went on to regenerate, save (a no-op, still version 2) and start an 8-minute full run, so that run did not test the change I thought it tested.
+- **Step 51: the tunnel refused connections at 16 calls at a time.** 23 of 63 cases went unplayed. With no time left for a re-run, v3 has no full run.
+- **Step 29: the first full run took 9m32s.** That left one fix round and one more full run, as the lessons predicted.
+- **The start went well.** The leftover generator was reused, the mock and tunnel were started by hand, the smoke run began at minute 1 and the first full run at minute 3.
 
 ## Lessons for any brief
 
-- Model-facing close tools are unreliable at speaking before they act. Speak the closing summary from a fixed line computed in code, then run the real close as an engine call. Every branch needs that line, including transfers.
-- A counted rule (N failed answers) must count every reply to the question, not only the replies the model forwards to a tool.
-- With 60 or more cases, one full run takes about 16 minutes. Plan for exactly one full run, and use the smoke test on one case per exit path (create, transfer, status, close) to catch structural bugs before it.
-- A pre-hook can rewrite a model tool's request to a harmless read-only endpoint, with a post-hook that validates the stored arguments. This puts per-answer validation in code, but the extra reads show up in the ledger.
+- When the model skips a mandatory lookup at the start of a step, run the lookup engine-side, fed by an enum extracted earlier. Name that variable differently from every model-filled tool field.
+- Word a global interrupt's intent narrowly and give it not-examples.
+- Never chain an edit with save and benchmark until you have seen the edit apply.
+- The free tunnel drops connections at 16 calls at a time too. Plan a re-run of the not-played cases.
 
 ## Lessons for this brief only (not in the lessons file)
 
-- The rule 21 timeout case in the mock records the slow first create *after* the immediate `find_applications`, so a check straight after the timeout cannot see it. A short wait or a second check is needed.
-- The universal cases' "no claim without a tool result" check flags the brief's prescribed "this call is recorded" opening line. That conflicts with rule 1, so those cases count as settled.
-- The status-path closing must fall back to `status_given`, not `out_of_scope`, when the customer only enquired.
+- GEN-24: the agent asked its own "which address" question without get_requirements. Fixed with the engine-run `first_find` node.
+- GEN-33: a customer reading out a PIN set off the security transfer. Fixed by narrowing the intent (rule 27 is about a code given to another person).
+- GEN-50: the check's wording was ambiguous ("after the first no"). It now states what rules 17 and 19 require.
+- Still open:
+  - GEN-10: the judge reads the fixed transfer line spoken after the tool, and the engine's end_call, as violations. A short "I will transfer you now" before the transfer call might settle it.
+  - After `first_find`, the model calls find_applications a second time.
+  - Rule 13's counter is still enforced in the prompt only.
+- `out/brief-f.workflow.json` was regenerated with the placeholder base URL `https://SUBMISSION-BASE-URL/v1`.
 
 ## Lesson lines changed in docs/builder-lessons.md (verbatim)
 
-Added to "Building the agent":
-- `Speak the closing summary from a fixed line computed in code and run the close as an engine call after it, on every exit path including transfers: the model often calls a closing tool without its closing sentence.`
-- `A rule that counts failed answers must count every reply to the question in code; the model does not forward non-answers ("I don't have it") to a validation tool.`
+Removed from "Building the agent":
+- `If python3 is not found, run the same command with python.` (the skill already says it)
 
-Changed in "Testing and fixing" (replaces "Smoke-test the plumbing with `--only` on 2–3 short cases before the first full run, and start that run by minute 10."):
-- `Smoke-test with --only on one case per exit path (create, transfer, status, close) before the first full run, and start that run by minute 8: a full run of 60+ cases takes about 16 minutes, so it may be the only one.`
+Added to "Building the agent":
+- `When the model skips a mandatory lookup at the start of a step, run it engine-side in a passthrough node fed by an enum extracted earlier; give that variable a name no model-filled tool field uses, or its value gets baked into those tools for later requests.`
+
+Changed in "Building the agent" (appended to the global-interrupt line):
+- `Word that node's intent narrowly (who received what, from whom), with not-examples: a broad one fired on a customer merely reading their own data to the agent.`
+
+Changed in "Testing and fixing" (the tunnel-drop line now ends):
+- `(it happened at 16 and 20 calls at a time, a third of a full run): budget a re-run of the not-played cases, and do not fix the agent for them.`
+
+Added to "Testing and fixing":
+- `Never chain an Edit with save and benchmark in one step without seeing the edit applied: a failed Edit then tests and saves the old version as if fixed.`

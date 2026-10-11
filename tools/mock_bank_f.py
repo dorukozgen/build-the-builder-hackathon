@@ -8,8 +8,8 @@
 
 Freya's servers must reach it: expose the port with a tunnel (`ngrok http 8765`) and benchmark with
 `--host <public url> --openapi tools/openapi-f.json`. The practice customers are the 13 of public-test-set.json (names and
-identity answers); a case's `backend` adds existing applications and faults. PUB-10's first create_application is slow:
-it goes through, but only after the agent's tool timeout, so the agent must check before it submits again.
+identity answers); a case's `backend` adds existing applications and faults. PUB-10's first create_application times out:
+it goes through, but the answer is a 504, so the agent must check before it submits again.
 """
 import argparse, datetime, json, pathlib, re, secrets, sys, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -38,7 +38,9 @@ REQUIREMENTS = {
         {"name": "monthly_income", "question": "What is your monthly net income?", "format": "amount", "required": False}],
 }
 DEFAULT_FAULTS = {"PUB-10": {"create_application": {"delay_first": 1}}}
-TIMEOUT_DELAY = 16.0            # seconds: longer than the agent's 12 s tool timeout, so the call "times out" at Freya but goes through here
+# A slow answer does not make Freya give up: with the tool's timeoutMs at 12000 it waited 21 s for a 16 s delay and handed the agent
+# a success. So a faulted call goes through and then answers as a gateway would when the bank is too slow: 504, after a short pause.
+TIMEOUT_DELAY = 3.0             # seconds before the 504
 
 LOCK = threading.Lock()
 SESSIONS = {}
@@ -127,10 +129,11 @@ def create_application(s, body):
         if f["name"] in fields and not valid(f, fields[f["name"]]): return {"ok": False, "error": f"invalid field {f['name']}: expected {f['format']}"}, False
     n = s["counts"]["create_application"] = s["counts"].get("create_application", 0) + 1
     delayed = n <= int((s["faults"].get("create_application") or {}).get("delay_first") or 0)
-    if delayed: time.sleep(TIMEOUT_DELAY)
     app = {"application_id": new_id("APP-"), "type": t, "status": "received", "created_on": s["variables"]["now"][:10], "note": "", "fields": fields}
     s["applications"].append(app); s["created"].append(app)
-    return {"ok": True, "application_id": app["application_id"], "status": "received"}, delayed
+    if delayed:                                                        # it went through; the answer is lost
+        time.sleep(TIMEOUT_DELAY); return {"ok": False, "error": "timeout"}, True
+    return {"ok": True, "application_id": app["application_id"], "status": "received"}, False
 
 
 def tool_call(s, tool, body):
@@ -204,12 +207,13 @@ class Handler(BaseHTTPRequestHandler):
         with LOCK: s = SESSIONS.get(str(b.get("customer_id")))
         if not s: return self.send(404, {"ok": False, "error": "unknown customer_id"})
         result, delayed = tool_call(s, tool, b)                        # a delayed call sleeps outside the lock
+        status = 504 if delayed else 200
         with LOCK:
-            rec = {"n": len(s["calls"]) + 1, "tool": tool, "args": {k: v for k, v in b.items() if k != "customer_id"}, "status": 200, "result": result}
+            rec = {"n": len(s["calls"]) + 1, "tool": tool, "args": {k: v for k, v in b.items() if k != "customer_id"}, "status": status, "result": result}
             if delayed: rec["delayed"] = True
             s["calls"].append(rec)
-        log(f"{s['customer_id']} {tool} {json.dumps(rec['args'])[:120]} -> {json.dumps(result)[:160]}{' (delayed)' if delayed else ''}")
-        self.send(200, result)
+        log(f"{s['customer_id']} {tool} {json.dumps(rec['args'])[:120]} -> {status} {json.dumps(result)[:160]}{' (timed out, went through)' if delayed else ''}")
+        self.send(status, result)
 
 
 def log(msg):

@@ -1,0 +1,1113 @@
+{
+ "n": 27,
+ "at": "2026-10-11 20:11:33",
+ "agent_id": "a0918965-0e6c-467f-910f-bf66efc8766f",
+ "version": "created",
+ "seconds": 98,
+ "style": null,
+ "only": true,
+ "public": null,
+ "uncovered_rules": [],
+ "minutes_used": 2.6174856,
+ "simulation_id": "72477383-8f81-4a3d-8a6f-e5e9a07be921",
+ "iteration_id": "d8264533-79f1-4020-8865-fd8dece40e84",
+ "status": "completed",
+ "concurrency": 12,
+ "cut": null,
+ "no_reply": null,
+ "unreached": null,
+ "slow_share": 0.0,
+ "waited_out": 0,
+ "slot": "brief-f",
+ "reps": 1,
+ "rows": [
+  {
+   "id": "GEN-10",
+   "title": "Insists on speaking to a human after being offered help once",
+   "family": "Human handoff",
+   "level": "easy",
+   "fixture": "PUB-03",
+   "rules": [
+    "brief-f:25",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": false,
+   "passes": 0,
+   "runs": 1,
+   "failed": [
+    "conversation: While several criteria were met, the call failed on two specific points: 1. The agent claimed to be passing the call and said \"Goodbye\" in [Message 4] before the transfer_to_agent tool was even initiated or confirmed successful, which constitutes claiming success before the tool returns ok. 2. The close_call tool (api_call) was not the last tool call, as it was followed by the end_call function. O"
+   ],
+   "categories": [
+    "conversation"
+   ],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "transfer_to_agent",
+     "args": {
+      "queue": "general"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    },
+    {
+     "n": 2,
+     "tool": "close_call",
+     "args": {
+      "reason": "human",
+      "outcome": "transferred"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 3.3,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-27/GEN-10.md",
+   "call_id": "aa94c95f-f7aa-4ffd-9c3e-7b83ccd64918",
+   "flaky": false,
+   "changed": false,
+   "sig": "44d2e9c0e7",
+   "promised": 0
+  },
+  {
+   "id": "GEN-02",
+   "title": "Limit increase, wrong date of birth twice, then a wrong phone number",
+   "family": "Identity failure",
+   "level": "medium",
+   "fixture": "PUB-03",
+   "rules": [
+    "brief-f:5",
+    "brief-f:6",
+    "brief-f:2"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1990-07-21"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 2,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1991-07-21"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 3,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1992-07-21"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 1,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 4,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "6603"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": false,
+      "wrong_answers_left": 0,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 5,
+     "tool": "close_call",
+     "args": {
+      "reason": "failed",
+      "outcome": "not_verified"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 1.7,
+   "ended": "assistant-ended-call",
+   "turns": 12,
+   "transcript": "results/bench/brief-f/run-27/GEN-02.md",
+   "call_id": "cebfe22b-e7cb-437f-be49-00d5ad421861",
+   "flaky": false,
+   "changed": false,
+   "sig": "a3afb282be",
+   "promised": 0
+  },
+  {
+   "id": "GEN-17",
+   "title": "Damaged card replacement, no optional fields",
+   "family": "Happy path",
+   "level": "easy",
+   "fixture": "PUB-04",
+   "rules": [
+    "brief-f:1",
+    "brief-f:2",
+    "brief-f:5",
+    "brief-f:9",
+    "brief-f:12",
+    "brief-f:19",
+    "brief-f:20",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1984-01-30"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "2219"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 4,
+     "tool": "find_applications",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "applications": []
+     }
+    },
+    {
+     "n": 5,
+     "tool": "get_requirements",
+     "args": {
+      "type": "card_replacement"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "fields": [
+       {
+        "name": "reason",
+        "question": "Is the card damaged or expired?",
+        "format": "choice",
+        "options": [
+         "damaged",
+         "expired"
+        ],
+        "required": true
+       },
+       {
+        "name": "card_last4",
+        "question": "What are the last four digits of the card, if you have them?",
+        "format": "digits",
+        "required": false
+       },
+       {
+        "name": "delivery",
+        "question": "Should the new card go to your home address or to a branch?",
+        "format": "choice",
+        "options": [
+         "home",
+         "branch"
+        ],
+        "required": false
+       }
+      ]
+     }
+    },
+    {
+     "n": 6,
+     "tool": "create_application",
+     "args": {
+      "type": "card_replacement",
+      "fields": {
+       "reason": "damaged"
+      }
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-873532",
+      "status": "received"
+     }
+    },
+    {
+     "n": 7,
+     "tool": "close_call",
+     "args": {
+      "outcome": "application_created"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 8.2,
+   "ended": "assistant-ended-call",
+   "turns": 16,
+   "transcript": "results/bench/brief-f/run-27/GEN-17.md",
+   "call_id": "e425b66b-9174-4d8f-98d2-a1781994d401",
+   "flaky": false,
+   "changed": false,
+   "sig": "6489fbccbc",
+   "promised": 0
+  },
+  {
+   "id": "GEN-21",
+   "title": "Wants a personal loan application, declines the transfer",
+   "family": "Unsupported",
+   "level": "easy",
+   "fixture": "PUB-02",
+   "rules": [
+    "brief-f:3",
+    "brief-f:29",
+    "brief-f:30"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "close_call",
+     "args": {
+      "reason": "unsupported",
+      "outcome": "no_action"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 2.0,
+   "ended": "assistant-ended-call",
+   "turns": 5,
+   "transcript": "results/bench/brief-f/run-27/GEN-21.md",
+   "call_id": "bc3d45cc-7f69-4b0c-83fd-4c0569c3eb43",
+   "flaky": false,
+   "changed": false,
+   "sig": "50d5ee4297",
+   "promised": 0
+  },
+  {
+   "id": "GEN-28",
+   "title": "Status enquiry on an application in review",
+   "family": "Status enquiry",
+   "level": "easy",
+   "fixture": "PUB-01",
+   "rules": [
+    "brief-f:5",
+    "brief-f:23",
+    "brief-f:29"
+   ],
+   "suite": "generated",
+   "public": false,
+   "pass": true,
+   "passes": 1,
+   "runs": 1,
+   "failed": [],
+   "categories": [],
+   "flags": [],
+   "calls": [
+    {
+     "n": 1,
+     "tool": "verify_identity",
+     "args": {
+      "field": "date_of_birth",
+      "answer": "1988-03-14"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": false
+     }
+    },
+    {
+     "n": 2,
+     "tool": "verify_identity",
+     "args": {
+      "field": "phone_last4",
+      "answer": "4471"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "verified": true,
+      "wrong_answers_left": 3,
+      "all_verified": true
+     }
+    },
+    {
+     "n": 3,
+     "tool": "get_application",
+     "args": {
+      "application_id": "APP-482913"
+     },
+     "status": 200,
+     "result": {
+      "ok": true,
+      "application_id": "APP-482913",
+      "type": "limit_increase",
+      "status": "in_review",
+      "created_on": "2026-10-12",
+      "note": ""
+     }
+    },
+    {
+     "n": 4,
+     "tool": "close_call",
+     "args": {
+      "outcome": "status_given"
+     },
+     "status": 200,
+     "result": {
+      "ok": true
+     }
+    }
+   ],
+   "forbidden": [],
+   "slowest_turn_s": 4.7,
+   "ended": "assistant-ended-call",
+   "turns": 14,
+   "transcript": "results/bench/brief-f/run-27/GEN-28.md",
+   "call_id": "265462e4-ba73-43b3-8e4c-f3c092eac904",
+   "flaky": false,
+   "changed": false,
+   "sig": "0ed1b62476",
+   "promised": 0
+  }
+ ],
+ "fixed": [],
+ "regressed": [],
+ "still_failing": [
+  "GEN-10"
+ ],
+ "promised_passed": 0,
+ "median_slowest_s": 3.3,
+ "worst_slowest_s": 8.2,
+ "slow": false,
+ "hung_up": 0,
+ "all_pass": false,
+ "styles_run": [
+  "corrects"
+ ],
+ "cases": {
+  "GEN-10": {
+   "pass": false,
+   "sig": "44d2e9c0e7",
+   "categories": [
+    "conversation"
+   ],
+   "passes": 0,
+   "runs": 1
+  },
+  "GEN-02": {
+   "pass": true,
+   "sig": "a3afb282be",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-17": {
+   "pass": true,
+   "sig": "6489fbccbc",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-21": {
+   "pass": true,
+   "sig": "50d5ee4297",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  },
+  "GEN-28": {
+   "pass": true,
+   "sig": "0ed1b62476",
+   "categories": [],
+   "passes": 1,
+   "runs": 1
+  }
+ },
+ "stats": {
+  "covered": 5,
+  "total": 63,
+  "cases": {
+   "GEN-02": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Identity failure",
+    "rules": [
+     "brief-f:5",
+     "brief-f:6",
+     "brief-f:2"
+    ]
+   },
+   "GEN-10": {
+    "passes": 0,
+    "runs": 1,
+    "rate": 0.0,
+    "ci": [
+     0.0,
+     79.3
+    ],
+    "flakiness": 0.0,
+    "final": 0.0,
+    "category": "Failing",
+    "priority": 1,
+    "styles": {
+     "none": [
+      0,
+      1
+     ]
+    },
+    "family": "Human handoff",
+    "rules": [
+     "brief-f:25",
+     "brief-f:29",
+     "brief-f:30"
+    ]
+   },
+   "GEN-17": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Happy path",
+    "rules": [
+     "brief-f:1",
+     "brief-f:2",
+     "brief-f:5",
+     "brief-f:9",
+     "brief-f:12",
+     "brief-f:19",
+     "brief-f:20",
+     "brief-f:29",
+     "brief-f:30"
+    ]
+   },
+   "GEN-21": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Unsupported",
+    "rules": [
+     "brief-f:3",
+     "brief-f:29",
+     "brief-f:30"
+    ]
+   },
+   "GEN-28": {
+    "passes": 1,
+    "runs": 1,
+    "rate": 100.0,
+    "ci": [
+     20.7,
+     100.0
+    ],
+    "flakiness": 0.0,
+    "final": 100.0,
+    "category": "Stable",
+    "priority": null,
+    "styles": {
+     "none": [
+      1,
+      1
+     ]
+    },
+    "family": "Status enquiry",
+    "rules": [
+     "brief-f:5",
+     "brief-f:23",
+     "brief-f:29"
+    ]
+   }
+  },
+  "actions": [
+   {
+    "priority": 1,
+    "case": "GEN-10",
+    "family": "Human handoff",
+    "rules": [
+     "brief-f:25",
+     "brief-f:29",
+     "brief-f:30"
+    ],
+    "issue": "fails every run (0/1)",
+    "action": "P1 failing: a deterministic bug, so its transcript shows the step, route or check that goes wrong"
+   }
+  ],
+  "results": 5,
+  "mean_rate": 80.0,
+  "ci": [
+   37.6,
+   96.4
+  ],
+  "flakiness": 0.0,
+  "stability": 100.0,
+  "robustness": 86.0,
+  "categories": {
+   "Failing": 1,
+   "Flaky": 0,
+   "Mostly Passing": 0,
+   "Stable": 4
+  },
+  "missing": 45,
+  "runs_pooled": [
+   27
+  ]
+ },
+ "next_concurrency": 12,
+ "concurrency_note": "only 5 of 12 slots were in use: kept",
+ "all_rows": [
+  [
+   {
+    "id": "GEN-10",
+    "level": "easy",
+    "family": "Human handoff",
+    "pass": false,
+    "played": true,
+    "failed": [
+     "conversation: While several criteria were met, the call failed on two specific points: 1. The agent claimed to be passing the call and said \"Goodbye\" in [Message 4] before the transfer_to_agent tool was even initiated or confirmed successful, which constitutes claiming success before the tool returns ok. 2. The close_call tool (api_call) was not the last tool call, as it was followed by the end_call function. O"
+    ],
+    "call_id": "aa94c95f-f7aa-4ffd-9c3e-7b83ccd64918",
+    "tools": [
+     "transfer_to_agent",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "transfer_to_agent",
+      "args": {
+       "queue": "general"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     },
+     {
+      "n": 2,
+      "tool": "close_call",
+      "args": {
+       "reason": "human",
+       "outcome": "transferred"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_0ff308df0806",
+    "slowest_turn_s": 3.3,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 2,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-02",
+    "level": "medium",
+    "family": "Identity failure",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "cebfe22b-e7cb-437f-be49-00d5ad421861",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "verify_identity",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1990-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 2,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1991-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 3,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1992-07-21"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 1,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 4,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "6603"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": false,
+       "wrong_answers_left": 0,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 5,
+      "tool": "close_call",
+      "args": {
+       "reason": "failed",
+       "outcome": "not_verified"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_9ff3c4fee9b7",
+    "slowest_turn_s": 1.7,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 5,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-17",
+    "level": "easy",
+    "family": "Happy path",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "e425b66b-9174-4d8f-98d2-a1781994d401",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "find_applications",
+     "find_applications",
+     "get_requirements",
+     "create_application",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1984-01-30"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "2219"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 4,
+      "tool": "find_applications",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "applications": []
+      }
+     },
+     {
+      "n": 5,
+      "tool": "get_requirements",
+      "args": {
+       "type": "card_replacement"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "fields": [
+        {
+         "name": "reason",
+         "question": "Is the card damaged or expired?",
+         "format": "choice",
+         "options": [
+          "damaged",
+          "expired"
+         ],
+         "required": true
+        },
+        {
+         "name": "card_last4",
+         "question": "What are the last four digits of the card, if you have them?",
+         "format": "digits",
+         "required": false
+        },
+        {
+         "name": "delivery",
+         "question": "Should the new card go to your home address or to a branch?",
+         "format": "choice",
+         "options": [
+          "home",
+          "branch"
+         ],
+         "required": false
+        }
+       ]
+      }
+     },
+     {
+      "n": 6,
+      "tool": "create_application",
+      "args": {
+       "type": "card_replacement",
+       "fields": {
+        "reason": "damaged"
+       }
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-873532",
+       "status": "received"
+      }
+     },
+     {
+      "n": 7,
+      "tool": "close_call",
+      "args": {
+       "outcome": "application_created"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_1ae073a73e45",
+    "slowest_turn_s": 8.2,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 7,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-21",
+    "level": "easy",
+    "family": "Unsupported",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "bc3d45cc-7f69-4b0c-83fd-4c0569c3eb43",
+    "tools": [
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "close_call",
+      "args": {
+       "reason": "unsupported",
+       "outcome": "no_action"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_ca36a91a82ab",
+    "slowest_turn_s": 2.0,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 2,
+    "slow_replies": 0,
+    "forbidden": []
+   },
+   {
+    "id": "GEN-28",
+    "level": "easy",
+    "family": "Status enquiry",
+    "pass": true,
+    "played": true,
+    "failed": [],
+    "call_id": "265462e4-ba73-43b3-8e4c-f3c092eac904",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "get_application",
+     "close_call"
+    ],
+    "calls": [
+     {
+      "n": 1,
+      "tool": "verify_identity",
+      "args": {
+       "field": "date_of_birth",
+       "answer": "1988-03-14"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": false
+      }
+     },
+     {
+      "n": 2,
+      "tool": "verify_identity",
+      "args": {
+       "field": "phone_last4",
+       "answer": "4471"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "verified": true,
+       "wrong_answers_left": 3,
+       "all_verified": true
+      }
+     },
+     {
+      "n": 3,
+      "tool": "get_application",
+      "args": {
+       "application_id": "APP-482913"
+      },
+      "status": 200,
+      "result": {
+       "ok": true,
+       "application_id": "APP-482913",
+       "type": "limit_increase",
+       "status": "in_review",
+       "created_on": "2026-10-12",
+       "note": ""
+      }
+     },
+     {
+      "n": 4,
+      "tool": "close_call",
+      "args": {
+       "outcome": "status_given"
+      },
+      "status": 200,
+      "result": {
+       "ok": true
+      }
+     }
+    ],
+    "customer_id": "f_2053371246cb",
+    "slowest_turn_s": 4.7,
+    "ended": "assistant-ended-call",
+    "waited_at_end": 0.0,
+    "replies": 6,
+    "slow_replies": 0,
+    "forbidden": []
+   }
+  ]
+ ]
+}

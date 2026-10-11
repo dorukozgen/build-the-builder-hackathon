@@ -1681,7 +1681,7 @@
    "brief-f:16",
    "brief-f:19"
   ],
-  "script": "Address change. Verified. Street 'Elm Street 40', city 'Boston', postcode '02118'. No move date. Confirms at the read-back.",
+  "script": "Address change. When asked each security question, gives the answer straight away in that same reply (the date of birth, then the four phone digits), and only then chats. Street 'Elm Street 40', city 'Boston', postcode '02118'. No move date. Confirms at the read-back.",
   "expected": {
    "outcome": "application_created",
    "promises": [],
@@ -1755,7 +1755,7 @@
    ]
   },
   "checks": [
-   "create_application is not called after the first 'no'",
+   "create_application is not called before the agent has read back the changed amount 4500 and the customer has said yes to that second read-back",
    "create_application is sent with 4500"
   ],
   "forbidden_tools": [

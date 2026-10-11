@@ -377,6 +377,9 @@ def test_applications_created_and_scored():
     assert B.applications_failed({"applications": [{"type": "card_replacement"}]}, [ok, failed]) == []
     assert B.applications_failed({"applications": [{"type": "card_replacement"}]}, [ok, dup]) == ["applications ['card_replacement', 'card_replacement'], expected ['card_replacement']"]
     assert B.applications_failed({"outcome": "x"}, [ok, dup]) == []                                  # nothing expected: nothing checked
+    late = {"n": 6, "tool": "create_application", "args": {"type": "card_replacement", "fields": {}}, "status": 504, "result": {"ok": False, "error": "timeout"}, "delayed": True}
+    assert B.applications_created([late]) == ["card_replacement"]                                    # timed out for the agent, recorded by the bank
+    assert B.applications_failed({"applications": [{"type": "card_replacement"}]}, [late]) == []
 
 
 def test_main_takes_openapi_and_host(tmp_path, monkeypatch):
@@ -526,7 +529,7 @@ def test_run_pools_the_results_of_one_saved_version(tmp_path, monkeypatch):
     cases_path = tmp_path / "brief-x.cases.json"
     cases_path.write_text(json.dumps([GOOD, dict(GOOD, id="GEN-02", title="Accepts the floor again")]), encoding="utf-8")
     outcomes = iter([{"GEN-01": True, "GEN-02": False}, {"GEN-02": True}, {"GEN-01": True}])
-    def run_once(agent_id, cases, ids, style=None, concurrency=None):
+    def run_once(agent_id, cases, ids, style=None, concurrency=None, deadline=None):
         got = next(outcomes)
         return ([{"id": c["id"], "level": c["level"], "family": c["family"], "pass": got[c["id"]], "failed": [] if got[c["id"]] else ["outcome x"], "call_id": None,
                   "tools": [], "calls": [], "customer_id": "cust", "slowest_turn_s": 2.0, "ended": "assistant-ended-call"} for c in cases], "sim", "it", "completed", 1.0, 2.0)
@@ -599,7 +602,7 @@ def test_run_plays_universal_cases_and_scores_them_on_the_conversation(tmp_path,
     cases_path = tmp_path / "brief-x.cases.json"; cases_path.write_text(json.dumps([GOOD]), encoding="utf-8")
     failed = {"GEN-01": [], "UNI-01": ["outcome ('no_promise', 'refused'), expected (None, None)"],
               "UNI-02": ["outcome ('not_reached', 'callback'), expected (None, None)", "conversation: told the partner the amount"]}
-    def run_once(agent_id, cases, ids, style=None, concurrency=None):
+    def run_once(agent_id, cases, ids, style=None, concurrency=None, deadline=None):
         return ([{"id": c["id"], "level": c["level"], "family": c["family"], "pass": not failed[c["id"]], "failed": list(failed[c["id"]]), "call_id": None,
                   "tools": [], "calls": [], "customer_id": "cust", "slowest_turn_s": 2.0, "ended": "assistant-ended-call"} for c in cases], "sim", "it", "completed", 1.0, 2.0)
     monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
@@ -627,7 +630,7 @@ def test_skip_universal_leaves_them_out_of_one_run(tmp_path, monkeypatch):
     (tmp_path / "universal-test-set.json").write_text(json.dumps([
         {"id": "UNI-01", "fixture": "PUB-01", "family": "Adversarial", "level": "medium", "title": "Injection", "rules": ["knowledge:9.4"], "script": "s", "checks": ["c"]}]), encoding="utf-8")
     cases_path = tmp_path / "brief-x.cases.json"; cases_path.write_text(json.dumps([GOOD]), encoding="utf-8")
-    def run_once(agent_id, cases, ids, style=None, concurrency=None):
+    def run_once(agent_id, cases, ids, style=None, concurrency=None, deadline=None):
         return ([{"id": c["id"], "level": c["level"], "family": c["family"], "pass": True, "failed": [], "call_id": None, "tools": [], "calls": [], "customer_id": "cust",
                   "slowest_turn_s": 2.0, "ended": "assistant-ended-call"} for c in cases], "sim", "it", "completed", 1.0, 2.0)
     monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
@@ -644,23 +647,257 @@ def test_skip_universal_leaves_them_out_of_one_run(tmp_path, monkeypatch):
 
 # --- adaptive concurrency: calls at a time follow how the agent kept up ----------------------------------------------
 
-def test_concurrency_adapts_to_the_agents_speed(tmp_path, monkeypatch):
+def test_concurrency_adapts_to_the_share_of_slow_replies(tmp_path, monkeypatch):
     monkeypatch.setattr(B, "ROOT", tmp_path); (tmp_path / "results" / "bench" / "slot").mkdir(parents=True)
     assert B.pick_concurrency("slot") == B.run_cases.CONCURRENCY                              # nothing settled yet: the starting point
-    nxt, why = B.adapt_concurrency("slot", 16, median_slowest_s=4.0, hung_up=0, n_cases=63)    # fast and no hang-up: 1.5x
-    assert nxt == 24 and why.startswith("the agent kept up") and B.pick_concurrency("slot") == 24
-    nxt, _ = B.adapt_concurrency("slot", 24, median_slowest_s=4.0, hung_up=0, n_cases=20)      # fewer cases than calls at a time: no point raising
-    assert nxt == 24
-    nxt, why = B.adapt_concurrency("slot", 24, median_slowest_s=12.0, hung_up=0, n_cases=63)   # slow: halved
-    assert nxt == 12 and why.startswith("the agent was slow")
-    nxt, _ = B.adapt_concurrency("slot", 12, median_slowest_s=5.0, hung_up=1, n_cases=63)      # a hang-up counts as slow
+    nxt, why = B.adapt_concurrency("slot", 16, slow_share=0.05, waited_out=0, n_cases=63)     # few slow replies, nobody gave up: 1.5x
+    assert nxt == 24 and why.startswith("the agent kept up (5% of replies over 10 s") and B.pick_concurrency("slot") == 24
+    nxt, why = B.adapt_concurrency("slot", 24, slow_share=0.5, waited_out=3, n_cases=20)      # fewer customers than slots: says nothing about the load
+    assert nxt == 24 and why == "only 20 of 24 slots were in use: kept"
+    nxt, why = B.adapt_concurrency("slot", 24, slow_share=0.30, waited_out=0, n_cases=63)     # many slow replies under full load: halved
+    assert nxt == 12 and why.startswith("the agent was slow (30% of replies")
+    nxt, _ = B.adapt_concurrency("slot", 12, slow_share=0.05, waited_out=2, n_cases=63)       # two customers hung up waiting: halved too
     assert nxt == 6
-    nxt, _ = B.adapt_concurrency("slot", 6, median_slowest_s=20.0, hung_up=2, n_cases=63)      # never under the floor
+    nxt, why = B.adapt_concurrency("slot", 6, slow_share=0.16, waited_out=0, n_cases=63)      # a busy model, as at 5 and at 8 calls: kept
+    assert nxt == 6 and why.endswith(": kept")
+    nxt, _ = B.adapt_concurrency("slot", 6, slow_share=0.05, waited_out=1, n_cases=63)        # one customer who gave up holds the value
+    assert nxt == 6
+    nxt, _ = B.adapt_concurrency("slot", 6, slow_share=0.5, waited_out=5, n_cases=63)         # never under the floor
     assert nxt == B.run_cases.CONCURRENCY_MIN
-    for _ in range(6): nxt, _ = B.adapt_concurrency("slot", nxt, median_slowest_s=3.0, hung_up=0, n_cases=500)
+    for _ in range(8): nxt, _ = B.adapt_concurrency("slot", nxt, slow_share=0.0, waited_out=0, n_cases=500)
     assert nxt == B.run_cases.CONCURRENCY_MAX                                                  # never over the ceiling
     assert B.pick_concurrency("slot", host="https://tunnel.example") == B.TUNNEL_MAX           # a tunnelled mock caps it lower
-    nxt, _ = B.adapt_concurrency("slot", 20, median_slowest_s=3.0, hung_up=0, n_cases=63, host="https://tunnel.example")
+    nxt, _ = B.adapt_concurrency("slot", 20, slow_share=0.0, waited_out=0, n_cases=63, host="https://tunnel.example")
     assert nxt == B.TUNNEL_MAX
-    (tmp_path / "results" / "bench" / "slot" / "concurrency.json").write_text("garbage", encoding="utf-8")
+    f = tmp_path / "results" / "bench" / "slot" / "concurrency.json"
+    f.write_text(json.dumps({"concurrency": 5, "after_run_with": 5, "median_slowest_s": 9.5}), encoding="utf-8")
+    assert B.pick_concurrency("slot") == B.run_cases.CONCURRENCY                              # settled by the older rule: not reused
+    f.write_text("garbage", encoding="utf-8")
     assert B.pick_concurrency("slot") == B.run_cases.CONCURRENCY                              # an unreadable file is the starting point again
+
+
+def test_slow_replies_counts_every_rep():
+    reps = [[{"replies": 10, "slow_replies": 1, "ended": "assistant-ended-call", "waited_at_end": 0.0},
+             {"replies": 6, "slow_replies": 3, "ended": "customer-ended-call", "waited_at_end": 31.0}],
+            [{"replies": 4, "slow_replies": 0, "ended": "customer-ended-call", "waited_at_end": 1.0}, {"played": False}]]
+    share, waited_out = B.slow_replies(reps)
+    assert share == 0.2 and waited_out == 1                          # 4 of 20 replies; the customer who left after a second did not wait
+    assert B.slow_replies([[{"played": False}]]) == (0.0, 0)
+
+
+# --- a run that reaches its time limit: score what finished, name the rest --------------------------------------------
+
+def test_run_time_limit_follows_the_build_clock():
+    assert B.run_time_limit(None, None) is None                    # outside a build: no limit
+    assert B.run_time_limit(7, None) == 7 and B.run_time_limit(7, 25) == 7   # --max-minutes wins
+    assert B.run_time_limit(None, 6) == 11                         # early in a build: the cap below the 15-minute command limit
+    assert B.run_time_limit(None, 20) == 5                         # 30 - 20 - 5
+    assert B.run_time_limit(None, 29) == 3                         # never under the floor
+
+
+def test_play_order_starts_with_the_cases_that_failed():
+    hist = [{"cases": {"GEN-01": {"pass": True}, "GEN-02": {"pass": False}}}, {"cases": {"GEN-01": {"pass": False}, "GEN-03": {"pass": True}}}]
+    cases = [{"id": "UNI-01", "suite": "universal"}, {"id": "GEN-03"}, {"id": "GEN-04"}, {"id": "GEN-02"}, {"id": "GEN-01"}]
+    assert [c["id"] for c in B.play_order(cases, hist)] == ["GEN-02", "GEN-01", "GEN-04", "GEN-03", "UNI-01"]
+
+
+def test_run_cut_at_the_time_limit_scores_what_finished(tmp_path, monkeypatch, capsys):
+    import argparse
+    monkeypatch.setattr(B, "ROOT", tmp_path)
+    cases_path = tmp_path / "brief-x.cases.json"
+    cases_path.write_text(json.dumps([GOOD, dict(GOOD, id="GEN-02"), dict(GOOD, id="GEN-03")]), encoding="utf-8")
+    def run_once(agent_id, cases, ids, style=None, concurrency=None, deadline=None):
+        assert deadline is not None                                # --max-minutes reached run_once
+        rows = []
+        for c in cases:
+            played = c["id"] != "GEN-03"
+            rows.append({"id": c["id"], "level": c["level"], "family": c["family"], "pass": c["id"] == "GEN-01", "played": played,
+                         "failed": [] if c["id"] == "GEN-01" else (["outcome x"] if played else ["not played: the run reached its time limit"]),
+                         "call_id": None, "tools": [], "calls": [], "customer_id": "cust", "slowest_turn_s": 2.0, "ended": "assistant-ended-call"})
+        return rows, "sim", "it", "cut", 1.0, 2.0
+    monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
+    monkeypatch.setattr(B.run_cases, "run_once", run_once)
+    monkeypatch.setattr(B.run_cases, "running_simulations", lambda: [])
+    B.run(argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=None, reps=1, style=None,
+                             openapi=str(ROOT / "tools" / "openapi.json"), skip_universal=True, max_minutes=4))
+    out = tmp_path / "results" / "bench" / "brief-x"
+    rec = json.loads((out / "run-01.json").read_text(encoding="utf-8"))
+    assert [r["id"] for r in rec["rows"]] == ["GEN-01", "GEN-02"] and rec["cut"] == {"limit_min": 4, "not_played": ["GEN-03"]}
+    hist = json.loads((out / "history.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    assert set(hist["cases"]) == {"GEN-01", "GEN-02"}                # an unplayed case leaves no result behind
+    report = (out / "latest.md").read_text(encoding="utf-8")
+    assert "cut at the 4-minute time limit**: 1 cases were not played" in report and "`--only GEN-03`" in report
+    assert "generated 1/2 · total 1/2" in report
+    printed = capsys.readouterr().out
+    assert "time limit 4 min" in printed and "were not played: GEN-03" in printed and "Not played (the run reached its 4-minute time limit)" in printed
+
+
+# --- calls the agent's model never answered: not scored, the model told from the workflow -----------------------------
+
+def _no_reply_run(tmp_path, monkeypatch, answered_ids, diagnosed):
+    import argparse
+    monkeypatch.setattr(B, "ROOT", tmp_path)
+    cases_path = tmp_path / "brief-x.cases.json"
+    cases_path.write_text(json.dumps([GOOD, dict(GOOD, id="GEN-02"), dict(GOOD, id="GEN-03")]), encoding="utf-8")
+    def run_once(agent_id, cases, ids, style=None, concurrency=None, deadline=None):
+        rows = []
+        for c in cases:
+            ok = c["id"] in answered_ids
+            rows.append({"id": c["id"], "level": c["level"], "family": c["family"], "pass": ok, "played": ok, **({} if ok else {"why_not": "no reply"}),
+                         "failed": [] if ok else ["not played: the agent's model never answered the customer (60 s of silence, then the customer hung up)"],
+                         "call_id": None, "tools": [], "calls": [], "customer_id": "cust", "slowest_turn_s": 2.0, "ended": "assistant-ended-call"})
+        return rows, "sim", "it", "silent", 1.0, 2.0
+    monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
+    monkeypatch.setattr(B.run_cases, "run_once", run_once)
+    monkeypatch.setattr(B.run_cases, "running_simulations", lambda: [])
+    monkeypatch.setattr(B, "diagnose", lambda agent_id: (diagnosed.append(agent_id), ("down", "The phone agent's model is not answering."))[1])
+    B.run(argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=None, reps=2, style=None,
+                             openapi=str(ROOT / "tools" / "openapi.json"), skip_universal=True, max_minutes=None))
+    return tmp_path / "results" / "bench" / "brief-x"
+
+
+def test_run_leaves_unanswered_calls_unscored_and_says_why(tmp_path, monkeypatch, capsys):
+    diagnosed = []
+    out = _no_reply_run(tmp_path, monkeypatch, {"GEN-01"}, diagnosed)
+    rec = json.loads((out / "run-01.json").read_text(encoding="utf-8"))
+    assert [r["id"] for r in rec["rows"]] == ["GEN-01"] and rec["reps"] == 1                      # a silent model ends the reps
+    assert rec["no_reply"]["cases"] == ["GEN-02", "GEN-03"] and rec["cut"] is None and diagnosed == ["agent-x"]
+    assert rec["next_concurrency"] == rec["concurrency"] and rec["concurrency_note"].startswith("kept: the model did not answer")
+    assert not (out / "concurrency.json").exists()                                                # the load was not measured
+    assert set(json.loads((out / "history.jsonl").read_text(encoding="utf-8").splitlines()[0])["cases"]) == {"GEN-01"}
+    report = (out / "latest.md").read_text(encoding="utf-8")
+    assert "not scored, the agent's model did not answer**: 2 cases: GEN-02, GEN-03. The phone agent's model is not answering." in report
+    assert "do not change the workflow because of them" in report and "`--only GEN-02,GEN-03`" in report
+    printed = capsys.readouterr().out
+    assert "no further reps" in printed and "The phone agent's model is not answering." in printed
+
+
+def test_run_with_no_answered_call_scores_nothing(tmp_path, monkeypatch):
+    with pytest.raises(SystemExit) as e: _no_reply_run(tmp_path, monkeypatch, set(), [])
+    assert "Nothing to score: the agent's model answered none of the calls. The phone agent's model is not answering." in str(e.value)
+    assert not (tmp_path / "results" / "bench" / "brief-x" / "history.jsonl").exists()
+
+
+def test_chat_turn_tells_a_silent_model_from_a_broken_start(monkeypatch):
+    def api(answer):
+        def call(method, path, body=None, **k):
+            if path.endswith("/end"): return {}
+            if "callId" not in body: return {"callId": "c", "response": "Hello."}
+            if isinstance(answer, Exception): raise answer
+            return {"response": answer}
+        return call
+    monkeypatch.setattr(B.freya, "api", api("I can hear you."))
+    assert B.chat_turn("wf")[0::2] == ("answered", "I can hear you.")
+    monkeypatch.setattr(B.freya, "api", api(RuntimeError("POST /api/v2/chat/message -> 504: error code: 504")))
+    assert B.chat_turn("wf")[0] == "no reply"
+    monkeypatch.setattr(B.freya, "api", api(RuntimeError("POST /api/v2/chat/message -> 502: error code: 502")))
+    assert B.chat_turn("wf")[0] == "no reply"
+    monkeypatch.setattr(B.freya, "api", api(TimeoutError("timed out")))
+    assert B.chat_turn("wf")[0] == "no reply"
+    monkeypatch.setattr(B.freya, "api", api(RuntimeError("POST /api/v2/chat/message -> 500: cannot start")))
+    assert B.chat_turn("wf")[0] == "error"
+
+
+def test_diagnose_tells_the_model_from_the_workflow(monkeypatch):
+    monkeypatch.setattr(B, "workflow_of", lambda agent_id: "own" if agent_id == "agent-x" else None)
+    monkeypatch.setattr(B, "probe_workflow", lambda: "ref")
+    def with_answers(ref, own):
+        monkeypatch.setattr(B, "chat_turn", lambda wf: {"ref": ref, "own": own}[wf])
+        return B.diagnose("agent-x")
+    up, down, none = ("answered", 2.0, "Yes."), ("no reply", 60.0, "504"), ("error", 0.5, "500")
+    assert with_answers(down, down)[0] == "down" and "change nothing" in with_answers(down, down)[1]
+    assert with_answers(up, down)[0] == "workflow" and "your last save" in with_answers(up, down)[1]
+    assert with_answers(up, up)[0] == "up" and with_answers(none, up)[0] == "up"
+    assert with_answers(up, none)[0] == "up"                     # the agent's chat did not start, but the model answers
+    assert with_answers(none, down)[0] == "down"                 # no test workflow, and the agent got no reply
+    assert with_answers(none, none)[0] == "unknown"
+
+
+def test_workflow_of_and_probe_workflow_are_found_once(tmp_path, monkeypatch):
+    f = tmp_path / "agents.json"
+    f.write_text(json.dumps({"brief-x": {"workflow_id": "wf-x", "agent_id": "agent-x", "version": 2}}), encoding="utf-8")
+    assert B.workflow_of("agent-x", f) == "wf-x" and B.workflow_of("other", f) is None and B.workflow_of("agent-x", tmp_path / "none.json") is None
+    created = []
+    monkeypatch.setattr(B, "PROBE_FILE", tmp_path / "results" / "probe-workflow.json")
+    monkeypatch.setattr(B.freya, "workspace_id", lambda: "ws")
+    monkeypatch.setattr(B.freya, "create_workflow", lambda name, wf: created.append(name) or {"workflow_id": "probe-wf", "agent_id": "probe-agent"})
+    monkeypatch.setattr(B.freya, "update_workflow", lambda wid, wf: 2)
+    assert B.probe_workflow() == "probe-wf" and B.probe_workflow() == "probe-wf" and created == ["model probe"]
+
+
+def test_main_probe_exits_by_what_it_found(monkeypatch, capsys):
+    for state, code in (("up", 0), ("down", 3), ("workflow", 3)):
+        monkeypatch.setattr(B, "diagnose", lambda agent_id: (state, f"state {state}"))
+        monkeypatch.setattr(sys, "argv", ["benchmark.py", "agent-x", "--probe"])
+        with pytest.raises(SystemExit) as e: B.main()
+        assert e.value.code == code and f"state {state}" in capsys.readouterr().out
+
+
+# --- a tunnelled mock: the benchmark's own requests stay local, and a lost bank is not the agent's fault ----------------
+
+def test_practice_host_uses_the_tunnels_local_end(monkeypatch):
+    import io
+    listing = {"tunnels": [{"public_url": "https://abc.ngrok-free.app", "config": {"addr": "http://localhost:8765"}},
+                           {"public_url": "https://port.ngrok-free.app", "config": {"addr": "9000"}}]}
+    monkeypatch.setattr(B.urllib.request, "urlopen", lambda url, timeout=None: io.BytesIO(json.dumps(listing).encode()))
+    assert B.practice_host("https://abc.ngrok-free.app/") == "http://127.0.0.1:8765"                  # not localhost: on Windows it tries IPv6 for 2 s
+    assert B.practice_host("https://port.ngrok-free.app") == "http://127.0.0.1:9000"
+    assert B.practice_host("https://other.example") == "https://other.example"          # not a tunnel of this machine
+    def down(url, timeout=None): raise OSError("no ngrok here")
+    monkeypatch.setattr(B.urllib.request, "urlopen", down)
+    assert B.practice_host("https://abc.ngrok-free.app") == "https://abc.ngrok-free.app"
+
+
+def test_a_lost_bank_halves_the_calls_at_a_time(tmp_path, monkeypatch):
+    monkeypatch.setattr(B, "ROOT", tmp_path); (tmp_path / "results" / "bench" / "slot").mkdir(parents=True)
+    nxt, why = B.adapt_concurrency("slot", 12, slow_share=0.0, waited_out=0, n_cases=4, host="https://t.example", unreached=3)
+    assert nxt == 6 and why == "3 calls could not reach the bank's host: halved"           # even in a small run
+
+
+def test_run_leaves_calls_that_lost_the_bank_unscored(tmp_path, monkeypatch, capsys):
+    import argparse
+    monkeypatch.setattr(B, "ROOT", tmp_path)
+    cases_path = tmp_path / "brief-x.cases.json"
+    cases_path.write_text(json.dumps([GOOD, dict(GOOD, id="GEN-02")]), encoding="utf-8")
+    def run_once(agent_id, cases, ids, style=None, concurrency=None, deadline=None):
+        rows = []
+        for c in cases:
+            ok = c["id"] == "GEN-01"
+            rows.append({"id": c["id"], "level": c["level"], "family": c["family"], "pass": ok, "played": ok, **({} if ok else {"why_not": "host"}),
+                         "failed": [] if ok else ["not played: 2 tool calls could not reach the bank's host (a connection error), so the call tested the outage, not the agent"],
+                         "call_id": None, "tools": [], "calls": [], "customer_id": "cust", "slowest_turn_s": 2.0, "ended": "assistant-ended-call"})
+        return rows, "sim", "it", "completed", 1.0, 2.0
+    monkeypatch.setattr(B.run_cases, "ensure_personas", lambda cases, style=None: {c["id"]: "p-" + c["id"] for c in cases})
+    monkeypatch.setattr(B.run_cases, "run_once", run_once)
+    monkeypatch.setattr(B.run_cases, "running_simulations", lambda: [])
+    B.run(argparse.Namespace(agent_id="agent-x", cases=str(cases_path), rules=[], public=None, only=None, reps=1, style=None,
+                             openapi=str(ROOT / "tools" / "openapi.json"), skip_universal=True, max_minutes=None, host="https://t.example"))
+    out = tmp_path / "results" / "bench" / "brief-x"
+    rec = json.loads((out / "run-01.json").read_text(encoding="utf-8"))
+    assert [r["id"] for r in rec["rows"]] == ["GEN-01"] and rec["unreached"] == ["GEN-02"]
+    assert rec["concurrency_note"].startswith("1 call could not reach the bank's host: halved")
+    report = (out / "latest.md").read_text(encoding="utf-8")
+    assert "not scored, a tool call could not reach the bank's host**: 1 cases: GEN-02" in report and "They tested the tunnel, not the agent" in report
+    assert "could not reach the bank's host: GEN-02" in capsys.readouterr().out
+
+
+# --- a brief that brings its own test customers ----------------------------------------------------------------------------
+
+def test_own_fixtures_replace_the_practice_customers(tmp_path, monkeypatch):
+    monkeypatch.setattr(B, "ROOT", tmp_path); (tmp_path / "tests").mkdir()
+    assert B.fixtures_path("tests/brief-x.cases.json") == B.PUBLIC_SET and not B.own_fixtures("tests/brief-x.cases.json")
+    own = [{"id": "10000001", "brief": "brief-x", "variables": {"customerNumber": "10000001", "now": "2026-01-05T10:00:00+03:00"},
+            "identity": {}, "persona": "You are Ada Test.", "language": "tr"}]
+    (tmp_path / "tests" / "brief-x.fixtures.json").write_text(json.dumps(own), encoding="utf-8")
+    assert B.own_fixtures("tests/brief-x.cases.json")
+    fixtures = B.load_fixtures(B.fixtures_path("tests/brief-x.cases.json"))
+    case = {"id": "GEN-01", "fixture": "10000001", "title": "t", "family": "Happy path", "level": "easy", "rules": ["x:1"],
+            "script": "s", "expected": {}, "checks": ["c"]}
+    errors, _, _ = B.check_cases([case], fixtures, {"paths": {}}, None, own=True)
+    assert errors == []                                                          # the judge scores: no records needed
+    errors, _, _ = B.check_cases([case], fixtures, {"paths": {}}, None, own=False)
+    assert any("expected.outcome missing" in e for e in errors)
+    merged = B.merge_with_fixture(case, fixtures)
+    assert merged["persona"] == "You are Ada Test." and merged["language"] == "tr" and merged["variables"]["customerNumber"] == "10000001"
+    universal, skipped = B.load_universal(fixtures, {"paths": {}}, ROOT / "universal-test-set.json")
+    assert universal == [] and len(skipped) == 13                                # the practice customers are not there
