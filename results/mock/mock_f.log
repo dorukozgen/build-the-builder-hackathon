@@ -1,0 +1,486 @@
+16:53:58 brief-f mock listening on http://127.0.0.1:8765  (fixtures: PUB-01, PUB-02, PUB-03, PUB-04, PUB-05, PUB-06, PUB-07, PUB-08, PUB-09, PUB-10, PUB-11, PUB-12, PUB-13)
+17:00:27 session f_13718b8faa55 case PUB-08 apps 1 faults -
+17:00:27 session f_bb4b244cc1bb case PUB-04 apps 0 faults -
+17:00:28 session f_1492b407a1e5 case PUB-12 apps 0 faults -
+17:00:35 f_bb4b244cc1bb verify_identity {"field": "date_of_birth", "answer": "1984-01-30"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:00:39 f_1492b407a1e5 transfer_to_agent {"queue": "security"} -> {"ok": true}
+17:00:46 f_bb4b244cc1bb verify_identity {"field": "phone_last4", "answer": "2219"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:00:46 f_bb4b244cc1bb find_applications {"type": "card_replacement"} -> {"ok": true, "applications": []}
+17:00:46 f_13718b8faa55 verify_identity {"field": "date_of_birth", "answer": "1993-04-28"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:00:47 f_bb4b244cc1bb get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:00:50 f_bb4b244cc1bb get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:00:50 f_1492b407a1e5 close_call {"reason": "security", "outcome": "transferred"} -> {"ok": true}
+17:00:52 f_13718b8faa55 verify_identity {"field": "phone_last4", "answer": "3317"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:00:53 f_13718b8faa55 find_applications {"type": "limit_increase"} -> {"ok": true, "applications": [{"application_id": "APP-697908", "type": "limit_increase", "status": "in_review", "created_on": "2026-10-09", "note": ""}]}
+17:00:55 f_bb4b244cc1bb get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:00:57 f_13718b8faa55 find_applications {"type": "limit_increase"} -> {"ok": true, "applications": [{"application_id": "APP-697908", "type": "limit_increase", "status": "in_review", "created_on": "2026-10-09", "note": ""}]}
+17:01:03 f_bb4b244cc1bb get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:01:06 f_bb4b244cc1bb get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:01:15 f_13718b8faa55 close_call {"outcome": "status_given"} -> {"ok": true}
+17:01:17 f_bb4b244cc1bb create_application {"type": "card_replacement", "fields": {"reason": "damaged", "delivery": "home"}} -> {"ok": true, "application_id": "APP-302783", "status": "received"}
+17:01:24 f_bb4b244cc1bb close_call {"outcome": "application_created"} -> {"ok": true}
+17:03:30 session f_40a105c514e0 case PUB-01 apps 0 faults -
+17:03:31 session f_ae6ba9433cc7 case PUB-03 apps 0 faults -
+17:03:31 session f_cad6cd3e93fd case PUB-02 apps 0 faults -
+17:03:31 session f_cfa74dd5f8b6 case PUB-05 apps 0 faults -
+17:03:31 session f_9ff9a1fac5b0 case PUB-06 apps 0 faults -
+17:03:32 session f_83c15c2f07ba case PUB-07 apps 0 faults -
+17:03:32 session f_99ac49addbc5 case PUB-08 apps 0 faults -
+17:03:32 session f_c3fe5137212b case PUB-09 apps 0 faults -
+17:03:33 session f_9863f27de73c case PUB-01 apps 0 faults -
+17:03:33 session f_1adf97af8e90 case PUB-03 apps 0 faults -
+17:03:33 session f_44fb71c90a54 case PUB-05 apps 0 faults -
+17:03:33 session f_b97dddd380bf case PUB-06 apps 0 faults -
+17:03:34 session f_171f9c0f2ab0 case PUB-07 apps 0 faults -
+17:03:34 session f_bb5151005c63 case PUB-08 apps 1 faults -
+17:03:34 session f_9a79fb5dec66 case PUB-09 apps 0 faults -
+17:03:34 session f_1aa47f0f008e case PUB-10 apps 0 faults {'create_application': {'delay_first': 1}}
+17:03:35 session f_e762e792637a case PUB-04 apps 0 faults -
+17:03:35 session f_3a4eaa4e6c8e case PUB-11 apps 0 faults -
+17:03:35 session f_94d4af197ab0 case PUB-12 apps 0 faults -
+17:03:35 session f_cc7044322f10 case PUB-13 apps 0 faults -
+17:03:36 session f_c411b4ba2afd case PUB-02 apps 0 faults -
+17:03:36 session f_88fdcc5db0ec case PUB-06 apps 0 faults -
+17:03:36 session f_0cb429ae1462 case PUB-07 apps 1 faults -
+17:03:37 session f_43ac5522cd78 case PUB-08 apps 1 faults -
+17:03:37 session f_2e5e00492495 case PUB-03 apps 1 faults -
+17:03:37 session f_18cb2d41a049 case PUB-09 apps 1 faults -
+17:03:37 session f_555df085142a case PUB-13 apps 1 faults -
+17:03:38 session f_bff1239e10db case PUB-01 apps 1 faults -
+17:03:38 session f_9dd71d9a20d0 case PUB-02 apps 1 faults -
+17:03:38 session f_fea5e0d5d386 case PUB-04 apps 1 faults -
+17:03:38 session f_d9873deb75d4 case PUB-05 apps 0 faults -
+17:03:39 session f_585c484a6557 case PUB-11 apps 0 faults -
+17:03:39 session f_ea6607abb973 case PUB-08 apps 0 faults -
+17:03:39 session f_e2a32a00c5c9 case PUB-12 apps 0 faults -
+17:03:39 session f_6d828a76bf12 case PUB-03 apps 0 faults -
+17:03:40 session f_a731a14f42e2 case PUB-09 apps 0 faults -
+17:03:40 session f_867915ef1eb1 case PUB-10 apps 0 faults {'create_application': {'delay_first': 1}}
+17:03:41 session f_bf0b9ad8cfe6 case PUB-01 apps 0 faults -
+17:03:41 session f_48b9a1ef7a06 case PUB-06 apps 0 faults -
+17:03:41 session f_dd6fe6ea889e case PUB-07 apps 1 faults -
+17:03:42 session f_4ae40194a8db case PUB-13 apps 0 faults -
+17:03:42 session f_d7556951cb76 case PUB-11 apps 0 faults -
+17:03:42 session f_bf6fce054d77 case PUB-05 apps 0 faults -
+17:03:42 session f_ec10e149e811 case PUB-12 apps 0 faults -
+17:03:43 session f_7b4e5059b3cf case PUB-02 apps 0 faults -
+17:03:43 session f_2ac296eee399 case PUB-04 apps 0 faults -
+17:03:43 session f_5309792149e6 case PUB-09 apps 0 faults -
+17:03:43 session f_f97e998a3805 case PUB-01 apps 0 faults -
+17:03:44 session f_e6741bbe33f0 case PUB-03 apps 0 faults -
+17:03:44 session f_58ed0db8f8bd case PUB-08 apps 0 faults -
+17:03:44 session f_b3ccd1f8d5e6 case PUB-01 apps 0 faults -
+17:03:45 session f_83032c6c027a case PUB-05 apps 0 faults -
+17:03:45 session f_c38e961c0e5d case PUB-08 apps 0 faults -
+17:03:45 session f_11e7c90fc491 case PUB-04 apps 0 faults -
+17:03:45 session f_0380e701ba6d case PUB-03 apps 0 faults -
+17:03:46 session f_51c188c7a836 case PUB-06 apps 0 faults -
+17:03:46 session f_44ba07a72000 case PUB-07 apps 0 faults -
+17:03:46 session f_ce6e61a1d073 case PUB-09 apps 0 faults -
+17:03:46 session f_596bb39f579b case PUB-02 apps 0 faults -
+17:03:47 session f_b6192b67ee87 case PUB-03 apps 0 faults -
+17:03:47 session f_5d871c8e3e71 case PUB-05 apps 0 faults -
+17:03:47 session f_509bea836d5d case PUB-06 apps 0 faults -
+17:03:47 session f_6f4c917bba42 case PUB-04 apps 0 faults -
+17:03:55 f_e762e792637a verify_identity {"field": "date_of_birth", "answer": "1984-01-30"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:03:59 f_b6192b67ee87 transfer_to_agent {"queue": "general"} -> {"ok": true}
+17:04:01 f_b6192b67ee87 close_call {"reason": "human", "outcome": "transferred"} -> {"ok": true}
+17:04:05 f_6f4c917bba42 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:04:07 f_5d871c8e3e71 transfer_to_agent {"queue": "general"} -> {"ok": true}
+17:04:07 f_e762e792637a verify_identity {"field": "phone_last4", "answer": "2219"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:04:07 f_e762e792637a find_applications {"type": "card_replacement"} -> {"ok": true, "applications": []}
+17:04:08 f_5d871c8e3e71 close_call {"reason": "human", "outcome": "transferred"} -> {"ok": true}
+17:04:08 f_e762e792637a get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:04:14 f_6f4c917bba42 close_call {"reason": "out_of_scope", "outcome": "no_action"} -> {"ok": true}
+17:04:21 f_509bea836d5d get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:04:22 f_e762e792637a get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:04:22 f_e2a32a00c5c9 transfer_to_agent {"queue": "security"} -> {"ok": true}
+17:04:24 f_bb5151005c63 verify_identity {"field": "date_of_birth", "answer": "1993-04-28"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:04:28 f_e2a32a00c5c9 close_call {"reason": "security", "outcome": "transferred"} -> {"ok": true}
+17:04:30 f_bb5151005c63 verify_identity {"field": "phone_last4", "answer": "3317"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:04:30 f_bb5151005c63 find_applications {"type": "limit_increase"} -> {"ok": true, "applications": [{"application_id": "APP-552907", "type": "limit_increase", "status": "in_review", "created_on": "2026-10-09", "note": ""}]}
+17:04:31 f_509bea836d5d close_call {"reason": "out_of_scope", "outcome": "no_action"} -> {"ok": true}
+17:04:37 f_bb5151005c63 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:04:38 f_bb5151005c63 close_call {"outcome": "status_given"} -> {"ok": true}
+17:04:41 f_40a105c514e0 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:04:42 f_40a105c514e0 close_call {"reason": "declined", "outcome": "not_verified"} -> {"ok": true}
+17:04:44 f_e762e792637a get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:04:52 f_e762e792637a get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:04:57 f_cad6cd3e93fd verify_identity {"field": "date_of_birth", "answer": "1979-02-11"} -> {"ok": true, "verified": false, "wrong_answers_left": 3, "all_verified": false, "hint": "day_month_swapped"}
+17:04:58 f_cfa74dd5f8b6 transfer_to_agent {"queue": "general"} -> {"ok": true}
+17:04:59 f_ae6ba9433cc7 verify_identity {"field": "date_of_birth", "answer": "1990-07-21"} -> {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+17:05:00 f_cad6cd3e93fd verify_identity {"field": "date_of_birth", "answer": "1979-11-02"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:05:03 f_cad6cd3e93fd verify_identity {"field": "phone_last4", "answer": "0385"} -> {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+17:05:03 f_e762e792637a create_application {"type": "card_replacement", "fields": {"reason": "damaged", "delivery": "home"}} -> {"ok": true, "application_id": "APP-528302", "status": "received"}
+17:05:05 f_cfa74dd5f8b6 close_call {"reason": "human", "outcome": "transferred"} -> {"ok": true}
+17:05:08 f_cad6cd3e93fd verify_identity {"field": "phone_last4", "answer": "0385"} -> {"ok": true, "verified": false, "wrong_answers_left": 1, "all_verified": false}
+17:05:11 f_cad6cd3e93fd verify_identity {"field": "phone_last4", "answer": "3580"} -> {"ok": true, "verified": false, "wrong_answers_left": 0, "all_verified": false}
+17:05:12 f_cad6cd3e93fd close_call {"reason": "failed", "outcome": "not_verified"} -> {"ok": true}
+17:05:12 f_ae6ba9433cc7 verify_identity {"field": "date_of_birth", "answer": "1991-07-21"} -> {"ok": true, "verified": false, "wrong_answers_left": 1, "all_verified": false}
+17:05:14 f_e762e792637a get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:05:18 f_596bb39f579b verify_identity {"field": "date_of_birth", "answer": "1979-11-02"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:05:19 f_e762e792637a close_call {"outcome": "application_created"} -> {"ok": true}
+17:05:21 f_596bb39f579b verify_identity {"field": "phone_last4", "answer": "0358"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:05:25 f_ae6ba9433cc7 verify_identity {"field": "date_of_birth", "answer": "1992-07-21"} -> {"ok": true, "verified": true, "wrong_answers_left": 1, "all_verified": false}
+17:05:34 f_9ff9a1fac5b0 transfer_to_agent {"queue": "general"} -> {"ok": true}
+17:05:35 f_596bb39f579b get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:05:35 f_596bb39f579b close_call {"reason": "out_of_scope", "outcome": "no_action"} -> {"ok": true}
+17:05:36 f_ae6ba9433cc7 verify_identity {"field": "phone_last4", "answer": "6603"} -> {"ok": true, "verified": false, "wrong_answers_left": 0, "all_verified": false}
+17:05:42 f_9ff9a1fac5b0 close_call {"reason": "human", "outcome": "transferred"} -> {"ok": true}
+17:05:42 f_83c15c2f07ba verify_identity {"field": "date_of_birth", "answer": "1976-12-05"} -> {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+17:05:45 f_ae6ba9433cc7 close_call {"reason": "failed", "outcome": "not_verified"} -> {"ok": true}
+17:05:51 f_99ac49addbc5 verify_identity {"field": "date_of_birth", "answer": "1993-04-28"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:05:54 f_83c15c2f07ba verify_identity {"field": "date_of_birth", "answer": "1970-03-03"} -> {"ok": true, "verified": false, "wrong_answers_left": 1, "all_verified": false}
+17:06:04 f_2e5e00492495 verify_identity {"field": "date_of_birth", "answer": "1992-07-21"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:06:07 f_ce6e61a1d073 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:06:08 f_83c15c2f07ba verify_identity {"field": "date_of_birth", "answer": "1975-11-05"} -> {"ok": true, "verified": false, "wrong_answers_left": 0, "all_verified": false}
+17:06:12 f_2e5e00492495 verify_identity {"field": "phone_last4", "answer": "6630"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:06:12 f_2e5e00492495 find_applications {"type": "limit_increase"} -> {"ok": true, "applications": [{"application_id": "APP-640021", "type": "limit_increase", "status": "received", "created_on": "2026-10-13", "note": ""}]}
+17:06:13 f_c3fe5137212b transfer_to_agent {"queue": "general"} -> {"ok": true}
+17:06:14 f_ce6e61a1d073 close_call {"reason": "out_of_scope", "outcome": "no_action"} -> {"ok": true}
+17:06:15 f_83c15c2f07ba close_call {"reason": "failed", "outcome": "not_verified"} -> {"ok": true}
+17:06:15 f_99ac49addbc5 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:06:18 f_2e5e00492495 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:06:19 f_2e5e00492495 close_call {"outcome": "status_given"} -> {"ok": true}
+17:06:22 f_c3fe5137212b close_call {"reason": "human", "outcome": "transferred"} -> {"ok": true}
+17:06:25 f_99ac49addbc5 close_call {"reason": "declined", "outcome": "not_verified"} -> {"ok": true}
+17:06:42 f_9863f27de73c transfer_to_agent {"queue": "security"} -> {"ok": true}
+17:06:42 f_9863f27de73c close_call {"reason": "security", "outcome": "transferred"} -> {"ok": true}
+17:06:45 f_0cb429ae1462 verify_identity {"field": "date_of_birth", "answer": "1975-12-05"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:06:48 f_0cb429ae1462 verify_identity {"field": "phone_last4", "answer": "7093"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:06:48 f_1adf97af8e90 transfer_to_agent {"queue": "general"} -> {"ok": true}
+17:06:48 f_0cb429ae1462 find_applications {"type": "card_replacement"} -> {"ok": true, "applications": [{"application_id": "APP-551208", "type": "card_replacement", "status": "more_info_needed", "created_on": "2026-10-08", "note": "A 
+17:06:49 f_1adf97af8e90 close_call {"reason": "human", "outcome": "transferred"} -> {"ok": true}
+17:06:54 f_0cb429ae1462 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:06:57 f_0cb429ae1462 close_call {"outcome": "status_given"} -> {"ok": true}
+17:07:08 f_44ba07a72000 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:07:08 f_44ba07a72000 close_call {"reason": "out_of_scope", "outcome": "no_action"} -> {"ok": true}
+17:07:09 f_bff1239e10db verify_identity {"field": "date_of_birth", "answer": "1988-03-14"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:07:17 f_44fb71c90a54 transfer_to_agent {"queue": "general"} -> {"ok": true}
+17:07:19 f_44fb71c90a54 close_call {"reason": "human", "outcome": "transferred"} -> {"ok": true}
+17:07:21 f_58ed0db8f8bd verify_identity {"field": "date_of_birth", "answer": "1993-04-28"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:07:23 f_bff1239e10db verify_identity {"field": "phone_last4", "answer": "4471"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:07:34 f_b97dddd380bf get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:07:35 f_b97dddd380bf close_call {"reason": "declined", "outcome": "not_verified"} -> {"ok": true}
+17:07:37 f_bff1239e10db get_application {"application_id": "APP482913"} -> {"ok": false, "error": "unknown application_id"}
+17:07:42 f_58ed0db8f8bd verify_identity {"field": "phone_last4", "answer": "3317"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:07:51 f_58ed0db8f8bd find_applications {"type": "limit_increase"} -> {"ok": true, "applications": []}
+17:07:57 f_171f9c0f2ab0 verify_identity {"field": "date_of_birth", "answer": "1980-06-12"} -> {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+17:07:58 f_58ed0db8f8bd get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:08:01 f_171f9c0f2ab0 verify_identity {"field": "date_of_birth", "answer": "1972-08-22"} -> {"ok": true, "verified": false, "wrong_answers_left": 1, "all_verified": false}
+17:08:08 f_171f9c0f2ab0 verify_identity {"field": "date_of_birth", "answer": "1985-02-14"} -> {"ok": true, "verified": false, "wrong_answers_left": 0, "all_verified": false}
+17:08:09 f_171f9c0f2ab0 close_call {"reason": "failed", "outcome": "not_verified"} -> {"ok": true}
+17:08:19 f_bff1239e10db get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:08:19 f_58ed0db8f8bd get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:08:19 f_9a79fb5dec66 verify_identity {"field": "date_of_birth", "answer": "1981-08-11"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:08:23 f_1aa47f0f008e verify_identity {"field": "date_of_birth", "answer": "1989-02-23"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:08:29 f_bff1239e10db close_call {"reason": "out_of_scope", "outcome": "no_action"} -> {"ok": true}
+17:08:29 f_1aa47f0f008e verify_identity {"field": "phone_last4", "answer": "9904"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:08:30 f_1aa47f0f008e find_applications {"type": "card_replacement"} -> {"ok": true, "applications": []}
+17:08:30 f_1aa47f0f008e get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:08:34 f_1aa47f0f008e get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:08:40 f_3a4eaa4e6c8e verify_identity {"field": "date_of_birth", "answer": "1987-06-03"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:08:41 f_58ed0db8f8bd get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:08:41 f_9a79fb5dec66 verify_identity {"field": "phone_last4", "answer": "5560"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:08:44 f_3a4eaa4e6c8e verify_identity {"field": "phone_last4", "answer": "2280"} -> {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+17:08:49 f_94d4af197ab0 verify_identity {"field": "date_of_birth", "answer": "1983-10-19"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:08:49 f_3a4eaa4e6c8e verify_identity {"field": "phone_last4", "answer": "2288"} -> {"ok": true, "verified": true, "wrong_answers_left": 2, "all_verified": true}
+17:08:49 f_9a79fb5dec66 find_applications {"type": "limit_increase"} -> {"ok": true, "applications": []}
+17:08:49 f_3a4eaa4e6c8e find_applications {"type": "address_change"} -> {"ok": true, "applications": []}
+17:08:50 f_3a4eaa4e6c8e get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:08:50 f_1aa47f0f008e get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:08:52 f_94d4af197ab0 verify_identity {"field": "phone_last4", "answer": "4410"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:08:52 f_94d4af197ab0 find_applications {"type": "limit_increase"} -> {"ok": true, "applications": []}
+17:08:52 f_94d4af197ab0 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:08:54 f_3a4eaa4e6c8e get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:08:54 f_1aa47f0f008e get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:08:56 f_3a4eaa4e6c8e get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:08:56 f_9a79fb5dec66 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:09:00 f_3a4eaa4e6c8e get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:09:01 f_94d4af197ab0 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:09:04 f_3a4eaa4e6c8e get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:09:04 f_94d4af197ab0 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:09:08 f_94d4af197ab0 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:09:12 f_58ed0db8f8bd get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:09:12 f_1aa47f0f008e find_applications {"type": "card_replacement"} -> {"ok": true, "applications": []}
+17:09:12 f_3a4eaa4e6c8e create_application {"type": "address_change", "fields": {"street": "Rua das Flores 27", "city": "Porto", "postcode": "40150"}} -> {"ok": true, "application_id": "APP-372811", "status": "received"}
+17:09:12 f_1aa47f0f008e create_application {"type": "card_replacement", "fields": {"reason": "expired", "delivery": "home"}} -> {"ok": true, "application_id": "APP-194004", "status": "received"}
+17:09:15 f_1aa47f0f008e get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:09:16 f_3a4eaa4e6c8e get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:09:16 f_1aa47f0f008e close_call {"outcome": "application_created"} -> {"ok": true}
+17:09:16 f_3a4eaa4e6c8e close_call {"outcome": "application_created"} -> {"ok": true}
+17:09:17 f_1aa47f0f008e create_application {"type": "card_replacement", "fields": {"reason": "expired", "delivery": "home"}} -> {"ok": true, "application_id": "APP-202690", "status": "received"} (delayed)
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 51383)
+Traceback (most recent call last):
+  File "C:\Python314\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Python314\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python314\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\loseu\Desktop\build-the-builder\tools\mock_bank_f.py", line 212, in do_POST
+    self.send(200, result)
+    ~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\loseu\Desktop\build-the-builder\tools\mock_bank_f.py", line 176, in send
+    self.wfile.write(data)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Python314\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine
+----------------------------------------
+17:09:25 f_94d4af197ab0 create_application {"type": "limit_increase", "fields": {"requested_limit": "5000", "monthly_income": "3200"}} -> {"ok": true, "application_id": "APP-540438", "status": "received"}
+17:09:29 f_94d4af197ab0 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:09:30 f_58ed0db8f8bd create_application {"type": "limit_increase", "fields": {"requested_limit": "4500"}} -> {"ok": true, "application_id": "APP-125771", "status": "received"}
+17:09:31 f_94d4af197ab0 close_call {"outcome": "application_created"} -> {"ok": true}
+17:09:41 f_9a79fb5dec66 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:09:47 f_58ed0db8f8bd get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:09:48 f_cc7044322f10 transfer_to_agent {"queue": "applications"} -> {"ok": true}
+17:10:01 f_9a79fb5dec66 close_call {"reason": "incomplete", "outcome": "no_action"} -> {"ok": true}
+17:10:04 f_c411b4ba2afd get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:10:16 f_88fdcc5db0ec verify_identity {"field": "date_of_birth", "answer": "1986-05-17"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:10:22 f_88fdcc5db0ec verify_identity {"field": "phone_last4", "answer": "1502"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:10:23 f_88fdcc5db0ec find_applications {"type": "address_change"} -> {"ok": true, "applications": []}
+17:10:24 f_88fdcc5db0ec get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:10:27 f_c411b4ba2afd close_call {"reason": "unsupported", "outcome": "no_action"} -> {"ok": true}
+17:10:28 f_88fdcc5db0ec get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:10:30 f_43ac5522cd78 verify_identity {"field": "date_of_birth", "answer": "1993-04-28"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:10:33 f_88fdcc5db0ec get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:10:35 f_88fdcc5db0ec get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:10:38 f_18cb2d41a049 verify_identity {"field": "date_of_birth", "answer": "1981-08-11"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:10:41 f_88fdcc5db0ec get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:10:45 f_88fdcc5db0ec create_application {"type": "address_change", "fields": {"street": "Keizersgracht 101", "city": "Amsterdam", "postcode": "10150"}} -> {"ok": true, "application_id": "APP-582843", "status": "received"}
+17:10:47 f_555df085142a verify_identity {"field": "date_of_birth", "answer": "1991-01-08"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:10:48 f_88fdcc5db0ec find_applications {"type": "card_replacement"} -> {"ok": true, "applications": []}
+17:10:48 f_88fdcc5db0ec get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:10:54 f_88fdcc5db0ec get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:10:58 f_43ac5522cd78 verify_identity {"field": "phone_last4", "answer": "3317"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:11:00 f_43ac5522cd78 find_applications {"type": "address_change"} -> {"ok": true, "applications": [{"application_id": "APP-203344", "type": "address_change", "status": "more_info_needed", "created_on": "2026-10-10", "note": "Proo
+17:11:02 f_9dd71d9a20d0 verify_identity {"field": "date_of_birth", "answer": "1979-11-02"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:11:03 f_88fdcc5db0ec get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:11:06 f_88fdcc5db0ec get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:11:06 f_18cb2d41a049 verify_identity {"field": "phone_last4", "answer": "5560"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:11:07 f_43ac5522cd78 transfer_to_agent {"queue": "applications"} -> {"ok": true}
+17:11:12 f_43ac5522cd78 close_call {"reason": "applications", "outcome": "transferred"} -> {"ok": true}
+17:11:12 f_555df085142a verify_identity {"field": "phone_last4", "answer": "6604"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:11:13 f_88fdcc5db0ec create_application {"type": "card_replacement", "fields": {"reason": "damaged", "delivery": "home"}} -> {"ok": true, "application_id": "APP-801553", "status": "received"}
+17:11:14 f_18cb2d41a049 find_applications {"type": "card_replacement"} -> {"ok": true, "applications": [{"application_id": "APP-118870", "type": "card_replacement", "status": "approved", "created_on": "2026-09-01", "note": ""}]}
+17:11:14 f_555df085142a find_applications {"type": "limit_increase"} -> {"ok": true, "applications": [{"application_id": "APP-300912", "type": "limit_increase", "status": "rejected", "created_on": "2026-08-20", "note": "Income could
+17:11:16 f_18cb2d41a049 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:11:18 f_555df085142a get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:11:18 f_9dd71d9a20d0 verify_identity {"field": "phone_last4", "answer": "0358"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:11:18 f_88fdcc5db0ec get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:11:19 f_88fdcc5db0ec close_call {"outcome": "application_created"} -> {"ok": true}
+17:11:32 f_18cb2d41a049 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:11:35 f_fea5e0d5d386 verify_identity {"field": "date_of_birth", "answer": "1984-01-30"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:11:36 f_555df085142a get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:11:36 f_51c188c7a836 transfer_to_agent {"queue": "general"} -> {"ok": true}
+17:11:38 f_51c188c7a836 close_call {"reason": "human", "outcome": "transferred"} -> {"ok": true}
+17:11:39 f_9dd71d9a20d0 get_application {"application_id": "APP-111111"} -> {"ok": false, "error": "unknown application_id"}
+17:11:39 f_fea5e0d5d386 verify_identity {"field": "phone_last4", "answer": "2219"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:11:41 f_fea5e0d5d386 get_application {"application_id": "APP-774410"} -> {"ok": true, "application_id": "APP-774410", "type": "card_replacement", "status": "rejected", "created_on": "2026-10-01", "note": ""}
+17:11:45 f_fea5e0d5d386 find_applications {"type": "card_replacement"} -> {"ok": true, "applications": [{"application_id": "APP-774410", "type": "card_replacement", "status": "rejected", "created_on": "2026-10-01", "note": ""}]}
+17:11:46 f_fea5e0d5d386 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:11:54 f_fea5e0d5d386 transfer_to_agent {"queue": "applications"} -> {"ok": true}
+17:11:56 f_fea5e0d5d386 close_call {"reason": "applications", "outcome": "transferred"} -> {"ok": true}
+17:11:58 f_18cb2d41a049 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:12:04 f_555df085142a get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:12:05 f_9dd71d9a20d0 find_applications {"type": "address_change"} -> {"ok": true, "applications": [{"application_id": "APP-305577", "type": "address_change", "status": "received", "created_on": "2026-10-11", "note": ""}]}
+17:12:25 f_585c484a6557 verify_identity {"field": "date_of_birth", "answer": "1987-06-03"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:12:27 f_18cb2d41a049 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:12:28 f_d9873deb75d4 verify_identity {"field": "date_of_birth", "answer": "1990-09-09"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:12:29 f_585c484a6557 verify_identity {"field": "phone_last4", "answer": "2288"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:12:29 f_585c484a6557 find_applications {"type": "address_change"} -> {"ok": true, "applications": []}
+17:12:30 f_585c484a6557 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:12:31 f_555df085142a find_applications {"type": "limit_increase"} -> {"ok": true, "applications": [{"application_id": "APP-300912", "type": "limit_increase", "status": "rejected", "created_on": "2026-08-20", "note": "Income could
+17:12:32 f_9dd71d9a20d0 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:12:33 f_585c484a6557 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:12:35 f_585c484a6557 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:12:37 f_585c484a6557 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:12:40 f_585c484a6557 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:12:44 f_585c484a6557 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:12:44 f_555df085142a find_applications {"type": "limit_increase"} -> {"ok": true, "applications": [{"application_id": "APP-300912", "type": "limit_increase", "status": "rejected", "created_on": "2026-08-20", "note": "Income could
+17:12:48 f_585c484a6557 create_application {"type": "address_change", "fields": {"street": "Avenida Central 8", "city": "Faro", "postcode": "80001"}} -> {"ok": true, "application_id": "APP-416988", "status": "received"}
+17:12:51 f_585c484a6557 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:12:52 f_585c484a6557 close_call {"outcome": "application_created"} -> {"ok": true}
+17:12:55 f_18cb2d41a049 create_application {"type": "card_replacement", "fields": {"reason": "damaged", "delivery": "home"}} -> {"ok": true, "application_id": "APP-681389", "status": "received"}
+17:12:56 f_18cb2d41a049 find_applications {"type": "card_replacement"} -> {"ok": true, "applications": [{"application_id": "APP-118870", "type": "card_replacement", "status": "approved", "created_on": "2026-09-01", "note": ""}, {"appl
+17:12:56 f_d9873deb75d4 verify_identity {"field": "phone_last4", "answer": "8846"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:12:56 f_9dd71d9a20d0 close_call {"outcome": "status_given"} -> {"ok": true}
+17:13:07 f_555df085142a create_application {"type": "limit_increase", "fields": {"requested_limit": "3000"}} -> {"ok": true, "application_id": "APP-649022", "status": "received"}
+17:13:08 f_d9873deb75d4 find_applications {"type": "address_change"} -> {"ok": true, "applications": []}
+17:13:09 f_18cb2d41a049 find_applications {"type": "card_replacement"} -> {"ok": true, "applications": [{"application_id": "APP-118870", "type": "card_replacement", "status": "approved", "created_on": "2026-09-01", "note": ""}, {"appl
+17:13:12 f_d9873deb75d4 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:13:17 f_555df085142a transfer_to_agent {"queue": "applications"} -> {"ok": true}
+17:13:17 f_ea6607abb973 verify_identity {"field": "date_of_birth", "answer": "1993-04-28"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:13:20 f_18cb2d41a049 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:13:21 f_ea6607abb973 verify_identity {"field": "phone_last4", "answer": "3317"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:13:21 f_ea6607abb973 find_applications {"type": "card_replacement"} -> {"ok": true, "applications": []}
+17:13:21 f_ea6607abb973 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:13:24 f_d9873deb75d4 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:13:25 f_ea6607abb973 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:13:27 f_555df085142a close_call {"reason": "applications", "outcome": "transferred"} -> {"ok": true}
+17:13:27 f_6d828a76bf12 verify_identity {"field": "date_of_birth", "answer": "1992-07-21"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:13:30 f_18cb2d41a049 close_call {"outcome": "application_created"} -> {"ok": true}
+17:13:30 f_6d828a76bf12 verify_identity {"field": "phone_last4", "answer": "6630"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:13:31 f_6d828a76bf12 find_applications {"type": "address_change"} -> {"ok": true, "applications": []}
+17:13:31 f_6d828a76bf12 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:13:34 f_6d828a76bf12 transfer_to_agent {"queue": "security"} -> {"ok": true}
+17:13:34 f_ea6607abb973 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:13:35 f_d9873deb75d4 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:13:36 f_6d828a76bf12 close_call {"reason": "security", "outcome": "transferred"} -> {"ok": true}
+17:13:38 f_ea6607abb973 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:13:46 f_ea6607abb973 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:13:46 f_ea6607abb973 close_call {"reason": "out_of_scope", "outcome": "no_action"} -> {"ok": true}
+17:13:50 f_a731a14f42e2 transfer_to_agent {"queue": "security"} -> {"ok": true}
+17:13:51 f_a731a14f42e2 close_call {"reason": "security", "outcome": "transferred"} -> {"ok": true}
+17:13:52 f_d9873deb75d4 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:13:54 f_867915ef1eb1 verify_identity {"field": "date_of_birth", "answer": "1989-02-23"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:13:58 f_867915ef1eb1 verify_identity {"field": "phone_last4", "answer": "9904"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:13:59 f_867915ef1eb1 find_applications {"type": "address_change"} -> {"ok": true, "applications": []}
+17:14:00 f_867915ef1eb1 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:14:05 f_867915ef1eb1 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:14:08 f_d9873deb75d4 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:14:08 f_867915ef1eb1 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:14:09 f_4ae40194a8db verify_identity {"field": "date_of_birth", "answer": "1991-08-01"} -> {"ok": true, "verified": false, "wrong_answers_left": 3, "all_verified": false, "hint": "day_month_swapped"}
+17:14:11 f_48b9a1ef7a06 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:14:11 f_867915ef1eb1 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:14:14 f_867915ef1eb1 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:14:18 f_48b9a1ef7a06 close_call {"reason": "declined", "outcome": "not_verified"} -> {"ok": true}
+17:14:20 f_4ae40194a8db verify_identity {"field": "date_of_birth", "answer": "1991-01-08"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:14:21 f_bf0b9ad8cfe6 verify_identity {"field": "date_of_birth", "answer": "1988-03-14"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:14:29 f_d9873deb75d4 transfer_to_agent {"queue": "applications"} -> {"ok": true}
+17:14:31 f_4ae40194a8db verify_identity {"field": "phone_last4", "answer": "6604"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:14:31 f_867915ef1eb1 find_applications {"type": "address_change"} -> {"ok": true, "applications": []}
+17:14:31 f_867915ef1eb1 create_application {"type": "address_change", "fields": {"street": "Main Road 3", "city": "Cork", "postcode": "12345"}} -> {"ok": true, "application_id": "APP-547505", "status": "received"}
+17:14:32 f_bf0b9ad8cfe6 verify_identity {"field": "phone_last4", "answer": "4471"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:14:33 f_867915ef1eb1 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:14:33 f_867915ef1eb1 close_call {"outcome": "application_created"} -> {"ok": true}
+17:14:36 f_4ae40194a8db find_applications {"type": "card_replacement"} -> {"ok": true, "applications": []}
+17:14:36 f_867915ef1eb1 create_application {"type": "address_change", "fields": {"street": "Main Road 3", "city": "Cork", "postcode": "12345"}} -> {"ok": true, "application_id": "APP-772179", "status": "received"} (delayed)
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 52494)
+Traceback (most recent call last):
+  File "C:\Python314\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Python314\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python314\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\loseu\Desktop\build-the-builder\tools\mock_bank_f.py", line 212, in do_POST
+    self.send(200, result)
+    ~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\loseu\Desktop\build-the-builder\tools\mock_bank_f.py", line 176, in send
+    self.wfile.write(data)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Python314\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine
+----------------------------------------
+17:14:36 f_bf0b9ad8cfe6 find_applications {"type": "limit_increase"} -> {"ok": true, "applications": []}
+17:14:37 f_d9873deb75d4 close_call {"reason": "applications", "outcome": "transferred"} -> {"ok": true}
+17:14:39 f_4ae40194a8db get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:14:40 f_bf0b9ad8cfe6 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:14:45 f_0380e701ba6d transfer_to_agent {"queue": "general"} -> {"ok": true}
+17:14:51 f_4ae40194a8db get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:14:51 f_bf0b9ad8cfe6 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:14:53 f_0380e701ba6d close_call {"reason": "human", "outcome": "transferred"} -> {"ok": true}
+17:14:56 f_dd6fe6ea889e verify_identity {"field": "date_of_birth", "answer": "1975-12-05"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:15:02 f_dd6fe6ea889e verify_identity {"field": "phone_last4", "answer": "7093"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:15:04 f_dd6fe6ea889e get_application {"application_id": "APP-990017"} -> {"ok": true, "application_id": "APP-990017", "type": "address_change", "status": "approved", "created_on": "2026-10-02", "note": ""}
+17:15:06 f_d7556951cb76 verify_identity {"field": "date_of_birth", "answer": "1987-06-03"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:15:07 f_bf0b9ad8cfe6 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:15:07 f_4ae40194a8db get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:15:09 f_dd6fe6ea889e get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:15:11 f_dd6fe6ea889e close_call {"outcome": "status_given"} -> {"ok": true}
+17:15:12 f_d7556951cb76 verify_identity {"field": "phone_last4", "answer": "2288"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:15:12 f_d7556951cb76 find_applications {"type": "address_change"} -> {"ok": true, "applications": []}
+17:15:12 f_d7556951cb76 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:15:17 f_4ae40194a8db get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:15:19 f_d7556951cb76 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:15:21 f_bf0b9ad8cfe6 create_application {"type": "limit_increase", "fields": {"requested_limit": "20000"}} -> {"ok": true, "application_id": "APP-750137", "status": "received"}
+17:15:23 f_d7556951cb76 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:15:30 f_4ae40194a8db create_application {"type": "card_replacement", "fields": {"reason": "expired", "delivery": "home"}} -> {"ok": true, "application_id": "APP-137902", "status": "received"}
+17:15:31 f_bf6fce054d77 verify_identity {"field": "date_of_birth", "answer": "1990-09-09"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:15:34 f_bf0b9ad8cfe6 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:15:35 f_bf6fce054d77 verify_identity {"field": "phone_last4", "answer": "8846"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:15:35 f_bf6fce054d77 find_applications {"type": "address_change"} -> {"ok": true, "applications": []}
+17:15:36 f_bf6fce054d77 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:15:36 f_d7556951cb76 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:15:37 f_ec10e149e811 verify_identity {"field": "date_of_birth", "answer": "1983-10-19"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:15:37 f_d7556951cb76 close_call {"reason": "incomplete", "outcome": "no_action"} -> {"ok": true}
+17:15:40 f_bf6fce054d77 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:15:41 f_4ae40194a8db get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:15:47 f_4ae40194a8db close_call {"outcome": "application_created"} -> {"ok": true}
+17:15:50 f_ec10e149e811 verify_identity {"field": "phone_last4", "answer": "4410"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:15:51 f_ec10e149e811 find_applications {"type": "limit_increase"} -> {"ok": true, "applications": []}
+17:15:53 f_ec10e149e811 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:15:54 f_bf6fce054d77 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:15:57 f_11e7c90fc491 transfer_to_agent {"queue": "general"} -> {"ok": true}
+17:15:57 f_ec10e149e811 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:15:57 f_bf6fce054d77 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:16:01 f_bf6fce054d77 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:16:02 f_ec10e149e811 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:16:05 f_11e7c90fc491 close_call {"reason": "human", "outcome": "transferred"} -> {"ok": true}
+17:16:06 f_7b4e5059b3cf verify_identity {"field": "date_of_birth", "answer": "0000-11-02"} -> {"ok": true, "verified": false, "wrong_answers_left": 2, "all_verified": false}
+17:16:06 f_bf6fce054d77 create_application {"type": "address_change", "fields": {"street": "Lindenweg 9", "city": "Munich", "postcode": "80331"}} -> {"ok": true, "application_id": "APP-430661", "status": "received"}
+17:16:06 f_ec10e149e811 create_application {"type": "limit_increase", "fields": {"requested_limit": "7500"}} -> {"ok": true, "application_id": "APP-807528", "status": "received"}
+17:16:11 f_bf6fce054d77 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:16:12 f_bf6fce054d77 close_call {"outcome": "application_created"} -> {"ok": true}
+17:16:14 f_ec10e149e811 get_requirements {"type": "limit_increase"} -> {"ok": true, "fields": [{"name": "requested_limit", "question": "What limit would you like, as an amount?", "format": "amount", "required": true}, {"name": "car
+17:16:15 f_ec10e149e811 close_call {"outcome": "application_created"} -> {"ok": true}
+17:16:15 f_7b4e5059b3cf verify_identity {"field": "date_of_birth", "answer": "0000-00-1979"} -> {"ok": false, "error": "answer is not a date. Send it as YYYY-MM-DD."}
+17:16:23 f_7b4e5059b3cf verify_identity {"field": "date_of_birth", "answer": "0000-11-02"} -> {"ok": true, "verified": false, "wrong_answers_left": 1, "all_verified": false}
+17:16:31 f_2ac296eee399 verify_identity {"field": "date_of_birth", "answer": "1984-01-30"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:16:33 f_7b4e5059b3cf verify_identity {"field": "date_of_birth", "answer": "0000-11-02"} -> {"ok": true, "verified": false, "wrong_answers_left": 0, "all_verified": false}
+17:16:34 f_f97e998a3805 verify_identity {"field": "date_of_birth", "answer": "1988-03-14"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:16:34 f_5309792149e6 verify_identity {"field": "date_of_birth", "answer": "1981-08-11"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": false}
+17:16:36 f_7b4e5059b3cf close_call {"reason": "failed", "outcome": "not_verified"} -> {"ok": true}
+17:16:37 f_2ac296eee399 verify_identity {"field": "phone_last4", "answer": "2219"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:16:39 f_2ac296eee399 find_applications {"type": "card_replacement"} -> {"ok": true, "applications": []}
+17:16:40 f_5309792149e6 verify_identity {"field": "phone_last4", "answer": "5560"} -> {"ok": true, "verified": true, "wrong_answers_left": 3, "all_verified": true}
+17:16:40 f_5309792149e6 find_applications {"type": "card_replacement"} -> {"ok": true, "applications": []}
+17:16:40 f_2ac296eee399 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:16:41 f_5309792149e6 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:16:42 f_e6741bbe33f0 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:16:44 f_e6741bbe33f0 close_call {"reason": "out_of_scope", "outcome": "no_action"} -> {"ok": true}
+17:16:49 f_2ac296eee399 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:16:51 f_5309792149e6 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:16:53 f_2ac296eee399 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:16:58 f_5309792149e6 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:17:00 f_2ac296eee399 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:17:03 f_5309792149e6 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:17:03 f_83032c6c027a get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:17:04 f_83032c6c027a close_call {"reason": "out_of_scope", "outcome": "no_action"} -> {"ok": true}
+17:17:06 f_2ac296eee399 create_application {"type": "card_replacement", "fields": {"reason": "damaged", "delivery": "home"}} -> {"ok": true, "application_id": "APP-196192", "status": "received"}
+17:17:07 f_5309792149e6 create_application {"type": "card_replacement", "fields": {"reason": "expired", "delivery": "home"}} -> {"ok": true, "application_id": "APP-445937", "status": "received"}
+17:17:09 f_2ac296eee399 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:17:10 f_5309792149e6 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:17:11 f_2ac296eee399 close_call {"outcome": "application_created"} -> {"ok": true}
+17:17:11 f_5309792149e6 close_call {"outcome": "application_created"} -> {"ok": true}
+17:17:22 f_b3ccd1f8d5e6 get_requirements {"type": "card_replacement"} -> {"ok": true, "fields": [{"name": "reason", "question": "Is the card damaged or expired?", "format": "choice", "options": ["damaged", "expired"], "required": tru
+17:17:23 f_b3ccd1f8d5e6 close_call {"reason": "out_of_scope", "outcome": "no_action"} -> {"ok": true}
+17:17:23 f_c38e961c0e5d transfer_to_agent {"queue": "general"} -> {"ok": true}
+17:17:24 f_c38e961c0e5d close_call {"reason": "human", "outcome": "transferred"} -> {"ok": true}
+17:18:08 f_f97e998a3805 get_requirements {"type": "address_change"} -> {"ok": true, "fields": [{"name": "street", "question": "What is the street and number of the new address?", "format": "text", "required": true}, {"name": "city"
+17:18:09 f_f97e998a3805 close_call {"reason": "declined", "outcome": "not_verified"} -> {"ok": true}
